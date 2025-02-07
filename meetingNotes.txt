@@ -1,6 +1,10 @@
 Session 1.
 
-- We came up with the Initial idea of a bingo board with tiles contianing sustainnability goals which are marked off when completed. When the user gets a bingo win condition (4 In a row either Horizontally, Vertically, or diagonally), they gain an in game currency: Leaf Coins. With these coins they can purchase plant packets for plants to add to their virtual gardens.
+- We came up with the Initial idea of a bingo board with tiles contianing sustainnability goals which are marked off when completed. When the user gets a bingo win condition (4 In a row either Horizontally, Vertically, or diagonally), they gain an in game currency: Leaf Coins. With these  coins they can purchase plant packets for plants to add to their virtual gardens.
+
+
+- The website will consist of a home page, with an explanation of the game, and a login prompt.
+- There will then be two other pages, one with the bingo board, the other with the garden.
 
 - The grid will be 4x4, resetting every week.
 - 6 or so will be a visiting tiles, requiring the user to walk to a specific location.
