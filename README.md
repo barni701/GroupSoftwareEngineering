@@ -3,7 +3,7 @@
 A bingo style game in which users complete sustainability type squares and tasks. Users get points (leaf coins) if they are able to complete a rows, columns or diagonals of a sustainability bingo grid. They are then able to spend these coins on different seed packets that they can grow in their garden. If you don't keep a daily streak going, plants start dying. 
 
 
-## Meetings
+## Meeting Notes
 ### Session 1
 Date: 07/02/2025
 - We came up with the Initial idea of a bingo board with tiles contianing sustainnability goals which are marked off when completed. When the user gets a bingo win condition (4 In a row either Horizontally, Vertically, or diagonally), they gain an in game currency: Leaf Coins. With these  coins they can purchase plant packets for plants to add to their virtual gardens.
