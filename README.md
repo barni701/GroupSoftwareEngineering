@@ -5,10 +5,12 @@ A bingo style game in which users complete sustainability type squares and tasks
 
 ## Roles
 ### General Roles
-Dylan, Adam - Front-End Development
+Archie - Git Master <br/>
+Will - Part Time Climate Consultant <br/>
+Dylan, Adam - Front-End Development <br/>
 Will, Yoav, Archie, Barna, Sam - Back-End Development
 ### Week 1
 Dylan, Adam - Create a basic html template for the bingo board <br/>
-Barna, Sam - User Management
-Yoav, Archie - Bingo Logic
+Barna, Sam - User Management <br/>
+Yoav, Archie - Bingo Logic <br/>
 Will - Sustainability Ideas (Questions)
