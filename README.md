@@ -39,3 +39,15 @@ Date: 07/02/2025
 
 - We did research about the rarity of plants and which category they will fit.
 - The first deadline will be to get the grid and win conditions working, along with recieving the Leaf Coins.
+
+### Session 2
+Date: 10/02/2025
+- Reflected on initial feedback from drop-in sprint meeting and took action
+- We created roles and assigned initial tasks to indivudals based on strengths
+- Created and assigned branches to allow users to contribute on their own
+- Initialised main branch to contain a basic django project
+- Created .gitignore to solve issues when merging and pushing from mac and windows
+- Created a prototype login system and sign up system
+- Have an initial basic database with password hashing to store user data
+- Created multiple django apps to allow for the creation of features
+- Database hashing system complies with the GDPR requirements
