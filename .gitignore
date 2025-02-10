@@ -11,3 +11,17 @@ Thumbs.db
 # Ignore logs and temp files
 *.log
 *.tmp
+
+# Ignore pyhton bytecode
+*.pyc
+
+
+# Ignore Vim swap files
+*.swp
+
+# Ignore Emacs backup files
+*~
+
+# Ignore MacOS Finder files
+.AppleDouble
+.LSOverride
