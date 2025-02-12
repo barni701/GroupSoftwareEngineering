@@ -1,0 +1,35 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: whitesmoke;
+}
+
+.board {
+    width: 90vmin;
+    height: 90vmin;
+    border-collapse: collapse;
+    font-size: 30px;
+    
+}
+
+.board td {
+    border: 1px solid black;
+    color: black;
+    aspect-ratio: 1/1;
+    text-align: center;
+    font-family: 'Tahoma';
+}
+
+.board td.incomplete:hover {
+    background-color: lightgray;
+}
+
+.board .complete {
+    background-color: lightgreen;
+}
+
+.board .incomplete {
+    background-color: white;
+}

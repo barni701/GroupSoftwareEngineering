@@ -1,12 +1,24 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/bingo.css' %}">
     <title>Bingo</title>
 </head>
 <body>
-    <h1>Bingo</h1>
+    <table class="board" border="1">
+        {% for row in board %}
+            <tr>
+                {% for cell in row %}
+                <td class="{% if cell.status == 1 %}complete{% else %}incomplete{% endif %}" data-value="{{ cell.challenge }}">
+                    {{ cell.challenge }}
+                </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
 </body>
 </html>
+
