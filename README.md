@@ -51,3 +51,12 @@ Date: 10/02/2025
 - Have an initial basic database with password hashing to store user data
 - Created multiple django apps to allow for the creation of features
 - Database hashing system complies with the GDPR requirements
+
+### Session 3
+Date: 10/02/2025
+- Designing slide show presentation
+- Dividing up roles and what to say for the presentation
+- Reviewing progress made in different branches
+- Designing the live demo for the presentation
+- Checking to see if GDPR requirements has been met
+- Checking the spec to help create the presentation
