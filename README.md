@@ -60,3 +60,23 @@ Date: 10/02/2025
 - Designing the live demo for the presentation
 - Checking to see if GDPR requirements has been met
 - Checking the spec to help create the presentation
+- Planned Presentation
+   - Intro
+     - Introduce each member
+     - Basic concept of the game
+   - Aspects of gamification
+     - Login system
+        - GDPR
+        - Hashing
+        - T&C
+        - forgotten password
+        - Account deletion
+     - Home page
+        - 4 aspects of sustainability 
+     - Bingo board
+        - Quiz
+   - Live demo
+     - Go to home page
+     - Login
+     - Expain forgot password
+     - Go to bingo board
