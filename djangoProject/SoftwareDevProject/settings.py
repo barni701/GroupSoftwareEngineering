@@ -122,3 +122,26 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+SECURE_SSL_REDIRECT = False  # Disable HTTPS redirection
+SESSION_COOKIE_SECURE = False  # Allow session cookies over HTTP
+CSRF_COOKIE_SECURE = False  # Allow CSRF tokens over HTTP
+SECURE_PROXY_SSL_HEADER = None  # Remove any forced SSL headers
+
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'user_changes.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
