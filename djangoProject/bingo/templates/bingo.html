@@ -13,7 +13,9 @@
             <tr>
                 {% for cell in row %}
                 <td class="{% if cell.status == 1 %}complete{% else %}incomplete{% endif %}" data-value="{{ cell.challenge }}">
-                    {{ cell.challenge }}
+                    <a class = cell href="{{cell.url}}">
+                        {{ cell.challenge }}
+                    </a>
                 </td>
                 {% endfor %}
             </tr>
