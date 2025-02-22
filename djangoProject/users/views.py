@@ -1,9 +1,9 @@
 from django.contrib.auth import login
 from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 import logging
-from .forms import SignUpForm
+from .forms import SignUpForm, ProfileUpdateForm, GDPRConsentForm
 from .models import UserProfile
 
 
@@ -27,7 +27,7 @@ def signup(request):
             return redirect('landing')  # Redirect to the landing page or another page
     else:
         form = SignUpForm()
-    return render(request, 'users/signup.html', {'form': form})
+    return render(request, 'users/signup_new.html', {'form': form})
 
 
 def landing(request):
@@ -49,4 +49,43 @@ def edit_profile(request):
         user.email = new_email
         user.save()
 
-    return render(request, 'profile.html')
+    return render(request, 'users/profile.html')
+
+
+@login_required
+def profile_view(request):
+    """Handles profile updates including GDPR consent."""
+    user = request.user
+    user_profile, created = UserProfile.objects.get_or_create(user=user)
+
+    if request.method == 'POST':
+        profile_form = ProfileUpdateForm(request.POST, instance=user)
+        gdpr_form = GDPRConsentForm(request.POST, instance=user_profile)
+
+        if profile_form.is_valid() and gdpr_form.is_valid():
+            profile_form.save()
+            gdpr_form.save()
+            messages.success(request, "Your profile has been updated successfully.")
+            return redirect('profile')
+    else:
+        profile_form = ProfileUpdateForm(instance=user)
+        gdpr_form = GDPRConsentForm(instance=user_profile)
+
+    return render(request, 'users/profile.html', {
+        'profile_form': profile_form,
+        'gdpr_form': gdpr_form
+    })
+
+
+@login_required
+def enable_2fa(request):
+    """Handles enabling two-factor authentication."""
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        user_profile.two_factor_enabled = True
+        user_profile.save()
+        messages.success(request, "Two-Factor Authentication has been enabled.")
+        return redirect('profile')
+
+    return render(request, 'users/enable_2fa.html', {'user_profile': user_profile})

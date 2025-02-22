@@ -11,5 +11,6 @@ urlpatterns = [
     path("signup/", views.signup, name='signup'),
     path("delete-account/", views.delete_account, name='delete_account'),
     path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
-    path("edit-profile/", views.edit_profile, name='edit_profile'),
+    path("profile/", views.profile_view, name='profile'),
+    path('enable-2fa/', views.enable_2fa, name='enable_2fa'),
 ]
