@@ -58,7 +58,7 @@ ROOT_URLCONF = "SoftwareDevProject.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -128,3 +128,27 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+SECURE_SSL_REDIRECT = False  # Disable HTTPS redirection
+SESSION_COOKIE_SECURE = False  # Allow session cookies over HTTP
+CSRF_COOKIE_SECURE = False  # Allow CSRF tokens over HTTP
+SECURE_PROXY_SSL_HEADER = None  # Remove any forced SSL headers
+LOGIN_REDIRECT_URL = '/users/profile'  # Change to your desired URL
+
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'user_changes.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}

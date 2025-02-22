@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input, button {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+            border: none;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .profile-info {
+            margin-bottom: 15px;
+        }
+
+        .profile-info p {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+
+        .link {
+            margin-top: 10px;
+            display: inline-block;
+            color: #007BFF;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>User Profile</h2>
+
+        <div class="profile-info">
+            <p><strong>Username:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>GDPR Consent:</strong> {% if user.userprofile.gdpr_consent %} ✅ Consented {% else %} ❌ Not Consented {% endif %}</p>
+            <p><strong>2FA Enabled:</strong> {% if user.userprofile.two_factor_enabled %} ✅ Yes {% else %} ❌ No {% endif %}</p>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            {{ profile_form.as_p }}
+            {{ gdpr_form.as_p }}
+            <button type="submit">Update Profile</button>
+        </form>
+
+        <a class="link" href="{% url 'enable_2fa' %}">Enable 2FA</a>
+    </div>
+</body>
+</html>
