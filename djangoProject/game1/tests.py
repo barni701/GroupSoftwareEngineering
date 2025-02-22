@@ -6,15 +6,16 @@ class QuizTests(TestCase):
         self.client = Client()
         self.quiz_url = reverse('quiz')
 
+    #tests to make sure the page loads correctly
     def test_quiz_get_request(self):
-        """Test that the quiz page loads correctly with a GET request."""
         response = self.client.get(self.quiz_url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'game1/quiz.html')
         self.assertIn('questions', response.context)
 
+
+    #Tests all correct questions are correct
     def test_quiz_post_request_correct_answers(self):
-        """Test that the quiz correctly evaluates answers."""
         data = {
             'question_0': '2030',
             'question_1': 'EMS',
@@ -30,8 +31,9 @@ class QuizTests(TestCase):
         self.assertEqual(response.context['correct_answers'], 7)
         self.assertEqual(response.context['total_questions'], 7)
 
+
+    #Tests if only some of the answers are correct
     def test_quiz_post_request_partial_answers(self):
-        """Test that the quiz handles partially correct answers."""
         data = {
             'question_0': '2030',
             'question_1': 'Wrong Answer',
@@ -46,8 +48,8 @@ class QuizTests(TestCase):
         self.assertEqual(response.context['correct_answers'], 4)
         self.assertEqual(response.context['total_questions'], 7)
 
+    #Tests if no fields are filled
     def test_quiz_post_request_empty_answers(self):
-        """Test that the quiz correctly handles empty responses."""
         data = {}
         response = self.client.post(self.quiz_url, data)
         self.assertEqual(response.status_code, 200)

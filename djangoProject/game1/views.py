@@ -2,11 +2,8 @@ from django.shortcuts import render
 
 from django.http import HttpResponse
 
-def home(request):
-    return HttpResponse("Hello, this is my new Django app!")
-
 def quiz_view(request):
-    # Define questions and answers as a dictionary
+    # Set of questions for the quiz
     questions = [
         {"text": "When does the University aim to be net zero?", "answer": "2030"},
         {"text": "What system does the University use to integrate sustainability (acronym)?", "answer": "EMS"},
@@ -22,15 +19,17 @@ def quiz_view(request):
         correct_answers = 0
         total_questions = len(questions)
 
-        # Check the user's answers
+        # Checks the users correct answers
         for i, question in enumerate(questions):
             user_answer = request.POST.get(f'question_{i}')
             if user_answer and user_answer.strip().lower() == question["answer"].lower():
                 correct_answers += 1
 
+        #renders the results
         return render(request, 'game1/quiz_result.html', {
             'correct_answers': correct_answers,
             'total_questions': total_questions,
         })
 
+    #renders the quiz questions
     return render(request, 'game1/quiz.html', {'questions': questions})
