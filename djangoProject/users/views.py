@@ -14,7 +14,7 @@ from django.contrib.auth.forms import UserCreationForm
 def delete_account(request):
     user = request.user
     user.delete()  # Deletes the user account
-    return redirect('home')  # Redirect after deletion
+    return redirect('landing')  # Redirect after deletion
 
 def signup(request):
     if request.method == 'POST':

@@ -127,6 +127,7 @@ SECURE_SSL_REDIRECT = False  # Disable HTTPS redirection
 SESSION_COOKIE_SECURE = False  # Allow session cookies over HTTP
 CSRF_COOKIE_SECURE = False  # Allow CSRF tokens over HTTP
 SECURE_PROXY_SSL_HEADER = None  # Remove any forced SSL headers
+LOGIN_REDIRECT_URL = '/Users/edit-profile'  # Change to your desired URL
 
 LOGGING = {
     'version': 1,
