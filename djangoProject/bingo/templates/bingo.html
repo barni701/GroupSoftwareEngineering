@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/bingo.css' %}">
+    <title>Bingo</title>
+</head>
+<body>
+    <!--Bing Board Table-->
+    <table class="board" border="1">
+        {% for row in board %}
+            <tr>
+                {% for cell in row %}
+                <td class="{% if cell.status == 1 %}complete{% else %}incomplete{% endif %}" data-value="{{ cell.challenge }}">
+                    <a class = cell href="{{cell.url}}">
+                        {{ cell.challenge }}
+                    </a>
+                </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
+
