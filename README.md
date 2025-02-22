@@ -80,3 +80,10 @@ Date: 10/02/2025
      - Login
      - Expain forgot password
      - Go to bingo board
+
+### Session 4
+Date: 22/02/2025
+- Evaluate the requirement brief for the sprint 1 submission
+- Check progress on each branch to see current state of project
+- Assess current unit tests and made decision to create more
+- Create Development branch used for merging current django app prototype
