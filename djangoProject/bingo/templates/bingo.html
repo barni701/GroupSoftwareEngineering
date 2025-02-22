@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/bingo.css' %}">
     <title>Bingo</title>
 </head>
 <body>
+    <!--Bing Board Table-->
     <table class="board" border="1">
         {% for row in board %}
             <tr>
