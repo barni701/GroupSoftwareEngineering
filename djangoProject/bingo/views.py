@@ -1,19 +1,49 @@
+# Authors: Yoav Shimoni, Adam Brooks
+
 from django.shortcuts import render
 import random
 # Create your views here.
 
+def bingo_view(request):
+    board = make_board(rows=5, cols=5)
+    return render(request, 'bingo.html', {'board': board})
+
+# Returns generated board variable with random integer values
+# 4x4
 def make_board(rows,cols):
     # status: complete or incomplete
     # challenge: the text displayed
     # url: links to the challenge page
-    board = [
-        [{"status": 0, "challenge": "Challenge 1", "url": "/game1/"}, {"status": 0, "challenge": "Challenge 2", "url": "https://google.com"}, {"status": 1, "challenge": "Challenge 3", "url": "https://google.com"}, {"status": 1, "challenge": "Challenge 4", "url": "https://google.com"}],
-        [{"status": 0, "challenge": "Challenge 5", "url": "https://google.com"}, {"status": 1, "challenge": "Challenge 6", "url": "https://google.com"}, {"status": 1, "challenge": "Challenge 7", "url": "https://google.com"}, {"status": 1, "challenge": "Challenge 8", "url": "https://google.com"}],
-        [{"status": 0, "challenge": "Challenge 9", "url": "https://google.com"}, {"status": 0, "challenge": "Challenge 10", "url": "https://google.com"}, {"status": 1, "challenge": "Challenge 11", "url": "https://google.com"}, {"status": 1, "challenge": "Challenge 12", "url": "https://google.com"}],
-        [{"status": 0, "challenge": "Challenge 13", "url": "https://google.com"}, {"status": 1, "challenge": "Challenge 14", "url": "https://google.com"}, {"status": 1, "challenge": "Challenge 15", "url": "https://google.com"}, {"status": 1, "challenge": "Challenge 16", "url": "https://google.com"}],
-    ]
+
+    numbers = random.sample(range(1, 16+1), 16)
+    board = [ [0]*4 for i in range(4)]
+    for i in range(0,4):
+        for j in range(0,4):
+            challenge = numbers.pop()
+            board[i][j] = {"status": bool(random.getrandbits(1)), "challenge": "Challenge "+str(challenge), "url": "/game" +str(challenge)+"/"}
+
     return board
 
-def bingo_view(request):
-    board = make_board(rows=5, cols=5)
-    return render(request, 'bingo.html', {'board': board})
+# Checks the provided board for bingos. Returns True if bingo, False otherwise.
+def checkBingo(board):
+
+    # Check Rows
+    for i in range(4):
+        if all(board[i][j]["status"] == 1 for j in range(4)):
+            return True
+
+    # Check Cols
+    for i in range(4):
+        if all(board[j][i]["status"] == 1 for j in range(4)):
+            return True
+
+    # Check Leading Diagonal
+    if all(board[i][i]["status"] == 1 for i in range(4)):
+        return True
+
+    # Check Anti-Diagonal
+    if all(board[i][3 - i]["status"] == 1 for i in range(4)):
+        return True
+
+    return False
+

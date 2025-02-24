@@ -84,7 +84,6 @@
             <p><strong>Username:</strong> {{ user.username }}</p>
             <p><strong>Email:</strong> {{ user.email }}</p>
             <p><strong>GDPR Consent:</strong> {% if user.userprofile.gdpr_consent %} ✅ Consented {% else %} ❌ Not Consented {% endif %}</p>
-            <p><strong>2FA Enabled:</strong> {% if user.userprofile.two_factor_enabled %} ✅ Yes {% else %} ❌ No {% endif %}</p>
         </div>
 
         <form method="POST">
@@ -94,7 +93,6 @@
             <button type="submit">Update Profile</button>
         </form>
 
-        <a class="link" href="{% url 'enable_2fa' %}">Enable 2FA</a><br><br><br>
 
         <a class="link" href="{% url 'home' %}">Return Home</a>
     </div>

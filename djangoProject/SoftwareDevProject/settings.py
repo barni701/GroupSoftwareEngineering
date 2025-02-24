@@ -41,11 +41,6 @@ INSTALLED_APPS = [
     "home",
     "game1",
     "bingo",
-
-    # 2fa Auth apps
-    'django_otp',
-    'django_otp.plugins.otp_totp',  # TOTP for Google Authenticator
-    'two_factor',
 ]
 
 MIDDLEWARE = [
@@ -56,9 +51,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-
-    # Middleware for 2FA
-    'django_otp.middleware.OTPMiddleware',
 ]
 
 ROOT_URLCONF = "SoftwareDevProject.urls"

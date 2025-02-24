@@ -75,17 +75,3 @@ def profile_view(request):
         'profile_form': profile_form,
         'gdpr_form': gdpr_form
     })
-
-
-@login_required
-def enable_2fa(request):
-    """Handles enabling two-factor authentication."""
-    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
-
-    if request.method == 'POST':
-        user_profile.two_factor_enabled = True
-        user_profile.save()
-        messages.success(request, "Two-Factor Authentication has been enabled.")
-        return redirect('profile')
-
-    return render(request, 'users/enable_2fa.html', {'user_profile': user_profile})
