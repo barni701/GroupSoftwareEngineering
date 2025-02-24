@@ -7,7 +7,7 @@ from users.models import UserProfile
 class SignUpViewTest(TestCase):
     def setUp(self):
         self.client = Client()
-        self.signup_url = reverse('signup')  # Ensure this matches your `urls.py`
+        self.signup_url = reverse('signup_new')  # Ensure this matches your `urls.py`
 
     def test_signup_GET(self):
         """Test that the signup page loads correctly"""

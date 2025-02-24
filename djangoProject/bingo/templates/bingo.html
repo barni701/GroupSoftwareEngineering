@@ -7,6 +7,18 @@
     <title>Bingo</title>
 </head>
 <body>
+    <nav class="navbar">
+        <a href="index.html">
+            <img src="{% static 'images/home-image.png' %}" alt="Logo" class="logo">
+        </a>
+        <div class="nav-links">
+            <a href="page3.html">Garden</a>
+            <a href="page4.html">Contact Us</a>
+        </div>
+    </nav>
+<br><br><br>
+
+
     <!--Bing Board Table-->
     <table class="board" border="1">
         {% for row in board %}
