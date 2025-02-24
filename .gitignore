@@ -1,2 +1,27 @@
-__pycache__/
+# Ignore node_modules (for JavaScript projects)
+node_modules/
+
+# Ignore VS Code settings
+.vscode/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore logs and temp files
+*.log
+*.tmp
+
+# Ignore pyhton bytecode
 *.pyc
+
+
+# Ignore Vim swap files
+*.swp
+
+# Ignore Emacs backup files
+*~
+
+# Ignore MacOS Finder files
+.AppleDouble
+.LSOverride
