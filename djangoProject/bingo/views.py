@@ -14,18 +14,13 @@ def make_board(rows,cols):
     # status: complete or incomplete
     # challenge: the text displayed
     # url: links to the challenge page
-    #max_id = 16
+
     numbers = random.sample(range(1, 16+1), 16)
     board = [ [0]*4 for i in range(4)]
     for i in range(0,4):
         for j in range(0,4):
             challenge = numbers.pop()
             board[i][j] = {"status": bool(random.getrandbits(1)), "challenge": "Challenge "+str(challenge), "url": "/game" +str(challenge)+"/"}
-    
-    #if(checkBingo(board)):
-    #    print("Bingo!")
-    #else:
-    #    print("No Bingo")
 
     return board
 
@@ -35,27 +30,20 @@ def checkBingo(board):
     # Check Rows
     for i in range(4):
         if all(board[i][j]["status"] == 1 for j in range(4)):
-            #print("Bingo By Row!")
             return True
 
     # Check Cols
     for i in range(4):
         if all(board[j][i]["status"] == 1 for j in range(4)):
-            #print("Bingo by Col!")
             return True
 
     # Check Leading Diagonal
     if all(board[i][i]["status"] == 1 for i in range(4)):
-        #print("Bingo by leading diag!")
         return True
 
     # Check Anti-Diagonal
     if all(board[i][3 - i]["status"] == 1 for i in range(4)):
-        #print("Bingo by anti diag!")
         return True
 
     return False
 
-
-
-#def markSquare(board, id):
