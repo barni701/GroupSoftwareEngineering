@@ -80,3 +80,24 @@ Date: 10/02/2025
      - Login
      - Expain forgot password
      - Go to bingo board
+
+### Session 4
+Date: 21/02/2025
+- Focussed on merging branches into a development branch
+- Linked the first game to the bingo board
+- Added the bingo checking logic
+- Linked the homepage to the bingo board
+- Resolved any merge conflicts due to combining multiple branches into one.
+- Ensured unit tests pass
+
+### Session 5
+Date: 24/02/2025
+- Added styling to the bingo board
+- Account deletion added
+- Login/Sign Up bug fixing
+- Finalised tests
+- Finalised documentation
+- Finalised formatting for sprint 1 submission
+
+
+
