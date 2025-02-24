@@ -1,3 +1,4 @@
+{% load static %}
 <html lang="en">
 <head>
     <title>Home</title>
@@ -6,8 +7,10 @@
             margin: 0;
             font-family: Arial, sans-serif;
 			background-color:white;
-			background-image: url(exeter3.png);
+			background-image: url("{% static '/images/exeter3.png' %}");
 			background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
 			padding: 0;
 			background-color: #ABCB3A;
         }
