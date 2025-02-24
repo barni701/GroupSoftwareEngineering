@@ -1,4 +1,4 @@
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -13,7 +13,9 @@ from django.contrib.auth.forms import UserCreationForm
 @login_required
 def delete_account(request):
     user = request.user
+    logout(request)  # Logs the user out
     user.delete()  # Deletes the user account
+    messages.success(request, "Your account has been deleted successfully.")
     return redirect('landing')  # Redirect after deletion
 
 def signup(request):
