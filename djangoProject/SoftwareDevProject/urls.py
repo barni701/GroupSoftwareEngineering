@@ -25,5 +25,4 @@ urlpatterns = [
     path("users/", include("users.urls")),
     path('game1/', include('game1.urls')),
     path("bingo/", include("bingo.urls")),
-    path("users/", include("users.urls")),
 ]
