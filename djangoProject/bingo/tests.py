@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
+import views.py as views
 
 class BingoViewTests(TestCase):
 
@@ -17,3 +18,9 @@ class BingoViewTests(TestCase):
     def test_bingo_content(self):
         response = self.client.get(reverse('bingo'))
         self.assertContains(response, '<table class="board" border="1">')
+
+    # Checks if the board is 4x4
+    def test_make_board_size(self):
+        response = self.client.get(reverse('bingo'))
+        board = views.make_board(4, 4)
+        self.assertEqual(len(board), 4)
