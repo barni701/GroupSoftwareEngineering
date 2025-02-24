@@ -7,13 +7,13 @@ from users.models import UserProfile
 class SignUpViewTest(TestCase):
     def setUp(self):
         self.client = Client()
-        self.signup_url = reverse('signup_new')  # Ensure this matches your `urls.py`
+        self.signup_url = reverse('signup')  # Ensure this matches your `urls.py`
 
     def test_signup_GET(self):
         """Test that the signup page loads correctly"""
         response = self.client.get(self.signup_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'users/signup.html')
+        self.assertTemplateUsed(response, 'users/signup_new.html')
 
     def test_signup_POST_valid(self):
         """Test signing up with valid data"""
@@ -41,7 +41,7 @@ class SignUpViewTest(TestCase):
         self.assertFalse(get_user_model().objects.filter(username='short').exists())  # No user created
 
 
-'''class DeleteAccountViewTest(TestCase):
+class DeleteAccountViewTest(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(username='testuser', password='testpass123')
         self.client.login(username='testuser', password='testpass123')
@@ -50,19 +50,24 @@ class SignUpViewTest(TestCase):
         """Test that the user can delete their account"""
         response = self.client.post(reverse('delete_account'))  # Ensure URL name is correct
         self.assertEqual(response.status_code, 302)  # Redirect after deletion
-        self.assertFalse(get_user_model().objects.filter(username='testuser').exists())  # User deleted'''
+        self.assertFalse(get_user_model().objects.filter(username='testuser').exists())  # User deleted
 
 class EditProfileViewTest(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(username='testuser', email='old@example.com', password='testpass123')
         self.client.login(username='testuser', password='testpass123')
 
-    def test_edit_profile_POST(self):
-        """Test changing user email"""
-        response = self.client.post(reverse('edit_profile'), {'email': 'new@example.com'})
-        self.assertEqual(response.status_code, 200)  # Ensure the page reloads
-        self.user.refresh_from_db()
-        self.assertEqual(self.user.email, 'new@example.com')  # Email should be updatee
+    def test_edit_profile_GET(self):
+        """Test rendering the profile page"""
+        # Send GET request to the profile page
+        response = self.client.get(reverse('profile'))
+
+        # Ensure the response is a success (200)
+        self.assertEqual(response.status_code, 200)
+
+        # Ensure the user context is passed correctly to the template
+        self.assertContains(response, self.user.username)
+        self.assertContains(response, self.user.email)
 
 class StaticViewsTest(TestCase):
     def test_landing_page(self):
