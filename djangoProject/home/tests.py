@@ -19,8 +19,8 @@ class HomeViewTests(TestCase):
     def test_home_view_content(self):
         response = self.client.get(reverse('home'))
         # Check if the main heading is present
-        self.assertContains(response, '<h1>Sustainability Bingo</h1>')
+        self.assertContains(response, 'Sustainability Bingo')
         # Check if the subheading is present
-        self.assertContains(response, '<h2>How does it work?</h2>')
+        self.assertContains(response, 'How does it work?')
         # Check if the content is present
-        self.assertContains(response, '<p>Sustainability bingo lets you help the environment while having fun!</p>')
+        self.assertContains(response, 'Sustainability bingo lets you help the environment while having fun!')

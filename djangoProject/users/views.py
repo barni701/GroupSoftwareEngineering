@@ -41,9 +41,11 @@ def privacy_policy(request):
 
 logger = logging.getLogger(__name__)
 
+
 def edit_profile(request):
+    user = request.user
+
     if request.method == 'POST':
-        user = request.user
         new_email = request.POST.get('email')
 
         logger.info(f"User {user.username} changed email to {new_email}")  # Logs changes
@@ -51,7 +53,9 @@ def edit_profile(request):
         user.email = new_email
         user.save()
 
-    return render(request, 'users/profile.html')
+        return redirect('profile')  # This should trigger a redirect
+
+    return render(request, 'users/profile.html', {'user': user})
 
 
 @login_required
