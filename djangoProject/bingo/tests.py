@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
-import views.py as views
+from bingo import views
 
 class BingoViewTests(TestCase):
 
