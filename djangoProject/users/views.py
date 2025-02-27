@@ -37,8 +37,11 @@ def landing(request):
     return render(request, 'users/landing.html')
 
 
-def privacy_policy(request):
+def terms_and_conditions(request):
     return render(request, 'users/tc.html')
+
+def privacy_policy(request):
+    return render(request, 'users/privacy_policy.html')
 
 logger = logging.getLogger(__name__)
 

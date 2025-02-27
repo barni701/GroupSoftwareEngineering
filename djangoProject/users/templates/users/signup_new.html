@@ -64,7 +64,7 @@
                                 {{ form.gdpr_consent.errors }}
                                 <input type="checkbox" name="gdpr_consent" class="form-check-input" {% if form.gdpr_consent.value %}checked{% endif %}>
                                 <label class="form-check-label" for="gdpr_consent">
-                                    I agree to the <a href="{% url 'privacy_policy' %}" target="_blank">Privacy Policy</a>
+                                    I agree to the <a href="{% url 'terms_and_conditions' %}" target="_blank">Terms and Conditions</a>
                                 </label>
                             </div>
                             <button type="submit" class="btn btn-primary btn-block">Sign Up</button>

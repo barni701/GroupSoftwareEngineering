@@ -10,8 +10,9 @@ urlpatterns = [
     path("logout/", auth_views.LogoutView.as_view(), name='logout'),
     path("signup/", views.signup, name='signup'),
     path("delete-account/", views.delete_account, name='delete_account'),
-    path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
+    path('terms-and-conitions/', views.terms_and_conditions, name='terms_and_conditions'),
     path("profile/", views.profile_view, name='profile'),
     path("user-data/", views.user_data_view, name="user_data"),
+    path("privacy-policy", views.privacy_policy, name="privacy_policy"),
 
 ]
