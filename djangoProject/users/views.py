@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 import logging
-from .forms import SignUpForm, ProfileUpdateForm, GDPRConsentForm
+from .forms import SignUpForm, ProfileUpdateForm, GDPRConsentForm, CustomSignUpForm
 from .models import UserProfile
 
 
@@ -21,7 +21,7 @@ def delete_account(request):
 
 def signup(request):
     if request.method == 'POST':
-        form = SignUpForm(request.POST)
+        form = CustomSignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
             # Save GDPR consent
@@ -29,7 +29,7 @@ def signup(request):
             login(request, user)  # Log the user in after signup
             return redirect('landing')  # Redirect to the landing page or another page
     else:
-        form = SignUpForm()
+        form = CustomSignUpForm()
     return render(request, 'users/signup_new.html', {'form': form})
 
 
