@@ -22,7 +22,7 @@ class SignUpViewTest(TestCase):
             'email': 'testuser@example.com',
             'password1': 'StrongPassword123!',
             'password2': 'StrongPassword123!',
-            'gdpr_consent': True  # Assuming this field is in SignUpForm
+            'tc_consent': True  # Assuming this field is in SignUpForm
         })
         self.assertEqual(response.status_code, 302)  # Should redirect
         self.assertTrue(get_user_model().objects.filter(username='testuser').exists())  # User created
@@ -78,5 +78,5 @@ class StaticViewsTest(TestCase):
     def test_privacy_policy_page(self):
         response = self.client.get(reverse('privacy_policy'))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'users/tc.html')
+        self.assertTemplateUsed(response, 'users/privacy_policy.html')
 
