@@ -83,19 +83,19 @@
         <div class="profile-info">
             <p><strong>Username:</strong> {{ user.username }}</p>
             <p><strong>Email:</strong> {{ user.email }}</p>
-            <p><strong>GDPR Consent:</strong> {% if user.userprofile.gdpr_consent %} ✅ Consented {% else %} ❌ Not Consented {% endif %}</p>
+            <p><strong>T&Cs Consent:</strong> {% if user.userprofile.gdpr_consent %} ✅ Consented {% else %} ❌ Not Consented {% endif %}</p>
         </div>
 
         <form method="POST">
             {% csrf_token %}
             {{ profile_form.as_p }}
-            {{ gdpr_form.as_p }}
             <button type="submit">Update Profile</button>
         </form>
 
 
         <a class="link" href="{% url 'home' %}">Return Home</a><br><br>
-        <a class="link" href = "{%url 'delete_account'%}">Delete Profile</a>
+        <a class="link" href = "{%url 'delete_account'%}">Delete Profile</a><br><br>
+        <a class="link" href = "{%url 'user_data'%}">View Your Data</a>
     </div>
 </body>
 </html>

@@ -1,6 +1,7 @@
 from django.contrib.auth import login, logout
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 import logging
 from .forms import SignUpForm, ProfileUpdateForm, GDPRConsentForm
@@ -42,7 +43,7 @@ def privacy_policy(request):
 logger = logging.getLogger(__name__)
 
 
-def edit_profile(request):
+'''def edit_profile(request):
     user = request.user
 
     if request.method == 'POST':
@@ -55,7 +56,7 @@ def edit_profile(request):
 
         return redirect('profile')  # This should trigger a redirect
 
-    return render(request, 'users/profile.html', {'user': user})
+    return render(request, 'users/profile.html', {'user': user})'''
 
 
 @login_required
@@ -81,3 +82,25 @@ def profile_view(request):
         'profile_form': profile_form,
         'gdpr_form': gdpr_form
     })
+
+@login_required
+def user_data_view(request):
+    """GDPR-compliant view to show and export user data."""
+    user = request.user
+    user_profile = UserProfile.objects.get(user=user)
+
+    user_data = {
+        "username": user.username,
+        "email": user.email,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "date_joined": user.date_joined,
+        "last_login": user.last_login,
+        "gdpr_consent": user_profile.gdpr_consent,
+    }
+
+    # Export data as JSON
+    if request.GET.get("export") == "json":
+        return JsonResponse(user_data, safe=False)
+
+    return render(request, "users/user_data.html", {"user_data": user_data})
