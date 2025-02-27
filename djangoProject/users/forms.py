@@ -23,24 +23,24 @@ class ProfileUpdateForm(forms.ModelForm):
         model = User
         fields = ['username', 'email']
 
-class GDPRConsentForm(forms.ModelForm):
-    """Form to handle GDPR consent."""
+class TCConsentForm(forms.ModelForm):
+    """Form to handle T&Cs consent."""
     class Meta:
         model = UserProfile
-        fields = ['gdpr_consent']
+        fields = ['tc_consent']
 
 
 
 class CustomSignUpForm(UserCreationForm):
-    gdpr_consent = forms.BooleanField(
+    tc_consent = forms.BooleanField(
         required=True,
-        label="I agree to the processing of my personal data in accordance with the GDPR.",
+        label="I agree to the processing of my personal data in accordance with the T&Cs.",
         help_text="You must agree to our terms to create an account."
     )
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password1', 'password2', 'gdpr_consent')
+        fields = ('username', 'email', 'password1', 'password2', 'tc_consent')
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")

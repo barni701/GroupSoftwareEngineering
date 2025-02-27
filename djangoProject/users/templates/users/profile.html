@@ -83,7 +83,6 @@
         <div class="profile-info">
             <p><strong>Username:</strong> {{ user.username }}</p>
             <p><strong>Email:</strong> {{ user.email }}</p>
-            <p><strong>T&Cs Consent:</strong> {% if user.userprofile.gdpr_consent %} ✅ Consented {% else %} ❌ Not Consented {% endif %}</p>
         </div>
 
         <form method="POST">

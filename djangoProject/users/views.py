@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 import logging
-from .forms import SignUpForm, ProfileUpdateForm, GDPRConsentForm, CustomSignUpForm
+from .forms import ProfileUpdateForm, TCConsentForm, CustomSignUpForm
 from .models import UserProfile
 
 
@@ -25,7 +25,7 @@ def signup(request):
         if form.is_valid():
             user = form.save()
             # Save GDPR consent
-            UserProfile.objects.create(user=user, gdpr_consent=form.cleaned_data['gdpr_consent'])
+            UserProfile.objects.create(user=user, tc_consent=form.cleaned_data['tc_consent'])
             login(request, user)  # Log the user in after signup
             return redirect('landing')  # Redirect to the landing page or another page
     else:
@@ -70,20 +70,20 @@ def profile_view(request):
 
     if request.method == 'POST':
         profile_form = ProfileUpdateForm(request.POST, instance=user)
-        gdpr_form = GDPRConsentForm(request.POST, instance=user_profile)
+        tc_form = TCConsentForm(request.POST, instance=user_profile)
 
-        if profile_form.is_valid() and gdpr_form.is_valid():
+        if profile_form.is_valid() and tc_form.is_valid():
             profile_form.save()
-            gdpr_form.save()
+            tc_form.save()
             messages.success(request, "Your profile has been updated successfully.")
             return redirect('profile')
     else:
         profile_form = ProfileUpdateForm(instance=user)
-        gdpr_form = GDPRConsentForm(instance=user_profile)
+        tc_form = TCConsentForm(instance=user_profile)
 
     return render(request, 'users/profile.html', {
         'profile_form': profile_form,
-        'gdpr_form': gdpr_form
+        'tc_form': tc_form
     })
 
 @login_required
@@ -99,7 +99,7 @@ def user_data_view(request):
         "last_name": user.last_name,
         "date_joined": user.date_joined,
         "last_login": user.last_login,
-        "gdpr_consent": user_profile.gdpr_consent,
+        "tc_consent": user_profile.tc_consent,
     }
 
     # Export data as JSON
