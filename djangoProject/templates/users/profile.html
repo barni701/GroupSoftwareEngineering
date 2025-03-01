@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+        h2, h3 {
+            color: #333;
+        }
+        .profile-info {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .profile-info p {
+            margin: 8px 0;
+            font-size: 16px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+        input, button {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+            border: none;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .link {
+            display: block;
+            margin-top: 10px;
+            color: #007BFF;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .link:hover {
+            text-decoration: underline;
+        }
+        .currency-section {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .currency-section input[type="number"] {
+            width: calc(100% - 22px);
+        }
+        .currency-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        .currency-buttons button {
+            width: 48%;
+        }
+        .message {
+            color: red;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>User Profile</h2>
+
+        <div class="profile-info">
+            <p><strong>Username:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Currency Balance:</strong> <span id="balance">{{ currency_balance }}</span></p>
+        </div>
+
+        <!-- Currency Management Section -->
+        <div class="currency-section">
+            <h3>Manage Currency</h3>
+            <input type="number" id="currency-amount" placeholder="Enter amount" step="0.01" min="0">
+            <div class="currency-buttons">
+                <button id="add-currency">Add Currency</button>
+                <button id="spend-currency">Spend Currency</button>
+            </div>
+            <p id="currency-message" class="message"></p>
+        </div>
+
+        <!-- Update Profile Form -->
+        <form method="POST">
+            {% csrf_token %}
+            {{ profile_form.as_p }}
+            <button type="submit">Update Profile</button>
+        </form>
+
+        <a class="link" href="{% url 'home' %}">Return Home</a>
+        <a class="link" href="{% url 'users:delete_account' %}">Delete Profile</a>
+        <a class="link" href="{% url 'users:user_data' %}">View Your Data</a>
+        <a class="link" href="{% url 'users:transaction_history' %}">Transaction History</a>
+    </div>
+
+    <script>
+        // Function to retrieve CSRF token from cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        // Function to update currency via POST request
+        function updateCurrency(url) {
+            const amount = document.getElementById('currency-amount').value;
+            const messageEl = document.getElementById('currency-message');
+            messageEl.textContent = ''; // Clear previous messages
+
+            if (!amount || parseFloat(amount) <= 0) {
+                messageEl.textContent = 'Please enter a valid amount.';
+                return;
+            }
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrftoken
+                },
+                body: new URLSearchParams({ amount: amount })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`Server Error: ${response.status} ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.new_balance) {
+                    document.getElementById('balance').textContent = data.new_balance;
+                } else if (data.error) {
+                    document.getElementById('currency-message').textContent = data.error;
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                document.getElementById('currency-message').textContent = 'An error occurred: ' + error.message;
+            });
+        }
+
+        // Event listeners for the currency buttons
+        document.getElementById('add-currency').addEventListener('click', function() {
+            updateCurrency('/users/add-currency/');
+        });
+
+        document.getElementById('spend-currency').addEventListener('click', function() {
+            updateCurrency('/users/spend-currency/');
+        });
+    </script>
+</body>
+</html>

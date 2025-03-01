@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Eco Runner: Clean the City</title>
+  <style>
+    canvas {
+      background: #e0f7fa; /* Light blue background */
+      display: block;
+      margin: 20px auto;
+      border: 2px solid #00796b; /* Dark teal border */
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    body {
+      text-align: center;
+      font-family: 'Arial', sans-serif;
+      background-color: #f0f8ff; /* Light blue background */
+      margin: 0;
+      padding: 0;
+    }
+    h2 {
+      color: #00796b; /* Dark teal */
+      margin-top: 20px;
+    }
+    #scoreDisplay, #timerDisplay {
+      font-size: 1.2em;
+      color: #2c3e50; /* Dark gray */
+      margin: 10px;
+    }
+    #feedback {
+      font-size: 1em;
+      color: #e74c3c; /* Red for feedback */
+      margin: 10px;
+    }
+    #gameOver {
+      display: none;
+      font-size: 1.5em;
+      color: #e74c3c; /* Red for game over */
+      margin-top: 20px;
+    }
+    #sustainabilityFacts {
+      display: none;
+      font-size: 1em;
+      color: #00796b; /* Dark teal */
+      margin: 20px;
+      padding: 10px;
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <h2>Eco Runner: Clean the City!</h2>
+  <canvas id="gameCanvas" width="480" height="320"></canvas>
+  <div id="scoreDisplay">Score: 0</div>
+  <div id="timerDisplay">Time Left: 60</div>
+  <div id="feedback"></div>
+  <div id="gameOver">Game Over! Final Score: <span id="finalScore"></span></div>
+  <div id="sustainabilityFacts"></div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const feedbackDisplay = document.getElementById('feedback');
+    const gameOverDisplay = document.getElementById('gameOver');
+    const finalScoreDisplay = document.getElementById('finalScore');
+    const sustainabilityFactsDisplay = document.getElementById('sustainabilityFacts');
+
+    let score = 0;
+    let timeLeft = 60;
+    let gameOver = false;
+    let level = 1;
+    let timer;
+
+    // Runner object
+    const runner = {
+      x: canvas.width / 2 - 15,
+      y: canvas.height - 50,
+      width: 30,
+      height: 30,
+      speed: 5,
+      moveLeft: false,
+      moveRight: false
+    };
+
+    // Arrays for recyclable items and obstacles (non-recyclable waste)
+    let recyclableItems = [];
+    let obstacles = [];
+
+    // Sustainability facts for the end of the game
+    const sustainabilityFacts = [
+      "Recycling one plastic bottle saves enough energy to power a 60-watt light bulb for 3 hours!",
+      "Paper recycling reduces water pollution by 35% and air pollution by 74%.",
+      "Recycling aluminum saves 95% of the energy required to make new aluminum.",
+      "Composting organic waste reduces methane emissions from landfills."
+    ];
+
+    // Spawn a recyclable item
+    function spawnRecyclableItem() {
+      const types = ['plastic', 'paper', 'metal', 'organic'];
+      const type = types[Math.floor(Math.random() * types.length)];
+      recyclableItems.push({
+        x: Math.random() * (canvas.width - 20),
+        y: 0,
+        width: 20,
+        height: 20,
+        speed: 2 + level, // Speed increases with level
+        type: type
+      });
+    }
+
+    // Spawn an obstacle (non-recyclable waste)
+    function spawnObstacle() {
+      obstacles.push({
+        x: Math.random() * (canvas.width - 20),
+        y: 0,
+        width: 20,
+        height: 20,
+        speed: 3 + level // Speed increases with level
+      });
+    }
+
+    // Handle keyboard input for runner movement
+    document.addEventListener('keydown', function(e) {
+      if(e.key === "ArrowLeft") {
+        runner.moveLeft = true;
+      } else if(e.key === "ArrowRight") {
+        runner.moveRight = true;
+      }
+    });
+
+    document.addEventListener('keyup', function(e) {
+      if(e.key === "ArrowLeft") {
+        runner.moveLeft = false;
+      } else if(e.key === "ArrowRight") {
+        runner.moveRight = false;
+      }
+    });
+
+    // Collision detection function
+    function isColliding(a, b) {
+      return !(a.x > b.x + b.width ||
+               a.x + a.width < b.x ||
+               a.y > b.y + b.height ||
+               a.y + a.height < b.y);
+    }
+
+    // Show feedback message
+    function showFeedback(message, isPositive) {
+      feedbackDisplay.innerText = message;
+      feedbackDisplay.style.color = isPositive ? '#2ecc71' : '#e74c3c'; // Green for positive, red for negative
+      setTimeout(() => {
+        feedbackDisplay.innerText = '';
+      }, 1000);
+    }
+
+    // Update game state
+    function update() {
+      if(gameOver) return;
+
+      // Update runner's position
+      if(runner.moveLeft && runner.x > 0) {
+        runner.x -= runner.speed;
+      }
+      if(runner.moveRight && runner.x + runner.width < canvas.width) {
+        runner.x += runner.speed;
+      }
+
+      // Update recyclable items
+      for(let i = recyclableItems.length - 1; i >= 0; i--) {
+        recyclableItems[i].y += recyclableItems[i].speed;
+        if(isColliding(runner, recyclableItems[i])) {
+          score += 10;
+          showFeedback(`You recycled a ${recyclableItems[i].type} item!`, true);
+          recyclableItems.splice(i, 1);
+        } else if(recyclableItems[i].y > canvas.height) {
+          recyclableItems.splice(i, 1);
+        }
+      }
+
+      // Update obstacles
+      for(let i = obstacles.length - 1; i >= 0; i--) {
+        obstacles[i].y += obstacles[i].speed;
+        if(isColliding(runner, obstacles[i])) {
+          gameOver = true;
+          endGame();
+        } else if(obstacles[i].y > canvas.height) {
+          obstacles.splice(i, 1);
+        }
+      }
+
+      // Randomly spawn new items and obstacles
+      if(Math.random() < 0.02) spawnRecyclableItem();
+      if(Math.random() < 0.01) spawnObstacle();
+
+      // Update score and timer
+      scoreDisplay.innerText = 'Score: ' + score;
+      timerDisplay.innerText = 'Time Left: ' + timeLeft;
+
+      // Increase level every 20 seconds
+      if(timeLeft % 20 === 0 && timeLeft < 60) {
+        level++;
+      }
+    }
+
+    // Draw game elements
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw the runner
+      ctx.fillStyle = '#00796b'; // Dark teal
+      ctx.fillRect(runner.x, runner.y, runner.width, runner.height);
+
+      // Draw recyclable items
+      recyclableItems.forEach(item => {
+        ctx.fillStyle = item.type === 'plastic' ? '#2196F3' : // Blue for plastic
+                        item.type === 'paper' ? '#FFC107' : // Yellow for paper
+                        item.type === 'metal' ? '#9E9E9E' : // Gray for metal
+                        '#8BC34A'; // Green for organic
+        ctx.fillRect(item.x, item.y, item.width, item.height);
+      });
+
+      // Draw obstacles
+      ctx.fillStyle = '#e74c3c'; // Red for obstacles
+      obstacles.forEach(obstacle => {
+        ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+      });
+    }
+
+    // End the game
+    function endGame() {
+      clearInterval(timer);
+      gameOverDisplay.style.display = 'block';
+      finalScoreDisplay.innerText = score;
+      sustainabilityFactsDisplay.style.display = 'block';
+      sustainabilityFactsDisplay.innerText = "Did you know? " + sustainabilityFacts[Math.floor(Math.random() * sustainabilityFacts.length)];
+    }
+
+    // Start the game loop
+    function gameLoop() {
+      update();
+      draw();
+      if(!gameOver) {
+        requestAnimationFrame(gameLoop);
+      }
+    }
+
+    // Start the timer
+    function startTimer() {
+      timer = setInterval(() => {
+        timeLeft--;
+        if(timeLeft <= 0) {
+          gameOver = true;
+          endGame();
+        }
+      }, 1000);
+    }
+
+    // Initialize the game
+    startTimer();
+    gameLoop();
+  </script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color:white;
+    background-image: url("{% static '/images/exeter3.png' %}");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    padding: 0;
+    background-color: #ABCB3A;
+}
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: green;
+    padding: 2px 4px;
+    font-family: 'Arial', sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+    height: 15%;
+}
+.section-two {
+    background-image: url(https://img.freepik.com/free-vector/branch-with-leaves_1182-560.jpg); /* Second image */
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.navbar a {
+    color: white;
+    text-decoration: none;
+    padding: 10px;
+}
+.logo {
+    width: 80px;
+}
+.nav-links {
+    display: flex;
+    gap: 15px;
+}
+.banner img {
+    width: 100%;
+    height:auto;
+    display: block;
+}
+.content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    font-family: 'Arial', sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    max-width: 50%
+}
+
+.text {
+    width: 50%;
+}
+
+.image {
+    width: 35%;
+    text-align: right;
+}
+h1 {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 50px;
+    font-weight: bold;
+    color: green;
+}
+
+.footer {
+    font-family: 'Arial', sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    text-align: center;
+    background-color: #ABCB3A;
+}
+.opening {
+    background-color: white; /* Soft green */
+    color: green;
+    padding: 20px;
+    border-radius: 12px; /* Rounded edges */
+    text-align: left;
+    font-size: 20px;
+    width: 70%;
+    margin: auto;
+    align-items: left;
+
+}
+.gap-box {
+    width: 80%; /* Adjust width as needed */
+    max-width: 600px; /* Limit max width */
+    height: 200px; /* Adjust height */
+    background-color: rgba(0, 128, 0, 0.8); /* Green with transparency */
+    color: white;
+    text-align: center;
+    padding: 20px;
+    border-radius: 10px;
+    position: relative; /* Adjust position as needed */
+    margin: 20px auto; /* Center the box */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+hr {
+    border: none;
+    background: none;
+}
+.sustain-container {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    align-items: center;
+}
+
+.sustain {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    width: 90%;
+    padding: 20px;
+    border: 2px solid #ccc;
+    transition: 0.3s ease-in-out;
+    border-radius: 10px;
+    background-color: green;
+    color: white;
+}
+
+.sustain:hover {
+    border: 2px solid #00bfff;
+    box-shadow: 0 0 15px rgba(0, 191, 255, 0.6);
+    transform: scale(1.05);
+}
+
+.sustain img {
+    width: 300px; /* Adjust image size */
+    height: auto;
+    border-radius: 10px;
+}
+
+.sustain-text {
+    flex: 1;
+    color: white;
+}
+
+.sustain h2 {
+    font-size: 26px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 10px;
+}
+
+.sustain p {
+    font-size: 20px;
+    color: white;
+    margin: 0;
+}
+.image {
+    width: 35%;
+    text-align: right;
+}
+
+.sustain img {
+    width: 100%;
+    max-width: 200px;
+}
+.opening img {
+    width: 20%;
+    align-items: center;
+}

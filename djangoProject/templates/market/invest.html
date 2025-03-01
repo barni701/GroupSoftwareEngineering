@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Invest in {{ company.name }}</title>
+  {% load static %}
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f4f7f9;
+      margin: 0;
+      padding: 20px;
+    }
+    nav {
+      background: #007BFF;
+      padding: 10px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    nav a {
+      color: #fff;
+      margin: 0 10px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    .container {
+      background: #fff;
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+    }
+    .company-details, .user-balance {
+      margin-bottom: 20px;
+    }
+    .company-details p, .user-balance p {
+      color: #555;
+      margin: 5px 0;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      margin-top: 10px;
+      font-weight: 500;
+      color: #333;
+    }
+    input[type="number"] {
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    .investment-summary {
+      margin-top: 15px;
+      font-size: 1.1em;
+      color: #333;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px;
+      background: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .error {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav>
+    <a href="{% url 'home' %}">Home</a>
+    <a href="{% url 'market:market_home' %}">Market Home</a>
+    <a href="{% url 'market:company_list' %}">Companies</a>
+    <a href="{% url 'market:portfolio' %}">Portfolio</a>
+  </nav>
+
+  <div class="container">
+    <h1>Invest in {{ company.name }}</h1>
+    <div class="company-details">
+      <p><strong>Description:</strong> {{ company.description }}</p>
+      <p><strong>Current Stock Price:</strong> ${{ company.current_stock_price }}</p>
+    </div>
+    <div class="user-balance">
+      {% if user.is_authenticated %}
+        <p><strong>Your Balance:</strong> ${{ user.userprofile.currency_balance }}</p>
+      {% endif %}
+    </div>
+    <form method="post">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="error">{{ form.non_field_errors }}</div>
+      {% endif %}
+      <label for="id_shares">Number of Shares to Invest:</label>
+      {{ form.shares }}
+
+      <div class="investment-summary">
+         <p>Total Cost: $<span id="total-cost">0.00</span></p>
+      </div>
+
+      <button type="submit">Invest</button>
+    </form>
+  </div>
+
+  <script>
+    // Update total cost dynamically as user enters number of shares
+    const sharesInput = document.getElementById("id_shares");
+    const totalCostSpan = document.getElementById("total-cost");
+    const currentStockPrice = parseFloat("{{ company.current_stock_price }}");
+
+    function updateTotalCost() {
+      const shares = parseFloat(sharesInput.value) || 0;
+      const cost = (shares * currentStockPrice).toFixed(2);
+      totalCostSpan.textContent = cost;
+    }
+
+    if (sharesInput) {
+      sharesInput.addEventListener("input", updateTotalCost);
+      updateTotalCost();  // Initial calculation
+    }
+  </script>
+</body>
+</html>

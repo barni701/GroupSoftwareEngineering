@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Portfolio</title>
+  {% load static %}
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+      margin: 0;
+    }
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      max-width: 800px;
+      margin: auto;
+    }
+    h1 {
+      color: #333;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #007BFF;
+      color: #fff;
+    }
+    .summary {
+      margin-top: 20px;
+      font-size: 1.1em;
+    }
+    .actions a {
+      color: #007BFF;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .actions a:hover {
+      text-decoration: underline;
+    }
+    .nav-links {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .nav-links a {
+      margin: 0 10px;
+      color: #007BFF;
+      text-decoration: none;
+      font-size: 1.1em;
+    }
+    .nav-links a:hover {
+      text-decoration: underline;
+    }
+    /* Navigation bar styling */
+    nav {
+      background: #007BFF;
+      padding: 10px;
+      text-align: center;
+    }
+    nav a {
+      color: #fff;
+      margin: 0 10px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav>
+    <a href="{% url 'home' %}">Home</a>
+    <a href="{% url 'market:market_home' %}">Sustainable Market</a>
+    <a href="{% url 'market:company_list' %}">Companies</a>
+    <a href="{% url 'market:portfolio' %}">My Portfolio</a>
+    <a href="{% url 'market:market_events' %}">Market Events</a>
+    <a href="{% url 'market:leaderboard' %}">Leaderboard</a>
+    {% if user.is_authenticated %}
+      <span class="balance">Balance: ${{ user.userprofile.currency_balance }}</span>
+      <a href="{% url 'users:profile' %}">Profile</a>
+      <a href="{% url 'users:logout' %}">Logout</a>
+    {% else %}
+      <a href="{% url 'users:login' %}">Login</a>
+      <a href="{% url 'users:signup' %}">Signup</a>
+    {% endif %}
+  </nav>
+
+  <div class="container">
+    <h1>My Portfolio</h1>
+    <table id="portfolio-table">
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Shares</th>
+          <th>Invested Amount</th>
+          <th>Current Value</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in portfolio_data %}
+          <tr>
+            <td>{{ item.company.name }}</td>
+            <td>{{ item.shares }}</td>
+            <td>${{ item.invested_amount }}</td>
+            <td>${{ item.current_amount }}</td>
+            <td class="actions">
+              <a href="{% url 'market:sell_investment' item.investment_id %}">Sell</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="5">You have no investments yet.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="summary">
+      <p><strong>Total Invested:</strong> ${{ total_invested }}</p>
+      <p><strong>Current Portfolio Value:</strong> ${{ current_value }}</p>
+      <p><strong>Green Impact Score:</strong> {{ green_impact_score }}</p>
+    </div>
+    <div class="nav-links">
+      <a href="{% url 'market:market_events' %}">View Market Events</a>
+      <a href="{% url 'market:leaderboard' %}">View Leaderboard</a>
+    </div>
+  </div>
+
+  <script>
+    // Function to update the portfolio table with fresh data
+    function updatePortfolio() {
+      fetch("{% url 'market:portfolio_data_api' %}")
+        .then(response => response.json())
+        .then(data => {
+          const tbody = document.querySelector('#portfolio-table tbody');
+          tbody.innerHTML = ''; // Clear current rows
+
+          if (data.portfolio.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5">You have no investments yet.</td></tr>';
+          } else {
+            data.portfolio.forEach(item => {
+              // Create a new row for each portfolio entry
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                <td>${item.company}</td>
+                <td>${item.shares}</td>
+                <td>$${item.invested_amount}</td>
+                <td>$${item.current_amount}</td>
+                <td class="actions">
+                  <a href="/market/investment/${item.investment_id}/sell/">Sell</a>
+                </td>
+              `;
+              tbody.appendChild(row);
+            });
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching portfolio data:", error);
+        });
+    }
+
+    // Poll for updates every 30 seconds
+    setInterval(updatePortfolio, 30000);
+    // Optionally, refresh the data immediately on page load
+    updatePortfolio();
+  </script>
+</body>
+</html>

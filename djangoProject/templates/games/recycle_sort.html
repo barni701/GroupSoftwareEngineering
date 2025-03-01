@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Recycle Sort Game</title>
+  <style>
+    /* General styling */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8ff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h2 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+
+    #game-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .bin {
+      width: 150px;
+      height: 150px;
+      border: 2px dashed #ccc;
+      margin: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      background-color: #e0f7fa;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s ease;
+    }
+
+    .bin:hover {
+      background-color: #b2ebf2;
+    }
+
+    .draggable {
+      width: 100px;
+      height: 100px;
+      margin: 20px;
+      background-color: #aaffaa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: move;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .draggable:hover {
+      transform: scale(1.1);
+    }
+
+    #score, #timer {
+      font-size: 1.5em;
+      margin: 10px;
+      color: #2c3e50;
+    }
+
+    #feedback {
+      font-size: 1.2em;
+      margin: 10px;
+      color: #e74c3c;
+    }
+
+    #game-over {
+      display: none;
+      font-size: 2em;
+      color: #e74c3c;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Recycle Sort</h2>
+  <div id="game-container">
+    <!-- Waste item -->
+    <div id="waste-item" class="draggable" draggable="true">
+      Plastic Bottle
+    </div>
+    <!-- Recycling bins -->
+    <div class="bin" data-type="plastic">Plastic</div>
+    <div class="bin" data-type="paper">Paper</div>
+    <div class="bin" data-type="metal">Metal</div>
+    <div class="bin" data-type="organic">Organic</div>
+    <div class="bin" data-type="glass">Glass</div>
+  </div>
+  <div id="score">Score: 0</div>
+  <div id="timer">Time Left: 60</div>
+  <div id="feedback"></div>
+  <div id="game-over">Game Over! Final Score: <span id="final-score"></span></div>
+
+  <script>
+    const wasteItem = document.getElementById('waste-item');
+    const bins = document.querySelectorAll('.bin');
+    const scoreDisplay = document.getElementById('score');
+    const timerDisplay = document.getElementById('timer');
+    const feedbackDisplay = document.getElementById('feedback');
+    const gameOverDisplay = document.getElementById('game-over');
+    const finalScoreDisplay = document.getElementById('final-score');
+
+    let score = 0;
+    let timeLeft = 60;
+    let timer;
+
+    const wasteItems = [
+      { name: 'Plastic Bottle', type: 'plastic' },
+      { name: 'Newspaper', type: 'paper' },
+      { name: 'Soda Can', type: 'metal' },
+      { name: 'Banana Peel', type: 'organic' },
+      { name: 'Glass Jar', type: 'glass' },
+      { name: 'Cardboard Box', type: 'paper' },
+      { name: 'Aluminum Foil', type: 'metal' },
+      { name: 'Apple Core', type: 'organic' }
+    ];
+
+    function getRandomWasteItem() {
+      const randomIndex = Math.floor(Math.random() * wasteItems.length);
+      return wasteItems[randomIndex];
+    }
+
+    function updateWasteItem() {
+      const newItem = getRandomWasteItem();
+      wasteItem.innerText = newItem.name;
+      wasteItem.dataset.type = newItem.type;
+    }
+
+    function updateScore(points) {
+      score += points;
+      scoreDisplay.innerText = 'Score: ' + score;
+    }
+
+    function showFeedback(message, isCorrect) {
+      feedbackDisplay.innerText = message;
+      feedbackDisplay.style.color = isCorrect ? '#2ecc71' : '#e74c3c';
+      setTimeout(() => {
+        feedbackDisplay.innerText = '';
+      }, 1000);
+    }
+
+    function startTimer() {
+      timer = setInterval(() => {
+        timeLeft--;
+        timerDisplay.innerText = 'Time Left: ' + timeLeft;
+
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          gameOver();
+        }
+      }, 1000);
+    }
+
+    function gameOver() {
+      gameOverDisplay.style.display = 'block';
+      finalScoreDisplay.innerText = score;
+      wasteItem.style.display = 'none';
+      bins.forEach(bin => bin.style.display = 'none');
+    }
+
+    // Set up drag events for the waste item
+    wasteItem.addEventListener('dragstart', function (e) {
+      e.dataTransfer.setData('text/plain', wasteItem.dataset.type);
+    });
+
+    // Set up drop events for each bin
+    bins.forEach(bin => {
+      bin.addEventListener('dragover', function(e) {
+        e.preventDefault();
+      });
+
+      bin.addEventListener('drop', function(e) {
+        e.preventDefault();
+        const droppedItemType = e.dataTransfer.getData('text/plain');
+        const binType = bin.getAttribute('data-type');
+
+        if (droppedItemType === binType) {
+          updateScore(10);
+          showFeedback('Correct! Keep it green.', true);
+        } else {
+          showFeedback('Oops! That doesn’t seem right.', false);
+        }
+
+        updateWasteItem();
+      });
+    });
+
+    // Initialize the game
+    updateWasteItem();
+    startTimer();
+  </script>
+</body>
+</html>

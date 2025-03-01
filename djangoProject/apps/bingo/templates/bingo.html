@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/bingo.css' %}">
+    <title>Bingo</title>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html">
+            <img src="{% static 'images/home-image.png' %}" alt="Logo" class="logo">
+        </a>
+        <div class="nav-links">
+            <a href="page3.html">Garden</a>
+            <a href="page4.html">Contact Us</a>
+        </div>
+    </nav>
+<br><br><br>
+
+
+    <!--Bing Board Table-->
+    <table class="board" border="1">
+        {% for row in board %}
+            <tr>
+                {% for cell in row %}
+                <td class="{% if cell.status == 1 %}complete{% else %}incomplete{% endif %}" data-value="{{ cell.challenge }}">
+                    <a class = cell href="{{cell.url}}">
+                        {{ cell.challenge }}
+                    </a>
+                </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
+

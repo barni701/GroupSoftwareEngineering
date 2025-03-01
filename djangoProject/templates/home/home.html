@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Home</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <style>
+        /* Modern styling */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            line-height: 1.6;
+        }
+        .navbar {
+            background-color: #2c3e50;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        .navbar a:hover {
+            color: #1abc9c;
+        }
+        .logo {
+            width: 100px;
+            transition: transform 0.3s ease;
+        }
+        .logo:hover {
+            transform: scale(1.05);
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+        .nav-links span {
+            margin-right: 20px;
+            font-size: 1.1em;
+            color: #ecf0f1;
+        }
+        .opening {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #1abc9c, #16a085);
+            color: #fff;
+            margin: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .opening h1 {
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+        .opening .text h2 {
+            margin-bottom: 15px;
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+        .opening p {
+            font-size: 1.1em;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .section-two {
+            padding: 40px 20px;
+            background: #fff;
+            margin: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .sustain-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        .sustain {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .sustain:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+        .sustain:last-child {
+            border-bottom: none;
+        }
+        .sustain-text {
+            flex: 1;
+            min-width: 300px;
+        }
+        .sustain-text h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+        .sustain-text p {
+            font-size: 1.1em;
+            color: #555;
+        }
+        .sustain img {
+            max-width: 300px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background-color: #2c3e50;
+            color: #fff;
+            margin-top: 40px;
+            font-size: 0.9em;
+        }
+        .footer p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="{% url 'home' %}">
+            <img src="{% static 'images/home-image.png' %}" alt="Logo" class="logo">
+        </a>
+        <div class="nav-links">
+            {% if user.is_authenticated %}
+                <span>Welcome, {{ user.username }}</span>
+                <span>Balance: ${{ user.userprofile.currency_balance }}</span>
+                <a href="{% url 'users:profile' %}">Profile</a>
+                <a href="{% url 'users:logout' %}">Log out</a>
+            {% else %}
+                <a href="{% url 'users:login' %}">Log in</a>
+                <a href="{% url 'users:signup' %}">Sign Up</a>
+            {% endif %}
+            <a href="{% url 'bingo' %}">Play</a>
+            <a href="{% url 'market:market_home' %}">Market</a>
+            <a href="page4.html">Contact Us</a>
+        </div>
+    </nav>
+
+    <div class="opening">
+        <h1>Sustainability Bingo</h1>
+        <div class="text">
+            <h2>How does it work?</h2>
+            <p>
+                Sustainability bingo lets you help the environment while having fun! Complete various challenges to tick boxes off of the bingo board and win leaf coins. These coins can be exchanged for seeds in the store, helping you to grow your very own virtual garden. Challenges can range from online quizzes and articles, to exploring campus and scanning QR codes. Learn more about the environment, and how we can help it, while growing your in-game garden! Good luck!
+            </p>
+        </div>
+    </div>
+
+    <section class="section-two">
+        <section class="sustain-container">
+            <div class="sustain">
+                <div class="sustain-text">
+                    <h2>Sustainable Food</h2>
+                    <p>
+                        One of our main priorities in helping the environment is creating a future where all food originates from sustainable food sources. Currently, the UK imports the majority of its fresh fruit and vegetables from overseas, which is not sustainable for multiple reasons. First, the transport of these goods is a massive source of carbon emissions, further contributing to climate change. Secondly, the countries these goods are imported from often do not produce the goods in a sustainable way. Often, these goods are grown in areas which were originally rainforests, and then sold to nations such as the UK rather than contributing to the local economy. The way to increase food sustainability is to limit the amount of food sold and bought which has been imported from overseas. Another way is to reduce the amount of food waste we produce.
+                    </p>
+                </div>
+                <img src="https://www.stockvault.net/data/2011/03/20/119777/preview16.jpg" alt="Sustainable Food">
+            </div>
+            <div class="sustain">
+                <div class="sustain-text">
+                    <h2>Preventing Climate Change</h2>
+                    <p>
+                        This is a sustainability goal which has become much more prevalent in recent years. Carbon emissions must be reduced to ensure that the greenhouse effect doesn’t continue to affect the planet. There are many ways to do this, but the most commonly discussed are sustainable energy sources, and reducing energy usage. This can be as small as turning off lights when leaving a room, and as big as introducing energy sources such as solar panels and wind turbines. Many countries are implementing a net-zero carbon emissions plan for the future, with hopes to further decrease the chance and risk of climate change.
+                    </p>
+                </div>
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYa0EvIyVoa8A9hNU7Y8Ayr6LRPNvHRCeIAw&s">
+            </div>
+            <div class="sustain">
+                <div class="sustain-text">
+                    <h2>Reducing Poverty</h2>
+                    <p>
+                        Sustainability isn’t all about the environment. It also includes increasing how sustainable peoples lives are economically. Another key goal for a sustainable future is to reduce the number of people who have to live in extreme poverty. This, however, can be extremely challenging, as poverty has been a long-standing problem throughout our history. Despite this, there are still things we can do to reduce it. This can include donating to charities, helping volunteer in local communities, or raising awareness.
+                    </p>
+                </div>
+                <img src="https://images.pexels.com/photos/6646870/pexels-photo-6646870.jpeg">
+            </div>
+            <div class="sustain">
+                <div class="sustain-text">
+                    <h2>Sustainable Cities and Communities</h2>
+                    <p>
+                        The last main goal of this app is ensuring the sustainability of our cities and urban areas. 57% of the world’s population live in cities, so it’s important to keep these cities liveable and safe for people to live in both the near and far future. A lot of this can link back to sustainable food, water and energy, as cities use much of each of these. Additionally, we need to create green spaces, ensure that buildings can last through natural disasters or extreme weather, and help to grow strong local communities that can support each other through hard times.
+                    </p>
+                </div>
+                <img src="https://images.stockcake.com/public/6/d/7/6d7ad099-e2dd-4b8c-8386-9ae802f7a34a/miniature-eco-city-stockcake.jpg">
+            </div>
+        </section>
+    </section>
+
+    <section class="footer">
+        <p>&copy; Copyright 2025. All rights reserved.</p>
+    </section>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Market Dashboard</title>
+  {% load static %}
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f4f4f4;
+    }
+    .header {
+      background-color: #007BFF;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    .nav-menu {
+      display: flex;
+      justify-content: center;
+      background-color: #333;
+    }
+    .nav-menu a {
+      color: white;
+      text-decoration: none;
+      padding: 15px 20px;
+      display: block;
+    }
+    .nav-menu a:hover {
+      background-color: #555;
+    }
+    .content {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .content h2 {
+      color: #007BFF;
+    }
+  </style>
+</head>
+<body>
+<nav style="background: #007BFF; padding: 10px; text-align: center;">
+  <a href="{% url 'home' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Home</a>
+  <a href="{% url 'market:market_home' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Sustainable Market</a>
+  <a href="{% url 'market:company_list' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Companies</a>
+  <a href="{% url 'market:portfolio' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">My Portfolio</a>
+  <a href="{% url 'market:market_events' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Market Events</a>
+  <a href="{% url 'market:leaderboard' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Leaderboard</a>
+  {% if user.is_authenticated %}
+    <span class="balance">Balance: ${{ user.userprofile.currency_balance }}</span>
+    <a href="{% url 'users:profile' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Profile</a>
+    <a href="{% url 'users:logout' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Logout</a>
+  {% else %}
+    <a href="{% url 'users:login' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Login</a>
+    <a href="{% url 'users:signup' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Signup</a>
+  {% endif %}
+</nav>
+  <div class="header">
+    <h1>Sustainable Market</h1>
+  </div>
+  <div class="nav-menu">
+    <a href="{% url 'market:company_list' %}">Companies</a>
+    <a href="{% url 'market:portfolio' %}">My Portfolio</a>
+    <a href="{% url 'market:market_events' %}">Market Events</a>
+    <a href="{% url 'market:about_eco_score' %}">Eco Score</a>
+    <!-- Add additional links here as you build new features -->
+  </div>
+  <div class="content">
+    <h2>Welcome to the Sustainable Market</h2>
+    <p>Invest in companies that are making a positive impact on the environment. Learn about their initiatives, track your investments, and see how your portfolio contributes to a greener future.</p>
+    <p>Use the navigation above to explore companies and manage your investments.</p>
+  </div>
+</body>
+</html>
