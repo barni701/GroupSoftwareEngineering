@@ -1,167 +1,104 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>My Portfolio</title>
-  {% load static %}
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      padding: 20px;
-      margin: 0;
-    }
-    .container {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      max-width: 800px;
-      margin: auto;
-    }
-    h1 {
-      color: #333;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    table, th, td {
-      border: 1px solid #ddd;
-    }
-    th, td {
-      padding: 10px;
-      text-align: left;
-    }
-    th {
-      background-color: #007BFF;
-      color: #fff;
-    }
-    .summary {
-      margin-top: 20px;
-      font-size: 1.1em;
-    }
-    .actions a {
-      color: #007BFF;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .actions a:hover {
-      text-decoration: underline;
-    }
-    .nav-links {
-      margin-top: 20px;
-      text-align: center;
-    }
-    .nav-links a {
-      margin: 0 10px;
-      color: #007BFF;
-      text-decoration: none;
-      font-size: 1.1em;
-    }
-    .nav-links a:hover {
-      text-decoration: underline;
-    }
-    /* Navigation bar styling */
-    nav {
-      background: #007BFF;
-      padding: 10px;
-      text-align: center;
-    }
-    nav a {
-      color: #fff;
-      margin: 0 10px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    nav a:hover {
-      text-decoration: underline;
-    }
-  </style>
-</head>
-<body>
-  <!-- Navigation Bar -->
-  <nav>
-    <a href="{% url 'home' %}">Home</a>
-    <a href="{% url 'market:market_home' %}">Sustainable Market</a>
-    <a href="{% url 'market:company_list' %}">Companies</a>
-    <a href="{% url 'market:portfolio' %}">My Portfolio</a>
-    <a href="{% url 'market:market_events' %}">Market Events</a>
-    <a href="{% url 'market:leaderboard' %}">Leaderboard</a>
-    {% if user.is_authenticated %}
-      <span class="balance">Balance: ${{ user.userprofile.currency_balance }}</span>
-      <a href="{% url 'users:profile' %}">Profile</a>
-      <a href="{% url 'users:logout' %}">Logout</a>
-    {% else %}
-      <a href="{% url 'users:login' %}">Login</a>
-      <a href="{% url 'users:signup' %}">Signup</a>
-    {% endif %}
-  </nav>
+{% extends 'market/base_market.html' %}
 
-  <div class="container">
-    <h1>My Portfolio</h1>
-    <table id="portfolio-table">
-      <thead>
-        <tr>
-          <th>Company</th>
-          <th>Shares</th>
-          <th>Invested Amount</th>
-          <th>Current Value</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for item in portfolio_data %}
-          <tr>
-            <td>{{ item.company.name }}</td>
-            <td>{{ item.shares }}</td>
-            <td>${{ item.invested_amount }}</td>
-            <td>${{ item.current_amount }}</td>
-            <td class="actions">
-              <a href="{% url 'market:sell_investment' item.investment_id %}">Sell</a>
-            </td>
-          </tr>
-        {% empty %}
-          <tr>
-            <td colspan="5">You have no investments yet.</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <div class="summary">
-      <p><strong>Total Invested:</strong> ${{ total_invested }}</p>
-      <p><strong>Current Portfolio Value:</strong> ${{ current_value }}</p>
-      <p><strong>Green Impact Score:</strong> {{ green_impact_score }}</p>
-    </div>
-    <div class="nav-links">
-      <a href="{% url 'market:market_events' %}">View Market Events</a>
-      <a href="{% url 'market:leaderboard' %}">View Leaderboard</a>
-    </div>
-  </div>
+{% block title %}My Portfolio{% endblock %}
 
+{% block content %}
+  <!-- Summary Section -->
+  <section style="margin-bottom: 40px; text-align: center;">
+    <h2 style="font-size: 2rem; color: #007BFF;">Portfolio Summary</h2>
+    <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 20px;">
+      <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+        <h3 style="margin: 0; color: #28a745;">Total Invested</h3>
+        <p style="font-size: 1.2rem; font-weight: 600;">${{ total_invested|floatformat:2 }}</p>
+      </div>
+      <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+        <h3 style="margin: 0; color: #17a2b8;">Current Value</h3>
+        <p style="font-size: 1.2rem; font-weight: 600;">${{ current_value|floatformat:2 }}</p>
+      </div>
+      <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+        <h3 style="margin: 0; color: #ffc107;">Green Impact Score</h3>
+        <p style="font-size: 1.2rem; font-weight: 600;">{{ green_impact_score|floatformat:2 }}</p>
+      </div>
+      <!-- New Analytics Metrics -->
+      <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+        <h3 style="margin: 0; color: #6f42c1;">ROI</h3>
+        <p style="font-size: 1.2rem; font-weight: 600;">{{ roi|floatformat:2 }}%</p>
+      </div>
+      <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+        <h3 style="margin: 0; color: #e83e8c;">Avg. Sustainability</h3>
+        <p style="font-size: 1.2rem; font-weight: 600;">{{ avg_sustainability|floatformat:2 }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Portfolio Analytics Chart -->
+  <section style="margin-bottom: 40px;">
+    <h2 style="text-align: center; color: #007BFF;">Portfolio Performance</h2>
+    <div style="max-width: 800px; margin: 20px auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+      <canvas id="portfolioChart" width="800" height="400"></canvas>
+    </div>
+  </section>
+
+  <!-- Investment Table -->
+  <section>
+    <h2 style="text-align: center; color: #007BFF;">Investments</h2>
+    <div style="overflow-x:auto;">
+      <table id="portfolio-table" style="width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+        <thead style="background: #007BFF; color: #fff;">
+          <tr>
+            <th style="padding: 12px;">Company</th>
+            <th style="padding: 12px;">Shares</th>
+            <th style="padding: 12px;">Invested Amount</th>
+            <th style="padding: 12px;">Current Value</th>
+            <th style="padding: 12px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in portfolio_data %}
+            <tr style="border-bottom: 1px solid #ddd;">
+              <td style="padding: 12px;">
+                <a href="{% url 'market:company_detail' item.company.pk %}" style="color: #007BFF; text-decoration: none;">{{ item.company.name }}</a>
+              </td>
+              <td style="padding: 12px; text-align: center;">{{ item.shares }}</td>
+              <td style="padding: 12px; text-align: right;">${{ item.invested_amount|floatformat:2 }}</td>
+              <td style="padding: 12px; text-align: right;">${{ item.current_amount|floatformat:2 }}</td>
+              <td style="padding: 12px; text-align: center;">
+                <a href="{% url 'market:sell_investment' item.company.pk %}" style="padding: 8px 12px; background: #dc3545; color: #fff; text-decoration: none; border-radius: 4px; font-size: 0.9rem;">Sell</a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5" style="padding: 12px; text-align: center;">You have no investments yet.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Dynamic Refresh Script for Investment Table -->
   <script>
-    // Function to update the portfolio table with fresh data
     function updatePortfolio() {
       fetch("{% url 'market:portfolio_data_api' %}")
         .then(response => response.json())
         .then(data => {
           const tbody = document.querySelector('#portfolio-table tbody');
-          tbody.innerHTML = ''; // Clear current rows
-
+          tbody.innerHTML = '';
           if (data.portfolio.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5">You have no investments yet.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" style="padding: 12px; text-align: center;">You have no investments yet.</td></tr>';
           } else {
             data.portfolio.forEach(item => {
-              // Create a new row for each portfolio entry
               const row = document.createElement('tr');
+              row.style.borderBottom = "1px solid #ddd";
               row.innerHTML = `
-                <td>${item.company}</td>
-                <td>${item.shares}</td>
-                <td>$${item.invested_amount}</td>
-                <td>$${item.current_amount}</td>
-                <td class="actions">
-                  <a href="/market/investment/${item.investment_id}/sell/">Sell</a>
+                <td style="padding: 12px;">
+                  <a href="/market/company/${item.company_pk}/" style="color: #007BFF; text-decoration: none;">${item.company}</a>
+                </td>
+                <td style="padding: 12px; text-align: center;">${item.shares}</td>
+                <td style="padding: 12px; text-align: right;">$${parseFloat(item.invested_amount).toFixed(2)}</td>
+                <td style="padding: 12px; text-align: right;">$${parseFloat(item.current_amount).toFixed(2)}</td>
+                <td style="padding: 12px; text-align: center;">
+                  <a href="/market/investment/company/${item.company_pk}/sell/" style="padding: 8px 12px; background: #dc3545; color: #fff; text-decoration: none; border-radius: 4px; font-size: 0.9rem;">Sell</a>
                 </td>
               `;
               tbody.appendChild(row);
@@ -172,11 +109,49 @@
           console.error("Error fetching portfolio data:", error);
         });
     }
-
-    // Poll for updates every 30 seconds
     setInterval(updatePortfolio, 30000);
-    // Optionally, refresh the data immediately on page load
     updatePortfolio();
   </script>
-</body>
-</html>
+
+  <!-- Portfolio Analytics Chart Script -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    fetch("{% url 'market:portfolio_analytics_api' %}")
+      .then(response => response.json())
+      .then(data => {
+        const timestamps = data.snapshots.map(s => s.timestamp);
+        const values = data.snapshots.map(s => parseFloat(s.total_value));
+        const ctx = document.getElementById('portfolioChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: timestamps,
+            datasets: [{
+              label: 'Portfolio Value ($)',
+              data: values,
+              backgroundColor: 'rgba(0, 123, 255, 0.2)',
+              borderColor: 'rgba(0, 123, 255, 1)',
+              borderWidth: 2,
+              fill: true,
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: {
+                display: true,
+                title: { display: true, text: 'Time' },
+                ticks: { autoSkip: true, maxTicksLimit: 10 }
+              },
+              y: {
+                display: true,
+                title: { display: true, text: 'Portfolio Value ($)' }
+              }
+            }
+          }
+        });
+      })
+      .catch(error => console.error('Error fetching analytics data:', error));
+  </script>
+{% endblock %}

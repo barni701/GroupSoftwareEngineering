@@ -1,153 +1,120 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>{{ company.name }} - Details</title>
-  {% load static %}
-  <link href="https://fonts.googleapis.com/css?family=Roboto:400,500&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #f4f7f9;
-      margin: 0;
-      padding: 20px;
-    }
-    /* Navigation Bar */
-    nav {
-      background: #007BFF;
-      padding: 10px;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    nav a {
-      color: #fff;
-      margin: 0 10px;
-      text-decoration: none;
-      font-weight: 500;
-    }
-    nav a:hover {
-      text-decoration: underline;
-    }
-    nav span.balance {
-      color: #fff;
-      font-weight: bold;
-      margin-right: 10px;
-    }
-    .container {
-      background: #fff;
-      max-width: 900px;
-      margin: auto;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    h1 {
-      color: #333;
-    }
-    .company-info p {
-      color: #555;
-      line-height: 1.6;
-    }
-    .chart-container {
-      margin-top: 30px;
-    }
-    .invest-btn {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 10px 20px;
-      background: #007BFF;
-      color: #fff;
-      text-decoration: none;
-      border-radius: 5px;
-      font-weight: 500;
-    }
-    .invest-btn:hover {
-      background: #0056b3;
-    }
-    #no-data-message {
-      text-align: center;
-      color: #555;
-      margin-top: 10px;
-      display: none;
-    }
-  </style>
-</head>
-<body>
-  <!-- Navigation Bar -->
-  <nav>
-    <a href="{% url 'home' %}">Home</a>
-    <a href="{% url 'market:market_home' %}">Sustainable Market</a>
-    <a href="{% url 'market:company_list' %}">Companies</a>
-    <a href="{% url 'market:portfolio' %}">My Portfolio</a>
-    <a href="{% url 'market:market_events' %}">Market Events</a>
-    <a href="{% url 'market:leaderboard' %}">Leaderboard</a>
-    {% if user.is_authenticated %}
-      <span class="balance">Balance: ${{ user.userprofile.currency_balance }}</span>
-      <a href="{% url 'users:profile' %}">Profile</a>
-      <a href="{% url 'users:logout' %}">Logout</a>
-    {% else %}
-      <a href="{% url 'users:login' %}">Login</a>
-      <a href="{% url 'users:signup' %}">Signup</a>
-    {% endif %}
-  </nav>
+{% extends 'market/base_market.html' %}
 
-  <div class="container">
-    <h1>{{ company.name }}</h1>
-    <div class="company-info">
-      <p>{{ company.description }}</p>
-      <p><strong>Sustainability Rating:</strong> {{ company.sustainability_rating }}</p>
-      <p><strong>Current Stock Price:</strong> ${{ company.current_stock_price }}</p>
+{% block title %}{{ company.name }} Details{% endblock %}
+
+{% block content %}
+<div class="company-detail-container" style="max-width: 900px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+  <!-- Company Header -->
+  <header class="company-header" style="text-align: center; margin-bottom: 30px;">
+    <h1 style="font-size: 2.5rem; color: #333;">{{ company.name }}</h1>
+    <p style="font-size: 1.1rem; color: #555;">{{ company.description }}</p>
+  </header>
+
+  <!-- Key Metrics Section -->
+  <section class="company-metrics" style="display: flex; justify-content: space-around; margin-bottom: 30px; flex-wrap: wrap;">
+    <div class="metric-card" style="background: #f9f9f9; padding: 15px 20px; border-radius: 5px; margin: 10px; text-align: center; flex: 1 1 150px;">
+      <h3 style="margin: 0; font-size: 1rem; color: #333;">Sustainability Rating</h3>
+      <p style="margin: 5px 0 0; font-size: 1.2rem; font-weight: bold;">{{ company.sustainability_rating }}</p>
     </div>
+    <div class="metric-card" style="background: #f9f9f9; padding: 15px 20px; border-radius: 5px; margin: 10px; text-align: center; flex: 1 1 150px;">
+      <h3 style="margin: 0; font-size: 1rem; color: #333;">Current Price</h3>
+      <p style="margin: 5px 0 0; font-size: 1.2rem; font-weight: bold;">${{ company.current_stock_price }}</p>
+    </div>
+  </section>
 
-    <!-- Graph for Historical Prices -->
-    <div class="chart-container">
+  <!-- Historical Price Chart -->
+  <section style="margin-bottom: 30px;">
+    <h2 style="text-align: center; color: #007BFF;">Historical Price</h2>
+    <div class="chart-container" style="max-width: 800px; margin: 20px auto;">
       <canvas id="priceChart" width="800" height="400"></canvas>
-      <p id="no-data-message">No historical data available.</p>
     </div>
+  </section>
 
-    <!-- Invest Button -->
-    <div style="text-align:center;">
-      <a href="{% url 'market:invest' company.pk %}" class="invest-btn">Invest in this Company</a>
+  <!-- Call-to-Action Buttons (placed above events) -->
+  <section style="text-align: center; margin-bottom: 30px;">
+    <a href="{% url 'market:invest' company.pk %}" style="display: inline-block; padding: 12px 20px; background: #28a745; color: #fff; text-decoration: none; border-radius: 5px; margin-right: 10px;">Invest Now</a>
+    <a href="{% url 'market:market_events' %}" style="display: inline-block; padding: 12px 20px; background: #ffc107; color: #333; text-decoration: none; border-radius: 5px;">View Market Events</a>
+  </section>
+
+  <!-- Events Affecting This Company -->
+  <section class="company-events" style="margin-bottom: 30px;">
+    <h2 style="text-align: center; color: #007BFF;">Events Affecting This Company</h2>
+    {% if active_events %}
+      <div style="margin-top: 20px;">
+        {% for event in active_events %}
+          <div class="event-card" data-start="{{ event.event_date|date:'U' }}" data-end="{{ event.end_timestamp }}" style="background: #f9f9f9; padding: 15px; margin-bottom: 10px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative;">
+            <h3 style="margin: 0; color: #333;">{{ event.title }}</h3>
+            <p style="color: #555; font-size: 0.95rem; margin: 5px 0;">{{ event.description }}</p>
+            <p style="color: #777; font-size: 0.9rem; margin: 5px 0;">
+              Impact: {{ event.impact_factor }} | Duration: {{ event.duration }} minutes
+            </p>
+            <p style="color: #777; font-size: 0.9rem; margin: 5px 0;">
+              Time Left: <span class="time-left" data-end="{{ event.end_timestamp }}">Calculating...</span>
+            </p>
+            <!-- Progress Bar -->
+            <div class="progress-bar" style="background: #ddd; border-radius: 3px; height: 6px; margin-top: 10px; overflow: hidden;">
+              <div class="progress-fill" style="background: #007BFF; width: 0%; height: 100%;"></div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p style="text-align: center; color: #555;">No active events affecting this company.</p>
+    {% endif %}
+  </section>
+
+  <!-- News Section -->
+  <section class="company-news" style="margin-bottom: 30px;">
+    <h2 style="text-align: center; color: #007BFF;">Latest News</h2>
+    <div style="margin-top: 20px; text-align: center;">
+      <p>No news available at the moment.</p>
     </div>
-  </div>
-
-  <!-- Company details section -->
-<div class="company-info">
-  <h1>{{ company.name }}</h1>
-  <p>{{ company.description }}</p>
-  <p><strong>Sustainability Rating:</strong> {{ company.sustainability_rating }}</p>
-  <p><strong>Current Stock Price:</strong> ${{ company.current_stock_price }}</p>
+  </section>
 </div>
+{% endblock %}
 
-<!-- Active Events Section -->
-<div class="active-events" style="margin-top: 20px; padding: 10px; background: #fef9e7; border: 1px solid #f7dc6f; border-radius: 5px;">
-  <h2>Active Market Events Affecting This Company</h2>
-  {% if active_events %}
-    <ul>
-      {% for event in active_events %}
-        <li>
-          <strong>{{ event.title }}</strong>: {{ event.description }}
-          <br>
-          Impact: {{ event.impact_factor }} (active for {{ event.duration }} minutes)
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No active events at the moment.</p>
-  {% endif %}
-</div>
-
-  <!-- Load Chart.js from CDN -->
+{% block extra_js %}
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Countdown and Progress Bar Script -->
   <script>
-    // Fetch historical data from the API endpoint
+    document.addEventListener("DOMContentLoaded", function() {
+      function updateEventCards() {
+        document.querySelectorAll('.event-card').forEach(card => {
+          // Retrieve start and end times from data attributes (in seconds) and convert to milliseconds
+          const startTimestamp = parseInt(card.getAttribute('data-start')) * 1000;
+          const endTimestamp = parseInt(card.getAttribute('data-end')) * 1000;
+          const now = Date.now();
+          const timeLeftEl = card.querySelector('.time-left');
+          const progressFill = card.querySelector('.progress-fill');
+
+          if (now < endTimestamp) {
+            const remaining = endTimestamp - now;
+            const minutes = Math.floor(remaining / (1000 * 60));
+            const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+            timeLeftEl.textContent = minutes + "m " + seconds + "s";
+
+            // Calculate percentage of time elapsed
+            const totalDuration = endTimestamp - startTimestamp;
+            const elapsed = now - startTimestamp;
+            const progressPercent = Math.min(100, (elapsed / totalDuration) * 100);
+            progressFill.style.width = progressPercent + "%";
+          } else {
+            timeLeftEl.textContent = "Expired";
+            progressFill.style.width = "100%";
+          }
+        });
+      }
+
+      updateEventCards();
+      setInterval(updateEventCards, 1000);
+    });
+  </script>
+
+  <!-- Chart.js Script for Historical Price -->
+  <script>
     fetch("{% url 'market:price_history_api' company.id %}")
       .then(response => response.json())
       .then(data => {
-        if (data.history.length === 0) {
-          document.getElementById("no-data-message").style.display = "block";
-          return;
-        }
         const dates = data.history.map(item => item.date);
         const prices = data.history.map(item => parseFloat(item.price));
         const ctx = document.getElementById('priceChart').getContext('2d');
@@ -156,33 +123,46 @@
           data: {
             labels: dates,
             datasets: [{
-              label: 'Historical Stock Price',
+              label: 'Price ($)',
               data: prices,
-              backgroundColor: 'rgba(0, 123, 255, 0.2)',
               borderColor: 'rgba(0, 123, 255, 1)',
+              backgroundColor: 'rgba(0, 123, 255, 0.2)',
               borderWidth: 2,
               fill: true,
+              tension: 0.4,
+              pointRadius: 4,
+              pointHoverRadius: 6
             }]
           },
           options: {
             responsive: true,
+            maintainAspectRatio: false,
             scales: {
               x: {
-                display: true,
                 title: { display: true, text: 'Date' },
                 ticks: { autoSkip: true, maxTicksLimit: 10 }
               },
               y: {
-                display: true,
                 title: { display: true, text: 'Price ($)' }
               }
+            },
+            plugins: {
+              tooltip: {
+                callbacks: {
+                  label: function(tooltipItem) {
+                    return 'Price: $' + tooltipItem.parsed.y.toFixed(2);
+                  }
+                }
+              },
+              legend: { display: false }
+            },
+            animation: {
+              duration: 1000,
+              easing: 'easeOutQuart'
             }
           }
         });
       })
-      .catch(error => {
-        console.error('Error fetching historical data:', error);
-      });
+      .catch(error => console.error('Error fetching price history:', error));
   </script>
-</body>
-</html>
+{% endblock %}

@@ -81,11 +81,15 @@ CELERY_BROKER_URL = 'amqp://guest:guest@127.0.0.1:5672//'
 CELERY_BEAT_SCHEDULE = {
     'update-stock-prices-every-60-seconds': {
         'task': 'apps.market.tasks.update_stock_prices_task',
-        'schedule': 45.0,  # Every 45 seconds
+        'schedule': 30.0,
     },
     'generate-market-events-every-2-minutes': {
         'task': 'apps.market.tasks.generate_market_event_task',
-        'schedule': 90.0,  # Every 90 secs
+        'schedule': 60.0,
+    },
+    'record-portfolio-snapshots-every-5-minutes': {
+        'task': 'apps.market.tasks.record_portfolio_snapshots_task',
+        'schedule': 30.0,
     },
 }
 

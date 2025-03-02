@@ -1,142 +1,110 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Invest in {{ company.name }}</title>
-  {% load static %}
-  <link href="https://fonts.googleapis.com/css?family=Roboto:400,500&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #f4f7f9;
-      margin: 0;
-      padding: 20px;
-    }
-    nav {
-      background: #007BFF;
-      padding: 10px;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    nav a {
-      color: #fff;
-      margin: 0 10px;
-      text-decoration: none;
-      font-weight: 500;
-    }
-    nav a:hover {
-      text-decoration: underline;
-    }
-    .container {
-      background: #fff;
-      max-width: 600px;
-      margin: auto;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    h1 {
-      color: #333;
-    }
-    .company-details, .user-balance {
-      margin-bottom: 20px;
-    }
-    .company-details p, .user-balance p {
-      color: #555;
-      margin: 5px 0;
-    }
-    form {
-      display: flex;
-      flex-direction: column;
-    }
-    label {
-      margin-top: 10px;
-      font-weight: 500;
-      color: #333;
-    }
-    input[type="number"] {
-      padding: 10px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 16px;
-    }
-    .investment-summary {
-      margin-top: 15px;
-      font-size: 1.1em;
-      color: #333;
-    }
-    button {
-      margin-top: 20px;
-      padding: 12px;
-      background: #007BFF;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #0056b3;
-    }
-    .error {
-      color: red;
-      margin-top: 10px;
-    }
-  </style>
-</head>
-<body>
-  <!-- Navigation Bar -->
-  <nav>
-    <a href="{% url 'home' %}">Home</a>
-    <a href="{% url 'market:market_home' %}">Market Home</a>
-    <a href="{% url 'market:company_list' %}">Companies</a>
-    <a href="{% url 'market:portfolio' %}">Portfolio</a>
-  </nav>
+{% extends 'market/base_market.html' %}
 
-  <div class="container">
-    <h1>Invest in {{ company.name }}</h1>
-    <div class="company-details">
-      <p><strong>Description:</strong> {{ company.description }}</p>
-      <p><strong>Current Stock Price:</strong> ${{ company.current_stock_price }}</p>
-    </div>
-    <div class="user-balance">
-      {% if user.is_authenticated %}
-        <p><strong>Your Balance:</strong> ${{ user.userprofile.currency_balance }}</p>
-      {% endif %}
-    </div>
-    <form method="post">
-      {% csrf_token %}
-      {% if form.non_field_errors %}
-        <div class="error">{{ form.non_field_errors }}</div>
-      {% endif %}
-      <label for="id_shares">Number of Shares to Invest:</label>
-      {{ form.shares }}
+{% block title %}Invest in {{ company.name }}{% endblock %}
 
-      <div class="investment-summary">
-         <p>Total Cost: $<span id="total-cost">0.00</span></p>
-      </div>
+{% block content %}
+<div class="invest-container" style="max-width: 600px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+  <h1 style="text-align: center; color: #007BFF;">Invest in {{ company.name }}</h1>
 
-      <button type="submit">Invest</button>
-    </form>
+  <div class="company-details" style="margin-bottom: 20px;">
+    <p style="margin: 10px 0;"><strong>Description:</strong> {{ company.description }}</p>
+    <p style="margin: 10px 0;"><strong>Current Stock Price:</strong> ${{ company.current_stock_price }}</p>
   </div>
 
-  <script>
-    // Update total cost dynamically as user enters number of shares
-    const sharesInput = document.getElementById("id_shares");
-    const totalCostSpan = document.getElementById("total-cost");
-    const currentStockPrice = parseFloat("{{ company.current_stock_price }}");
+  <div class="user-balance" style="margin-bottom: 20px;">
+    {% if user.is_authenticated %}
+      <p style="margin: 10px 0; font-size: 1.1rem;"><strong>Your Balance:</strong> ${{ user.userprofile.currency_balance }}</p>
+    {% endif %}
+  </div>
 
-    function updateTotalCost() {
-      const shares = parseFloat(sharesInput.value) || 0;
-      const cost = (shares * currentStockPrice).toFixed(2);
-      totalCostSpan.textContent = cost;
-    }
+  <form method="post" style="display: flex; flex-direction: column; gap: 15px;">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="error" style="color: red; font-size: 0.9rem;">{{ form.non_field_errors }}</div>
+    {% endif %}
 
-    if (sharesInput) {
-      sharesInput.addEventListener("input", updateTotalCost);
-      updateTotalCost();  // Initial calculation
+    <label for="id_shares" style="font-weight: 600; color: #333;">Number of Shares to Invest:</label>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <button type="button" id="decrement-btn" style="background: #dc3545; color: #fff; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 1rem;">–</button>
+      {{ form.shares }}
+      <button type="button" id="increment-btn" style="background: #28a745; color: #fff; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 1rem;">+</button>
+    </div>
+
+    <div class="investment-summary" style="margin-top: 10px; background: #f1f1f1; padding: 10px; border-radius: 4px; text-align: center;">
+      <p style="margin: 0;">Total Cost: $<span id="total-cost">0.00</span></p>
+    </div>
+
+    <div id="affordability-warning" style="color: red; font-size: 0.9rem; text-align: center; display: none;">
+      You cannot afford this investment.
+    </div>
+
+    {% if max_shares %}
+      <p style="font-size: 0.9rem; color: #555;">You can buy up to {{ max_shares }} shares with your current balance.</p>
+    {% endif %}
+
+    <button type="submit" id="invest-btn" style="padding: 12px; background: #007BFF; color: #fff; border: none; border-radius: 4px; font-size: 1rem; cursor: pointer;">
+      Invest
+    </button>
+  </form>
+</div>
+
+<script>
+  // Get references to elements
+  const sharesInput = document.getElementById("id_shares");
+  const totalCostSpan = document.getElementById("total-cost");
+  const incrementBtn = document.getElementById("increment-btn");
+  const decrementBtn = document.getElementById("decrement-btn");
+  const investBtn = document.getElementById("invest-btn");
+  const affordabilityWarning = document.getElementById("affordability-warning");
+
+  // Parse current stock price and user balance from template variables
+  const currentStockPrice = parseFloat("{{ company.current_stock_price }}");
+  const userBalance = parseFloat("{{ user.userprofile.currency_balance }}");
+
+  // Function to update total cost and check affordability
+  function updateTotalCost() {
+    const shares = parseInt(sharesInput.value) || 0;
+    const cost = (shares * currentStockPrice).toFixed(2);
+    totalCostSpan.textContent = cost;
+
+    // Compare cost with user balance
+    if (parseFloat(cost) > userBalance) {
+      affordabilityWarning.style.display = "block";
+      investBtn.disabled = true;
+      investBtn.style.background = "#aaa";
+      investBtn.style.cursor = "not-allowed";
+    } else {
+      affordabilityWarning.style.display = "none";
+      investBtn.disabled = false;
+      investBtn.style.background = "#007BFF";
+      investBtn.style.cursor = "pointer";
     }
-  </script>
-</body>
-</html>
+  }
+
+  // Increment button event
+  if (incrementBtn) {
+    incrementBtn.addEventListener("click", function() {
+      let currentVal = parseInt(sharesInput.value) || 0;
+      sharesInput.value = currentVal + 1;
+      updateTotalCost();
+    });
+  }
+
+  // Decrement button event
+  if (decrementBtn) {
+    decrementBtn.addEventListener("click", function() {
+      let currentVal = parseInt(sharesInput.value) || 0;
+      if (currentVal > 0) {
+        sharesInput.value = currentVal - 1;
+        updateTotalCost();
+      }
+    });
+  }
+
+  // Update total cost when user manually inputs a value
+  if (sharesInput) {
+    sharesInput.addEventListener("input", updateTotalCost);
+    updateTotalCost(); // Initial calculation
+  }
+</script>
+{% endblock %}

@@ -1,81 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Sell Investment in {{ investment.company.name }}</title>
-  {% load static %}
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      margin: 0;
-      padding: 20px;
-    }
-    .container {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      max-width: 500px;
-      margin: auto;
-    }
-    h1 {
-      color: #333;
-    }
-    form {
-      margin-top: 20px;
-    }
-    input[type="number"] {
-      padding: 10px;
-      margin: 10px 0;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    button {
-      padding: 10px 20px;
-      background: #007BFF;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #0056b3;
-    }
-    .error {
-      color: red;
-      margin-top: 10px;
-    }
-  </style>
-</head>
-<body>
-<nav style="background: #007BFF; padding: 10px; text-align: center;">
-  <a href="{% url 'home' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Home</a>
-  <a href="{% url 'market:market_home' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Sustainable Market</a>
-  <a href="{% url 'market:company_list' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Companies</a>
-  <a href="{% url 'market:portfolio' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">My Portfolio</a>
-  <a href="{% url 'market:market_events' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Market Events</a>
-  <a href="{% url 'market:leaderboard' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Leaderboard</a>
-  {% if user.is_authenticated %}
-    <span class="balance">Balance: ${{ user.userprofile.currency_balance }}</span>
-    <a href="{% url 'users:profile' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Profile</a>
-    <a href="{% url 'users:logout' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Logout</a>
-  {% else %}
-    <a href="{% url 'users:login' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Login</a>
-    <a href="{% url 'users:signup' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Signup</a>
-  {% endif %}
-</nav>
-  <div class="container">
-    <h1>Sell Investment in {{ investment.company.name }}</h1>
-    <p>You currently own {{ investment.shares }} shares.</p>
-    <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      {% if form.non_field_errors %}
-        <div class="error">{{ form.non_field_errors }}</div>
-      {% endif %}
-      <button type="submit">Sell Shares</button>
-    </form>
-  </div>
-</body>
-</html>
+{% extends 'market/base_market.html' %}
+
+{% block title %}Sell Investment - {{ company.name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+  <h1 style="text-align: center; color: #007BFF;">Sell Investment in {{ company.name }}</h1>
+  <p style="text-align: center; font-size: 1.1rem;">You currently own <strong>{{ total_shares }}</strong> shares.</p>
+  <form method="post" style="display: flex; flex-direction: column; gap: 15px;">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="error" style="color: red; font-size: 0.9rem;">{{ form.non_field_errors }}</div>
+    {% endif %}
+    <label for="id_shares" style="font-weight: 600; color: #333;">Number of Shares to Sell:</label>
+    {{ form.shares }}
+    <button type="submit" style="padding: 12px; background: #dc3545; color: #fff; border: none; border-radius: 4px; font-size: 1rem; cursor: pointer;">Sell Shares</button>
+  </form>
+</div>
+{% endblock %}

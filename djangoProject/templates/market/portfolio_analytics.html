@@ -1,0 +1,107 @@
+{% extends 'market/base_market.html' %}
+
+{% block title %}Portfolio Analytics{% endblock %}
+
+{% block content %}
+  <section style="text-align: center; margin-bottom: 40px;">
+    <h1 style="color: #007BFF;">Portfolio Analytics</h1>
+  </section>
+
+  <!-- Date Range Filter Form -->
+  <section style="max-width: 800px; margin: auto; margin-bottom: 20px; text-align: center;">
+    <form id="date-range-form" onsubmit="applyDateFilter(event)">
+      <label for="start_date">Start Date:</label>
+      <input type="date" id="start_date" name="start_date">
+      &nbsp;&nbsp;
+      <label for="end_date">End Date:</label>
+      <input type="date" id="end_date" name="end_date">
+      &nbsp;&nbsp;
+      <button type="submit" style="padding: 8px 16px; background: #007BFF; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Apply Filter</button>
+    </form>
+  </section>
+
+  <!-- Performance Line Chart -->
+  <section style="margin-bottom: 40px;">
+    <h2 style="text-align: center; color: #007BFF;">Portfolio Performance Over Time</h2>
+    <div style="max-width: 800px; margin: 20px auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+      <canvas id="portfolioChart" width="800" height="400"></canvas>
+    </div>
+  </section>
+
+{% endblock %}
+
+{% block extra_js %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Global variable to hold the current chart instance (if needed for update)
+    let portfolioChart;
+
+    // Function to fetch and render the performance chart with optional date filters
+    function fetchPortfolioAnalytics(start_date = '', end_date = '') {
+      // Build the API URL with query parameters if provided
+      let url = "{% url 'market:portfolio_analytics_api' %}";
+      const params = new URLSearchParams();
+      if (start_date) params.append("start_date", start_date);
+      if (end_date) params.append("end_date", end_date);
+      if ([...params].length > 0) {
+        url += "?" + params.toString();
+      }
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          const timestamps = data.snapshots.map(s => s.timestamp);
+          const values = data.snapshots.map(s => parseFloat(s.total_value));
+
+          const ctx = document.getElementById('portfolioChart').getContext('2d');
+
+          // If chart already exists, destroy it before creating a new one
+          if (portfolioChart) {
+            portfolioChart.destroy();
+          }
+
+          portfolioChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: timestamps,
+              datasets: [{
+                label: 'Portfolio Value ($)',
+                data: values,
+                backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                borderColor: 'rgba(0, 123, 255, 1)',
+                borderWidth: 2,
+                fill: true,
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                x: {
+                  display: true,
+                  title: { display: true, text: 'Time' },
+                  ticks: { autoSkip: true, maxTicksLimit: 10 }
+                },
+                y: {
+                  display: true,
+                  title: { display: true, text: 'Portfolio Value ($)' }
+                }
+              }
+            }
+          });
+        })
+        .catch(error => console.error('Error fetching analytics data:', error));
+    }
+
+    // Function to handle form submission and apply the date filter
+    function applyDateFilter(event) {
+      event.preventDefault();
+      const startDate = document.getElementById('start_date').value;
+      const endDate = document.getElementById('end_date').value;
+      fetchPortfolioAnalytics(startDate, endDate);
+    }
+
+    // Initial chart fetch without date filters
+    fetchPortfolioAnalytics();
+  </script>
+{% endblock %}

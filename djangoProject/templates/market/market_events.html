@@ -1,75 +1,98 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Market Events</title>
-    {% load static %}
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            padding: 20px;
-            margin: 0;
-        }
-        .container {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            max-width: 800px;
-            margin: auto;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #333;
-        }
-        .event {
-            border-bottom: 1px solid #ddd;
-            padding: 10px 0;
-        }
-        .event:last-child {
-            border-bottom: none;
-        }
-        .event h2 {
-            margin: 0;
-            color: #007BFF;
-        }
-        .event p {
-            margin: 5px 0;
-            color: #555;
-        }
-        .event small {
-            color: #999;
-        }
-    </style>
-</head>
-<body>
-<nav style="background: #007BFF; padding: 10px; text-align: center;">
-  <a href="{% url 'home' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Home</a>
-  <a href="{% url 'market:market_home' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Sustainable Market</a>
-  <a href="{% url 'market:company_list' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Companies</a>
-  <a href="{% url 'market:portfolio' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">My Portfolio</a>
-  <a href="{% url 'market:market_events' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Market Events</a>
-  <a href="{% url 'market:leaderboard' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Leaderboard</a>
-  {% if user.is_authenticated %}
-    <span class="balance">Balance: ${{ user.userprofile.currency_balance }}</span>
-    <a href="{% url 'users:profile' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Profile</a>
-    <a href="{% url 'users:logout' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Logout</a>
-  {% else %}
-    <a href="{% url 'users:login' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Login</a>
-    <a href="{% url 'users:signup' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Signup</a>
-  {% endif %}
-</nav>
-    <div class="container">
-        <h1>Latest Market Events</h1>
-        {% for event in events %}
-            <div class="event">
-                <h2>{{ event.title }}</h2>
-                <small>{{ event.event_date }}</small>
-                <p>{{ event.description }}</p>
-            </div>
-        {% empty %}
-            <p>No events at the moment.</p>
-        {% endfor %}
-    </div>
-</body>
-</html>
+{% extends 'market/base_market.html' %}
+
+{% block title %}Market Events{% endblock %}
+
+{% block content %}
+  <h1 style="text-align: center; color: #007BFF; margin-bottom: 30px;">Market Events</h1>
+  <div style="max-width: 900px; margin: auto;">
+    {% for event in events %}
+      <div style="background: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <h2 style="margin-top: 0; color: #333;">{{ event.title }}</h2>
+        <p style="color: #555;">{{ event.description }}</p>
+        <p style="color: #777; font-size: 0.9em;">
+          Started: {{ event.event_date|date:"M d, Y H:i" }} &mdash; Duration: {{ event.duration }} minutes &mdash; Time Left: {{ event.get_time_left }}
+        </p>
+        <p style="font-weight: bold; color: #007BFF; margin-bottom: 10px;">
+          Impact: {{ event.impact_factor }}
+        </p>
+        {% if event.companies_affected.all %}
+          <p style="color: #555;">
+            Affected Companies:
+            {% for company in event.companies_affected.all %}
+              <a href="{% url 'market:company_detail' company.pk %}" style="{% if company.pk in user_companies %}color: #e74c3c; font-weight: bold;{% else %}color: #007BFF;{% endif %} text-decoration: none;">{{ company.name }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+          </p>
+        {% else %}
+          <p style="color: #555;">No companies affected.</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Aggregate Impact Chart Section -->
+  <section style="margin: 40px auto; max-width: 900px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <h2 style="text-align: center; color: #007BFF;">Cumulative Event Impact</h2>
+    <canvas id="eventImpactChart" width="900" height="400"></canvas>
+  </section>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Fetch event impact data and render the chart
+    fetch("{% url 'market:event_impact_api' %}")
+      .then(response => response.json())
+      .then(result => {
+        const data = result.data;
+        const labels = data.map(item => item.timestamp);
+        const cumulativeImpact = data.map(item => item.cumulative_impact);
+
+        const ctx = document.getElementById('eventImpactChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Cumulative Impact',
+              data: cumulativeImpact,
+              backgroundColor: 'rgba(26, 188, 156, 0.2)',
+              borderColor: 'rgba(26, 188, 156, 1)',
+              borderWidth: 2,
+              fill: true,
+              tension: 0.3
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: {
+                title: { display: true, text: 'Time' },
+                ticks: { autoSkip: true, maxTicksLimit: 10 }
+              },
+              y: {
+                title: { display: true, text: 'Cumulative Impact' }
+              }
+            },
+            plugins: {
+              tooltip: {
+                callbacks: {
+                  title: function(tooltipItems) {
+                    return tooltipItems[0].label;
+                  },
+                  label: function(tooltipItem) {
+                    return 'Impact: ' + tooltipItem.parsed.y.toFixed(2);
+                  }
+                }
+              }
+            },
+            animation: {
+              duration: 1000,
+              easing: 'easeOutQuart'
+            }
+          }
+        });
+      })
+      .catch(error => console.error('Error fetching event impact data:', error));
+  </script>
+{% endblock %}

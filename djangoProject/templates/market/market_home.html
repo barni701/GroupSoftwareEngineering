@@ -1,80 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Market Dashboard</title>
-  {% load static %}
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background-color: #f4f4f4;
-    }
-    .header {
-      background-color: #007BFF;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-    .nav-menu {
-      display: flex;
-      justify-content: center;
-      background-color: #333;
-    }
-    .nav-menu a {
-      color: white;
-      text-decoration: none;
-      padding: 15px 20px;
-      display: block;
-    }
-    .nav-menu a:hover {
-      background-color: #555;
-    }
-    .content {
-      max-width: 800px;
-      margin: 20px auto;
-      padding: 20px;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    .content h2 {
-      color: #007BFF;
-    }
-  </style>
-</head>
-<body>
-<nav style="background: #007BFF; padding: 10px; text-align: center;">
-  <a href="{% url 'home' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Home</a>
-  <a href="{% url 'market:market_home' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Sustainable Market</a>
-  <a href="{% url 'market:company_list' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Companies</a>
-  <a href="{% url 'market:portfolio' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">My Portfolio</a>
-  <a href="{% url 'market:market_events' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Market Events</a>
-  <a href="{% url 'market:leaderboard' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Leaderboard</a>
-  {% if user.is_authenticated %}
-    <span class="balance">Balance: ${{ user.userprofile.currency_balance }}</span>
-    <a href="{% url 'users:profile' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Profile</a>
-    <a href="{% url 'users:logout' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Logout</a>
-  {% else %}
-    <a href="{% url 'users:login' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Login</a>
-    <a href="{% url 'users:signup' %}" style="color: #fff; margin: 0 10px; text-decoration: none;">Signup</a>
-  {% endif %}
-</nav>
-  <div class="header">
-    <h1>Sustainable Market</h1>
-  </div>
-  <div class="nav-menu">
-    <a href="{% url 'market:company_list' %}">Companies</a>
-    <a href="{% url 'market:portfolio' %}">My Portfolio</a>
-    <a href="{% url 'market:market_events' %}">Market Events</a>
-    <a href="{% url 'market:about_eco_score' %}">Eco Score</a>
-    <!-- Add additional links here as you build new features -->
-  </div>
-  <div class="content">
-    <h2>Welcome to the Sustainable Market</h2>
-    <p>Invest in companies that are making a positive impact on the environment. Learn about their initiatives, track your investments, and see how your portfolio contributes to a greener future.</p>
-    <p>Use the navigation above to explore companies and manage your investments.</p>
-  </div>
-</body>
-</html>
+{% extends 'market/base_market.html' %}
+
+{% block title %}Sustainable Market{% endblock %}
+
+{% block content %}
+  <!-- Hero Section with Solid Background -->
+  <section style="text-align: center; padding: 80px 20px; background-color: #007BFF; color: #fff; border-radius: 8px; margin-bottom: 40px;">
+    <h1 style="font-size: 3rem; margin-bottom: 20px;">Welcome to the Sustainable Market</h1>
+    <p style="font-size: 1.2rem; max-width: 800px; margin: 0 auto 30px;">
+      Invest in companies that champion environmental sustainability. Track your investments, explore market events, and see how your portfolio contributes to a greener future.
+    </p>
+    <a href="{% url 'market:company_list' %}" style="padding: 15px 30px; background: #28a745; color: #fff; font-size: 1.2rem; text-decoration: none; border-radius: 4px;">Explore Companies</a>
+  </section>
+
+  <!-- Feature Grid -->
+  <section style="margin: 0 auto 40px; text-align: center;">
+    <h2 style="font-size: 2rem; margin-bottom: 20px;">Key Features</h2>
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px;">
+      <div style="flex: 1 1 200px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+        <h3>Companies</h3>
+        <p style="font-size: 0.9rem; color: #555;">Browse sustainable companies and view their profiles.</p>
+        <a href="{% url 'market:company_list' %}" style="padding: 10px 20px; background: #007BFF; color: #fff; text-decoration: none; border-radius: 4px;">View</a>
+      </div>
+      <div style="flex: 1 1 200px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+        <h3>Portfolio</h3>
+        <p style="font-size: 0.9rem; color: #555;">Track your investments and manage your portfolio.</p>
+        <a href="{% url 'market:portfolio' %}" style="padding: 10px 20px; background: #17a2b8; color: #fff; text-decoration: none; border-radius: 4px;">View</a>
+      </div>
+      <div style="flex: 1 1 200px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+        <h3>Market Events</h3>
+        <p style="font-size: 0.9rem; color: #555;">See the latest news affecting sustainable stocks.</p>
+        <a href="{% url 'market:market_events' %}" style="padding: 10px 20px; background: #ffc107; color: #333; text-decoration: none; border-radius: 4px;">View</a>
+      </div>
+      <div style="flex: 1 1 200px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+        <h3>Eco Score</h3>
+        <p style="font-size: 0.9rem; color: #555;">Learn how your investments impact the environment.</p>
+        <a href="{% url 'market:about_eco_score' %}" style="padding: 10px 20px; background: #6c757d; color: #fff; text-decoration: none; border-radius: 4px;">Learn More</a>
+      </div>
+      <div style="flex: 1 1 200px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+        <h3>Analytics</h3>
+        <p style="font-size: 0.9rem; color: #555;">Visualize your portfolio performance over time.</p>
+        <a href="{% url 'market:portfolio_analytics' %}" style="padding: 10px 20px; background: #6f42c1; color: #fff; text-decoration: none; border-radius: 4px;">View</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call-to-Action Section -->
+  <section style="text-align: center; margin-top: 40px;">
+    <p style="font-size: 1rem; color: #555;">
+      Get started by exploring companies and making your first investment. Your sustainable future awaits!
+    </p>
+  </section>
+{% endblock %}

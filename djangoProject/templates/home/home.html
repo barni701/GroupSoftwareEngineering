@@ -5,7 +5,7 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <style>
-        /* Modern styling */
+        /* Base styling */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f9f9f9;
@@ -14,41 +14,56 @@
             color: #333;
             line-height: 1.6;
         }
+        /* Modern Navigation Bar */
         .navbar {
             background-color: #2c3e50;
-            color: #fff;
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 15px 30px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-        .navbar a {
-            color: #fff;
-            text-decoration: none;
-            margin: 0 15px;
-            font-weight: 600;
-            transition: color 0.3s ease;
-        }
-        .navbar a:hover {
-            color: #1abc9c;
-        }
-        .logo {
-            width: 100px;
-            transition: transform 0.3s ease;
-        }
-        .logo:hover {
-            transform: scale(1.05);
-        }
-        .nav-links {
+        .navbar-left, .navbar-center, .navbar-right {
             display: flex;
             align-items: center;
         }
-        .nav-links span {
-            margin-right: 20px;
-            font-size: 1.1em;
-            color: #ecf0f1;
+        .navbar-left .logo {
+            width: 100px;
+            transition: transform 0.3s ease;
         }
+        .navbar-left .logo:hover {
+            transform: scale(1.05);
+        }
+        .navbar-center ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+        .navbar-center li {
+            margin: 0 15px;
+        }
+        .navbar-center a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        .navbar-center a:hover {
+            color: #1abc9c;
+        }
+        .navbar-right {
+            font-size: 0.9em;
+        }
+        .navbar-right a, .navbar-right span {
+            color: #fff;
+            margin-left: 15px;
+            text-decoration: none;
+        }
+        .navbar-right a:hover {
+            text-decoration: underline;
+        }
+        /* Opening Section */
         .opening {
             text-align: center;
             padding: 60px 20px;
@@ -73,6 +88,7 @@
             max-width: 800px;
             margin: 0 auto;
         }
+        /* Section styling */
         .section-two {
             padding: 40px 20px;
             background: #fff;
@@ -133,11 +149,21 @@
     </style>
 </head>
 <body>
+    <!-- Navigation Bar -->
     <nav class="navbar">
-        <a href="{% url 'home' %}">
-            <img src="{% static 'images/home-image.png' %}" alt="Logo" class="logo">
-        </a>
-        <div class="nav-links">
+        <div class="navbar-left">
+            <a href="{% url 'home' %}">
+                <img src="{% static 'images/home-image.png' %}" alt="Logo" class="logo">
+            </a>
+        </div>
+        <div class="navbar-center">
+            <ul>
+                <li><a href="{% url 'bingo' %}">Play</a></li>
+                <li><a href="{% url 'market:market_home' %}">Market</a></li>
+                <li><a href="page4.html">Contact Us</a></li>
+            </ul>
+        </div>
+        <div class="navbar-right">
             {% if user.is_authenticated %}
                 <span>Welcome, {{ user.username }}</span>
                 <span>Balance: ${{ user.userprofile.currency_balance }}</span>
@@ -147,29 +173,28 @@
                 <a href="{% url 'users:login' %}">Log in</a>
                 <a href="{% url 'users:signup' %}">Sign Up</a>
             {% endif %}
-            <a href="{% url 'bingo' %}">Play</a>
-            <a href="{% url 'market:market_home' %}">Market</a>
-            <a href="page4.html">Contact Us</a>
         </div>
     </nav>
 
+    <!-- Opening Section -->
     <div class="opening">
         <h1>Sustainability Bingo</h1>
         <div class="text">
             <h2>How does it work?</h2>
             <p>
-                Sustainability bingo lets you help the environment while having fun! Complete various challenges to tick boxes off of the bingo board and win leaf coins. These coins can be exchanged for seeds in the store, helping you to grow your very own virtual garden. Challenges can range from online quizzes and articles, to exploring campus and scanning QR codes. Learn more about the environment, and how we can help it, while growing your in-game garden! Good luck!
+                Sustainability bingo lets you help the environment while having fun! Complete various challenges to tick boxes off the bingo board and win leaf coins. These coins can be exchanged for seeds in the store to help you grow your very own virtual garden. Challenges range from online quizzes to exploring campus and scanning QR codes. Learn more about the environment and how we can help it while growing your in-game garden! Good luck!
             </p>
         </div>
     </div>
 
+    <!-- Main Content Section -->
     <section class="section-two">
         <section class="sustain-container">
             <div class="sustain">
                 <div class="sustain-text">
                     <h2>Sustainable Food</h2>
                     <p>
-                        One of our main priorities in helping the environment is creating a future where all food originates from sustainable food sources. Currently, the UK imports the majority of its fresh fruit and vegetables from overseas, which is not sustainable for multiple reasons. First, the transport of these goods is a massive source of carbon emissions, further contributing to climate change. Secondly, the countries these goods are imported from often do not produce the goods in a sustainable way. Often, these goods are grown in areas which were originally rainforests, and then sold to nations such as the UK rather than contributing to the local economy. The way to increase food sustainability is to limit the amount of food sold and bought which has been imported from overseas. Another way is to reduce the amount of food waste we produce.
+                        Creating a future where all food comes from sustainable sources is key. Currently, the UK imports most of its fresh produce from overseas, contributing to high carbon emissions and unsustainable practices. Reducing food imports and waste can boost local production and sustainability.
                     </p>
                 </div>
                 <img src="https://www.stockvault.net/data/2011/03/20/119777/preview16.jpg" alt="Sustainable Food">
@@ -178,32 +203,33 @@
                 <div class="sustain-text">
                     <h2>Preventing Climate Change</h2>
                     <p>
-                        This is a sustainability goal which has become much more prevalent in recent years. Carbon emissions must be reduced to ensure that the greenhouse effect doesn’t continue to affect the planet. There are many ways to do this, but the most commonly discussed are sustainable energy sources, and reducing energy usage. This can be as small as turning off lights when leaving a room, and as big as introducing energy sources such as solar panels and wind turbines. Many countries are implementing a net-zero carbon emissions plan for the future, with hopes to further decrease the chance and risk of climate change.
+                        Reducing carbon emissions is critical to preventing climate change. Strategies include switching to sustainable energy sources and reducing energy consumption—from turning off unused lights to installing solar panels and wind turbines.
                     </p>
                 </div>
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYa0EvIyVoa8A9hNU7Y8Ayr6LRPNvHRCeIAw&s">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYa0EvIyVoa8A9hNU7Y8Ayr6LRPNvHRCeIAw&s" alt="Preventing Climate Change">
             </div>
             <div class="sustain">
                 <div class="sustain-text">
                     <h2>Reducing Poverty</h2>
                     <p>
-                        Sustainability isn’t all about the environment. It also includes increasing how sustainable peoples lives are economically. Another key goal for a sustainable future is to reduce the number of people who have to live in extreme poverty. This, however, can be extremely challenging, as poverty has been a long-standing problem throughout our history. Despite this, there are still things we can do to reduce it. This can include donating to charities, helping volunteer in local communities, or raising awareness.
+                        Sustainability also means improving economic conditions. Reducing poverty can involve charitable donations, volunteering, and raising awareness, all of which help create a more sustainable society.
                     </p>
                 </div>
-                <img src="https://images.pexels.com/photos/6646870/pexels-photo-6646870.jpeg">
+                <img src="https://images.pexels.com/photos/6646870/pexels-photo-6646870.jpeg" alt="Reducing Poverty">
             </div>
             <div class="sustain">
                 <div class="sustain-text">
                     <h2>Sustainable Cities and Communities</h2>
                     <p>
-                        The last main goal of this app is ensuring the sustainability of our cities and urban areas. 57% of the world’s population live in cities, so it’s important to keep these cities liveable and safe for people to live in both the near and far future. A lot of this can link back to sustainable food, water and energy, as cities use much of each of these. Additionally, we need to create green spaces, ensure that buildings can last through natural disasters or extreme weather, and help to grow strong local communities that can support each other through hard times.
+                        As urban populations grow, keeping cities livable is essential. This means ensuring green spaces, resilient infrastructure, and strong community support, along with sustainable food, water, and energy usage.
                     </p>
                 </div>
-                <img src="https://images.stockcake.com/public/6/d/7/6d7ad099-e2dd-4b8c-8386-9ae802f7a34a/miniature-eco-city-stockcake.jpg">
+                <img src="https://images.stockcake.com/public/6/d/7/6d7ad099-e2dd-4b8c-8386-9ae802f7a34a/miniature-eco-city-stockcake.jpg" alt="Sustainable Cities">
             </div>
         </section>
     </section>
 
+    <!-- Footer Section -->
     <section class="footer">
         <p>&copy; Copyright 2025. All rights reserved.</p>
     </section>

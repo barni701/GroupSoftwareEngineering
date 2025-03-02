@@ -1,0 +1,50 @@
+{% extends 'market/base_market.html' %}
+
+{% block title %}Companies{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <h1>Invest in {{ company.name }}</h1>
+    <div class="company-details">
+      <p><strong>Description:</strong> {{ company.description }}</p>
+      <p><strong>Current Stock Price:</strong> ${{ company.current_stock_price }}</p>
+    </div>
+    <div class="user-balance">
+      {% if user.is_authenticated %}
+        <p><strong>Your Balance:</strong> ${{ user.userprofile.currency_balance }}</p>
+      {% endif %}
+    </div>
+    <form method="post">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="error">{{ form.non_field_errors }}</div>
+      {% endif %}
+      <label for="id_shares">Number of Shares to Invest:</label>
+      {{ form.shares }}
+
+      <div class="investment-summary">
+         <p>Total Cost: $<span id="total-cost">0.00</span></p>
+      </div>
+
+      <button type="submit">Invest</button>
+    </form>
+  </div>
+
+  <script>
+    // Update total cost dynamically as user enters number of shares
+    const sharesInput = document.getElementById("id_shares");
+    const totalCostSpan = document.getElementById("total-cost");
+    const currentStockPrice = parseFloat("{{ company.current_stock_price }}");
+
+    function updateTotalCost() {
+      const shares = parseFloat(sharesInput.value) || 0;
+      const cost = (shares * currentStockPrice).toFixed(2);
+      totalCostSpan.textContent = cost;
+    }
+
+    if (sharesInput) {
+      sharesInput.addEventListener("input", updateTotalCost);
+      updateTotalCost();  // Initial calculation
+    }
+  </script>
+{% endblock %}

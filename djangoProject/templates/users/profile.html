@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <style>
         /* Global Styles */
         body {
@@ -85,6 +85,26 @@
             color: red;
             margin-top: 5px;
         }
+        /* Achievements Section */
+        .achievements {
+            margin-top: 30px;
+            text-align: left;
+        }
+        .achievements h3 {
+            border-bottom: 2px solid #007BFF;
+            padding-bottom: 5px;
+        }
+        .achievement-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        .achievement-item p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #555;
+        }
     </style>
 </head>
 <body>
@@ -114,6 +134,22 @@
             {{ profile_form.as_p }}
             <button type="submit">Update Profile</button>
         </form>
+
+        <!-- Achievements Section -->
+        <div class="achievements">
+            <h3>Your Achievements</h3>
+            {% if user.achievements.all %}
+                {% for ua in user.achievements.all %}
+                    <div class="achievement-item">
+                        <p><strong>{{ ua.achievement.name }}</strong></p>
+                        <p>{{ ua.achievement.description }}</p>
+                        <p><em>Awarded on: {{ ua.date_awarded|date:"M d, Y" }}</em></p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>You haven't earned any achievements yet. Invest and be sustainable to unlock rewards!</p>
+            {% endif %}
+        </div>
 
         <a class="link" href="{% url 'home' %}">Return Home</a>
         <a class="link" href="{% url 'users:delete_account' %}">Delete Profile</a>

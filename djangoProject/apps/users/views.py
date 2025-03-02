@@ -32,7 +32,7 @@ def signup(request):
             # Initialize UserProfile with default currency balance
             UserProfile.objects.create(user=user, tc_consent=form.cleaned_data['tc_consent'], currency_balance=Decimal('100.00'))  # Starting balance
             login(request, user)
-            return redirect('landing')
+            return redirect('users:landing')
     else:
         form = CustomSignUpForm()
     return render(request, 'users/signup_new.html', {'form': form})

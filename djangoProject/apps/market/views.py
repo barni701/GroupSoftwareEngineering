@@ -1,11 +1,17 @@
-from django.http import JsonResponse
+from django.core.paginator import Paginator
+from django.http import JsonResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from decimal import Decimal
-from .models import Company, Investment, MarketEvent
+
+from django.utils.dateparse import parse_date
+
+from .models import Company, Investment, MarketEvent, Transaction
 from .forms import InvestmentForm, SellInvestmentForm
 from ..users.models import UserProfile
 from django.utils import timezone
+from apps.market.utils import record_portfolio_snapshot
+
 
 
 from django.shortcuts import render
@@ -13,21 +19,56 @@ from django.shortcuts import render
 def market_home(request):
     return render(request, 'market/market_home.html')
 
-def company_list(request):
-    companies = Company.objects.all()
-    return render(request, 'market/company_list.html', {'companies': companies})
 
+@login_required
+def company_list(request):
+    companies = Company.objects.all().order_by('-sustainability_rating')
+
+    # Gather company IDs that the current user holds (if needed for highlighting)
+    user_company_ids = Investment.objects.filter(user=request.user).values_list('company__pk', flat=True).distinct()
+
+    paginator = Paginator(companies, 10)  # 10 companies per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'companies': page_obj,
+        'user_company_ids': list(user_company_ids),
+    }
+    return render(request, 'market/company_list.html', context)
+
+
+from django.shortcuts import get_object_or_404, render
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from apps.market.models import Company, MarketEvent, Investment
+
+@login_required
 def company_detail(request, pk):
     company = get_object_or_404(Company, pk=pk)
-    # Get active events for this company
-    active_events = company.market_events.filter(
+
+    # Retrieve market events affecting this company that have started.
+    events = MarketEvent.objects.filter(
+        companies_affected=company,
         event_date__lte=timezone.now()
-    )
-    active_events = [event for event in active_events if event.is_active()]
-    return render(request, 'market/company_detail.html', {
+    ).order_by('-event_date')
+
+    # Debug: print out event titles and active statuses (remove these prints in production)
+    '''for event in events:
+        print(f"Event: {event.title}, is_active: {event.is_active()}")'''
+
+    # Further filter events by checking if each event is active.
+    active_events = [event for event in events if event.is_active()]
+
+    # Get list of company IDs that the user holds for this company.
+    user_company_ids = Investment.objects.filter(user=request.user, company=company).values_list('company__pk', flat=True)
+
+    context = {
         'company': company,
-        'active_events': active_events
-    })
+        'active_events': active_events,
+        'user_company_ids': list(user_company_ids),
+    }
+    return render(request, 'market/company_detail.html', context)
 
 @login_required
 def invest_in_company(request, pk):
@@ -47,6 +88,7 @@ def invest_in_company(request, pk):
                 user_profile.currency_balance -= total_cost
                 user_profile.save()
                 investment.save()
+                record_portfolio_snapshot(request.user)
                 return redirect('market:company_detail', pk=company.pk)
             else:
                 form.add_error(None, "Insufficient funds to make this investment.")
@@ -58,74 +100,141 @@ def invest_in_company(request, pk):
 @login_required
 def portfolio(request):
     investments = Investment.objects.filter(user=request.user)
-    portfolio_data = []
-    total_invested = Decimal('0.00')
-    current_value = Decimal('0.00')
-    green_impact_score = Decimal('0.00')
+    grouped = {}
+    for inv in investments:
+        company_id = inv.company.pk
+        if company_id in grouped:
+            grouped[company_id]['shares'] += inv.shares
+            grouped[company_id]['invested_amount'] += inv.purchase_price * inv.shares
+            grouped[company_id]['current_amount'] = inv.company.current_stock_price * grouped[company_id]['shares']
+        else:
+            grouped[company_id] = {
+                'company': inv.company,
+                'shares': inv.shares,
+                'invested_amount': inv.purchase_price * inv.shares,
+                'current_amount': inv.company.current_stock_price * inv.shares,
+            }
+    portfolio_data = list(grouped.values())
 
-    for investment in investments:
-        invested_amount = investment.purchase_price * investment.shares
-        current_amount = investment.company.current_stock_price * investment.shares
-        total_invested += invested_amount
-        current_value += current_amount
-        green_impact_score += investment.company.sustainability_rating * investment.shares
+    total_invested = sum(item['invested_amount'] for item in portfolio_data)
+    current_value = sum(item['current_amount'] for item in portfolio_data)
+    green_impact_score = sum(item['company'].sustainability_rating * item['shares'] for item in portfolio_data)
 
-        portfolio_data.append({
-            'company': investment.company,
-            'shares': investment.shares,
-            'invested_amount': invested_amount,
-            'current_amount': current_amount,
-            'investment_id': investment.id,  # Include investment id here
-        })
+    roi = 0
+    if total_invested > 0:
+        roi = ((current_value - total_invested) / total_invested) * 100
+
+    total_shares = sum(item['shares'] for item in portfolio_data)
+    avg_sustainability = 0
+    if total_shares > 0:
+        avg_sustainability = sum(
+            item['company'].sustainability_rating * item['shares'] for item in portfolio_data) / total_shares
+
+    # Debug prints (remove in production)
+    print("Total Invested:", total_invested)
+    print("Current Value:", current_value)
+    print("ROI:", roi)
+    print("Avg Sustainability:", avg_sustainability)
 
     context = {
         'portfolio_data': portfolio_data,
         'total_invested': total_invested,
         'current_value': current_value,
         'green_impact_score': green_impact_score,
+        'roi': roi,
+        'avg_sustainability': avg_sustainability,
     }
     return render(request, 'market/portfolio.html', context)
 
-
 @login_required
-def sell_investment(request, investment_id):
-    investment = get_object_or_404(Investment, pk=investment_id, user=request.user)
+def sell_investment(request, company_pk):
+    # Retrieve all investments for the user in the given company
+    investments = Investment.objects.filter(user=request.user, company__pk=company_pk).order_by('id')
+    if not investments.exists():
+        raise Http404("No investment found for this company.")
+
+    # Sum the total shares owned for this company
+    total_shares = sum(inv.shares for inv in investments)
 
     if request.method == 'POST':
         form = SellInvestmentForm(request.POST)
         if form.is_valid():
             shares_to_sell = form.cleaned_data['shares']
-            if shares_to_sell > investment.shares:
+            if shares_to_sell > total_shares:
                 form.add_error('shares', 'You cannot sell more shares than you own.')
             else:
-                sale_value = investment.company.current_stock_price * shares_to_sell
-                # Update user's currency balance
+                current_price = investments.first().company.current_stock_price
+                sale_value = current_price * shares_to_sell
+                # Update user's balance
                 user_profile = UserProfile.objects.get(user=request.user)
                 user_profile.currency_balance += sale_value
                 user_profile.save()
-                # Update the investment record
-                investment.shares -= shares_to_sell
-                if investment.shares == 0:
-                    investment.delete()
-                else:
-                    investment.save()
+
+                # Process the sale from the aggregated investments (FIFO: sell from the oldest first)
+                remaining_to_sell = shares_to_sell
+                for inv in investments:
+                    if remaining_to_sell <= 0:
+                        break
+                    if inv.shares <= remaining_to_sell:
+                        remaining_to_sell -= inv.shares
+                        inv.delete()
+                    else:
+                        inv.shares -= remaining_to_sell
+                        inv.save()
+                        remaining_to_sell = 0
+
+                # Record portfolio snapshot
+                record_portfolio_snapshot(request.user)
                 return redirect('market:portfolio')
     else:
         form = SellInvestmentForm()
 
-    return render(request, 'market/sell_investment.html', {'investment': investment, 'form': form})
+    # Pass the aggregated information to the template for display
+    context = {
+        'company': investments.first().company,
+        'total_shares': total_shares,
+        'form': form
+    }
+    return render(request, 'market/sell_investment.html', context)
 
+@login_required
 def market_events(request):
     events = MarketEvent.objects.order_by('-event_date')[:10]  # Show the latest 10 events
-    return render(request, 'market/market_events.html', {'events': events})
+    user_companies = Investment.objects.filter(user=request.user).values_list('company__pk', flat=True).distinct()
+    context = {
+        'events': events,
+        'user_companies': list(user_companies),
+    }
+    return render(request, 'market/market_events.html', context)
 
+@login_required
 def leaderboard(request):
-    # Fetch all user profiles and sort by a calculated Green Impact Score.
-    # For this example, let's assume the UserProfile has a method `calculate_green_impact()`
-    # that sums the sustainability impact of all investments.
     profiles = UserProfile.objects.all()
-    profiles = sorted(profiles, key=lambda p: p.calculate_green_impact() if hasattr(p, 'calculate_green_impact') else Decimal('0.00'), reverse=True)
-    return render(request, 'market/leaderboard.html', {'profiles': profiles})
+
+    # Define a helper function to calculate green impact score if not already defined
+    def calculate_green_impact(profile):
+        total = Decimal('0.00')
+        # Assuming the Investment model has a related name 'investments'
+        for inv in profile.user.investments.all():
+            total += inv.company.sustainability_rating * inv.shares
+        return total
+
+    # Annotate each profile with total portfolio value and green impact score.
+    leaderboard_data = []
+    for profile in profiles:
+        total_value = sum(inv.company.current_stock_price * inv.shares for inv in profile.user.investments.all())
+        green_impact = calculate_green_impact(profile)
+        leaderboard_data.append({
+            'user': profile.user,
+            'balance': profile.currency_balance,
+            'portfolio_value': total_value,
+            'green_impact': green_impact,
+        })
+
+    # Sort profiles by green impact score descending (you can change to portfolio_value if desired)
+    leaderboard_data = sorted(leaderboard_data, key=lambda x: x['green_impact'], reverse=True)
+
+    return render(request, 'market/leaderboard.html', {'leaderboard': leaderboard_data})
 
 @login_required
 def portfolio_data_api(request):
@@ -134,6 +243,7 @@ def portfolio_data_api(request):
     for inv in investments:
         data.append({
             'company': inv.company.name,
+            'company_pk': inv.company.pk,  # Include the primary key here
             'shares': inv.shares,
             'invested_amount': str(inv.purchase_price * inv.shares),
             'current_amount': str(inv.company.current_stock_price * inv.shares),
@@ -153,3 +263,70 @@ def price_history_api(request, company_id):
     # Convert the date to a string for JSON serialization
     data = [{'date': h['date'].strftime('%Y-%m-%d %H:%M:%S'), 'price': str(h['price'])} for h in history]
     return JsonResponse({'history': data})
+
+@login_required
+def portfolio_analytics_api(request):
+    snapshots = request.user.portfolio_snapshots.order_by('timestamp')
+
+    # Get optional start and end dates from query parameters
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    if start_date:
+        start_date_parsed = parse_date(start_date)
+        if start_date_parsed:
+            snapshots = snapshots.filter(timestamp__date__gte=start_date_parsed)
+    if end_date:
+        end_date_parsed = parse_date(end_date)
+        if end_date_parsed:
+            snapshots = snapshots.filter(timestamp__date__lte=end_date_parsed)
+
+    data = [
+        {
+            'timestamp': s.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+            'total_value': str(s.total_value)
+        }
+        for s in snapshots
+    ]
+    return JsonResponse({'snapshots': data})
+
+@login_required
+def portfolio_analytics(request):
+    return render(request, 'market/portfolio_analytics.html')
+
+@login_required
+def transaction_history(request):
+    transactions = Transaction.objects.filter(user=request.user).order_by('-timestamp')
+    return render(request, 'market/transaction_history.html', {'transactions': transactions})
+
+@login_required
+def portfolio_breakdown_api(request):
+    investments = Investment.objects.filter(user=request.user)
+    grouped = {}
+    for inv in investments:
+        company_id = inv.company.pk
+        if company_id in grouped:
+            grouped[company_id]['invested_amount'] += inv.purchase_price * inv.shares
+        else:
+            grouped[company_id] = {
+                'company': inv.company.name,
+                'invested_amount': inv.purchase_price * inv.shares,
+            }
+    data = list(grouped.values())
+    return JsonResponse({'breakdown': data})
+
+@login_required
+def event_impact_api(request):
+    # Get all events up to now, ordered chronologically
+    events = MarketEvent.objects.filter(event_date__lte=timezone.now()).order_by('event_date')
+    data = []
+    cumulative_impact = 0
+    for event in events:
+        cumulative_impact += float(event.impact_factor)
+        data.append({
+            'timestamp': event.event_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'cumulative_impact': cumulative_impact,
+            'title': event.title,
+            'impact_factor': float(event.impact_factor),
+        })
+    return JsonResponse({'data': data})
