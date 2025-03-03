@@ -87,3 +87,12 @@ Date: 22/02/2025
 - Check progress on each branch to see current state of project
 - Assess current unit tests and made decision to create more
 - Create Development branch used for merging current django app prototype
+
+## Feedback
+- Why we are making the product
+- Why we work well as a team and how
+- Behind the scense (Any strengths and weaknesses)
+- Talk about next stage of progress after the completion of a feature (future goals and reflect on work)
+- Demo Github and Kanban board (Branches, ReadMe, Rules, Workflow) (How Kanban board works)
+- Cite the creation or copying of any source, Photos also need to be cited
+- Could wear suits to stand-out (fancy clothing, be more clear, use hands) (More marks) 
