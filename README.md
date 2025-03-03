@@ -97,6 +97,13 @@ Date: 24/02/2025
 - Finalised documentation
 - Finalised formatting for sprint 1 submission
 
+## Session 6
+Date: 03/03/2025
+- Added Sprint 2 cards to the kanban backlog
+- Main Goals for the week: complete games, garden ui prototype, skeleton for getting a user's board, complete login system (users remain logged in)
+- Created new Github branches for each feature
+- Created new Django apps.
+
 ## Feedback
 - Why we are making the product
 - Why we work well as a team and how
