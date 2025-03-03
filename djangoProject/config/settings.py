@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "apps.bingo",
     "apps.games",
     "apps.market",
+    "channels",
 ]
 
 
@@ -74,6 +75,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
+ASGI_APPLICATION = 'djangoProject.asgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],  # adjust if Redis is running elsewhere
+        },
+    },
+}
 
 # Configure your message broker (RabbitMQ or Redis)
 CELERY_BROKER_URL = 'amqp://guest:guest@127.0.0.1:5672//'
@@ -90,6 +101,10 @@ CELERY_BEAT_SCHEDULE = {
     'record-portfolio-snapshots-every-5-minutes': {
         'task': 'apps.market.tasks.record_portfolio_snapshots_task',
         'schedule': 30.0,
+    },
+    'reset-low-value-stocks-every-hour': {
+        'task': 'apps.market.tasks.reset_low_value_stocks_task',
+        'schedule': 15.0,
     },
 }
 

@@ -4,20 +4,24 @@
 
 {% block content %}
   <h2 style="text-align: center; margin-bottom: 30px; color: #007BFF;">Companies</h2>
-  <div class="company-grid" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+  <div class="company-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; padding: 0 20px;">
     {% for company in companies %}
-      <div class="company-card" style="background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 300px; display: flex; flex-direction: column; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease;">
-        <div class="company-info" style="padding: 20px; flex-grow: 1;">
-          <h3 style="margin: 0 0 10px; color: #333;">{{ company.name }}</h3>
-          <p style="color: #555; font-size: 0.9rem; margin-bottom: 10px;">{{ company.description|truncatewords:25 }}</p>
-          <p style="margin-bottom: 10px; font-weight: bold;">Price: ${{ company.current_stock_price }}</p>
+      <div class="company-card" style="background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.3s ease, box-shadow 0.3s ease;">
+        <div class="card-content" style="padding: 20px;">
+          <h3 style="margin: 0 0 10px; color: #333; font-size: 1.5rem;">{{ company.name }}</h3>
+          <p style="color: #555; font-size: 0.9rem; margin-bottom: 10px;">{{ company.description|truncatewords:20 }}</p>
+          <p style="margin-bottom: 5px; font-weight: bold;">Price: ${{ company.current_stock_price }}</p>
           <p style="margin-bottom: 10px; font-weight: bold;">Rating: <span style="color: #ffc107;">{{ company.sustainability_rating }}</span></p>
         </div>
+        <!-- Mini Chart Section -->
         <div class="company-chart-wrapper" style="width: 300px; height: 200px; overflow: hidden; position: relative;">
           <canvas id="chart-{{ company.id }}" style="display: block; width: 300px; height: 200px;"></canvas>
         </div>
-        <div class="card-footer" style="padding: 15px; background: #f7f7f7; text-align: center;">
-          <a href="{% url 'market:company_detail' company.pk %}" style="display: inline-block; padding: 10px 15px; background: #007BFF; color: #fff; text-decoration: none; border-radius: 4px; transition: background 0.3s;">View Details</a>
+        <div class="card-footer" style="padding: 15px; background: #007BFF; text-align: center;">
+          <a href="{% url 'market:company_detail' company.pk %}" style="color: #fff; text-decoration: none; font-weight: bold; margin-right: 10px;">View Details</a>
+          {% if company.pk in user_company_ids %}
+            <a href="{% url 'market:sell_investment_company' company.pk %}" style="color: #fff; text-decoration: none; font-weight: bold;">Sell Now</a>
+          {% endif %}
         </div>
       </div>
     {% empty %}
@@ -25,10 +29,24 @@
     {% endfor %}
   </div>
 
-  <!-- Load Chart.js from CDN -->
+  <!-- Pagination Controls -->
+  <div class="pagination" style="text-align: center; margin: 30px 0;">
+    {% if companies.has_previous %}
+      <a href="?page={{ companies.previous_page_number }}" style="margin-right: 15px; text-decoration: none; color: #007BFF;">Previous</a>
+    {% endif %}
+    <span style="font-weight: bold;">Page {{ companies.number }} of {{ companies.paginator.num_pages }}</span>
+    {% if companies.has_next %}
+      <a href="?page={{ companies.next_page_number }}" style="margin-left: 15px; text-decoration: none; color: #007BFF;">Next</a>
+    {% endif %}
+  </div>
+
+{% endblock %}
+
+{% block extra_js %}
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function() {
+      const maxDataPoints = 15;
       {% for company in companies %}
         (function(){
           const companyId = {{ company.id }};
@@ -36,22 +54,21 @@
           fetch("{% url 'market:price_history_api' company.id %}")
             .then(response => response.json())
             .then(data => {
-              const maxPoints = 15;
               let dates = data.history.map(item => item.date);
               let prices = data.history.map(item => parseFloat(item.price));
-              if (dates.length > maxPoints) {
-                dates = dates.slice(-maxPoints);
-                prices = prices.slice(-maxPoints);
+              if (dates.length > maxDataPoints) {
+                dates = dates.slice(-maxDataPoints);
+                prices = prices.slice(-maxDataPoints);
               }
-
               const canvas = document.getElementById(canvasId);
+              if (!canvas) {
+                console.error("Canvas not found for company", companyId);
+                return;
+              }
               const ctx = canvas.getContext('2d');
-
-              // Create a gradient fill for a modern look
               const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
               gradient.addColorStop(0, 'rgba(0, 123, 255, 0.4)');
               gradient.addColorStop(1, 'rgba(0, 123, 255, 0)');
-
               new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -63,7 +80,7 @@
                     backgroundColor: gradient,
                     borderWidth: 2,
                     fill: true,
-                    tension: 0.4, // smoother line
+                    tension: 0.4,
                     pointRadius: 3,
                     pointHoverRadius: 5,
                   }]
@@ -71,7 +88,7 @@
                 options: {
                   responsive: false,
                   maintainAspectRatio: false,
-                  layout: { padding: { left: 30, right: 30 } },
+                  layout: { padding: { left: 10, right: 10 } },
                   scales: {
                     x: { display: false },
                     y: { display: false }
@@ -81,7 +98,6 @@
                     tooltip: {
                       callbacks: {
                         title: function(tooltipItems) {
-                          // Format title as date (customize if needed)
                           return tooltipItems[0].label;
                         },
                         label: function(tooltipItem) {
@@ -102,4 +118,10 @@
       {% endfor %}
     });
   </script>
+  <style>
+    .company-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+  </style>
 {% endblock %}

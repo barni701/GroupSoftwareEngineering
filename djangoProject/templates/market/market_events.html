@@ -19,7 +19,9 @@
           <p style="color: #555;">
             Affected Companies:
             {% for company in event.companies_affected.all %}
-              <a href="{% url 'market:company_detail' company.pk %}" style="{% if company.pk in user_companies %}color: #e74c3c; font-weight: bold;{% else %}color: #007BFF;{% endif %} text-decoration: none;">{{ company.name }}</a>{% if not forloop.last %}, {% endif %}
+              <a href="{% url 'market:company_detail' company.pk %}" style="{% if company.pk in user_companies %}color: #e74c3c; font-weight: bold;{% else %}color: #007BFF;{% endif %} text-decoration: none;">
+                {{ company.name }}
+              </a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
           </p>
         {% else %}
@@ -28,71 +30,8 @@
       </div>
     {% endfor %}
   </div>
-
-  <!-- Aggregate Impact Chart Section -->
-  <section style="margin: 40px auto; max-width: 900px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-    <h2 style="text-align: center; color: #007BFF;">Cumulative Event Impact</h2>
-    <canvas id="eventImpactChart" width="900" height="400"></canvas>
-  </section>
 {% endblock %}
 
 {% block extra_js %}
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    // Fetch event impact data and render the chart
-    fetch("{% url 'market:event_impact_api' %}")
-      .then(response => response.json())
-      .then(result => {
-        const data = result.data;
-        const labels = data.map(item => item.timestamp);
-        const cumulativeImpact = data.map(item => item.cumulative_impact);
-
-        const ctx = document.getElementById('eventImpactChart').getContext('2d');
-        new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: labels,
-            datasets: [{
-              label: 'Cumulative Impact',
-              data: cumulativeImpact,
-              backgroundColor: 'rgba(26, 188, 156, 0.2)',
-              borderColor: 'rgba(26, 188, 156, 1)',
-              borderWidth: 2,
-              fill: true,
-              tension: 0.3
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              x: {
-                title: { display: true, text: 'Time' },
-                ticks: { autoSkip: true, maxTicksLimit: 10 }
-              },
-              y: {
-                title: { display: true, text: 'Cumulative Impact' }
-              }
-            },
-            plugins: {
-              tooltip: {
-                callbacks: {
-                  title: function(tooltipItems) {
-                    return tooltipItems[0].label;
-                  },
-                  label: function(tooltipItem) {
-                    return 'Impact: ' + tooltipItem.parsed.y.toFixed(2);
-                  }
-                }
-              }
-            },
-            animation: {
-              duration: 1000,
-              easing: 'easeOutQuart'
-            }
-          }
-        });
-      })
-      .catch(error => console.error('Error fetching event impact data:', error));
-  </script>
+  <!-- No additional JavaScript is needed since we've removed the graph -->
 {% endblock %}

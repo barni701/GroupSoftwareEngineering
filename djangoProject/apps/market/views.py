@@ -24,19 +24,18 @@ def market_home(request):
 def company_list(request):
     companies = Company.objects.all().order_by('-sustainability_rating')
 
-    # Gather company IDs that the current user holds (if needed for highlighting)
-    user_company_ids = Investment.objects.filter(user=request.user).values_list('company__pk', flat=True).distinct()
-
-    paginator = Paginator(companies, 10)  # 10 companies per page
+    # Paginate the companies (10 per page)
+    paginator = Paginator(companies, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
+    user_company_ids = Investment.objects.filter(user=request.user).values_list('company__pk', flat=True)
 
     context = {
         'companies': page_obj,
         'user_company_ids': list(user_company_ids),
     }
     return render(request, 'market/company_list.html', context)
-
 
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.decorators import login_required
@@ -53,20 +52,16 @@ def company_detail(request, pk):
         event_date__lte=timezone.now()
     ).order_by('-event_date')
 
-    # Debug: print out event titles and active statuses (remove these prints in production)
-    '''for event in events:
-        print(f"Event: {event.title}, is_active: {event.is_active()}")'''
-
     # Further filter events by checking if each event is active.
     active_events = [event for event in events if event.is_active()]
 
-    # Get list of company IDs that the user holds for this company.
-    user_company_ids = Investment.objects.filter(user=request.user, company=company).values_list('company__pk', flat=True)
+    # Check if the user holds any stock in this company.
+    user_has_investment = Investment.objects.filter(user=request.user, company=company).exists()
 
     context = {
         'company': company,
         'active_events': active_events,
-        'user_company_ids': list(user_company_ids),
+        'user_has_investment': user_has_investment,
     }
     return render(request, 'market/company_detail.html', context)
 
@@ -95,7 +90,6 @@ def invest_in_company(request, pk):
     else:
         form = InvestmentForm()
     return render(request, 'market/invest.html', {'company': company, 'form': form})
-
 
 @login_required
 def portfolio(request):
@@ -330,3 +324,62 @@ def event_impact_api(request):
             'impact_factor': float(event.impact_factor),
         })
     return JsonResponse({'data': data})
+
+TAX_RATE = Decimal("0.18")
+
+@login_required
+def sell_investment_for_company(request, company_pk):
+    company = get_object_or_404(Company, pk=company_pk)
+    # Retrieve all investments for this company by the current user, FIFO (oldest first)
+    investments = Investment.objects.filter(user=request.user, company=company).order_by('id')
+    if not investments.exists():
+        raise Http404("No investment found for this company.")
+
+    # Aggregate total shares owned
+    total_shares = sum(inv.shares for inv in investments)
+
+    if request.method == 'POST':
+        form = SellInvestmentForm(request.POST)
+        if form.is_valid():
+            shares_to_sell = form.cleaned_data['shares']
+            if shares_to_sell > total_shares:
+                form.add_error('shares', 'You cannot sell more shares than you own.')
+            else:
+                # Calculate gross sale value
+                sale_value = shares_to_sell * company.current_stock_price
+                # Calculate tax and net sale value
+                tax_amount = sale_value * TAX_RATE
+                net_sale_value = sale_value - tax_amount
+
+                # Update the user's balance with net proceeds
+                user_profile = UserProfile.objects.get(user=request.user)
+                user_profile.currency_balance += net_sale_value
+                user_profile.save()
+
+                # Process the sale (FIFO: sell from the oldest investment first)
+                remaining_to_sell = shares_to_sell
+                for inv in investments:
+                    if remaining_to_sell <= 0:
+                        break
+                    if inv.shares <= remaining_to_sell:
+                        remaining_to_sell -= inv.shares
+                        inv.delete()
+                    else:
+                        inv.shares -= remaining_to_sell
+                        inv.save()
+                        remaining_to_sell = 0
+
+                # Record a portfolio snapshot (if you have such functionality)
+                record_portfolio_snapshot(request.user)
+                return redirect('market:portfolio')
+    else:
+        form = SellInvestmentForm(initial={'shares': total_shares})
+
+    context = {
+        'company': company,
+        'form': form,
+        'total_shares': total_shares,
+        'sale_price': company.current_stock_price,
+        'tax_rate': float(TAX_RATE * 100),  # Display as percentage (e.g., 5.0 for 5%)
+    }
+    return render(request, 'market/sell_investment_company.html', context)

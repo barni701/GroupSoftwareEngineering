@@ -1,0 +1,149 @@
+{% extends 'market/base_market.html' %}
+
+{% block title %}Sell Investment in {{ company.name }}{% endblock %}
+
+{% block content %}
+<div class="sell-investment-container">
+  <h1 class="sell-investment-title">Sell Investment in {{ company.name }}</h1>
+  <p class="current-shares">You currently own <strong>{{ total_shares }}</strong> shares.</p>
+
+  <form method="POST" class="sell-investment-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <div class="info-container">
+      <p class="price-info">Current Price per Share: <span class="highlight">${{ sale_price }}</span></p>
+      <p class="tax-info">Tax Rate: <span class="highlight">{{ tax_rate }}%</span></p>
+      <p class="net-sale-value">Estimated Net Sale Value: <span class="highlight">$<span id="saleValue">0.00</span></span></p>
+    </div>
+
+    <button type="submit" class="sell-button">Sell Shares</button>
+  </form>
+
+  <a href="{% url 'market:company_detail' company.pk %}" class="back-link">Back to Company Details</a>
+</div>
+
+<style>
+  /* General Reset */
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f5f7fa;
+    margin: 0;
+    padding: 0;
+  }
+
+  .sell-investment-container {
+    max-width: 600px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .sell-investment-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  }
+
+  .sell-investment-title {
+    text-align: center;
+    color: #333;
+    font-size: 2em;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+
+  .current-shares {
+    text-align: center;
+    font-size: 1.1em;
+    color: #666;
+    margin-bottom: 30px;
+  }
+
+  .sell-investment-form {
+    margin-top: 20px;
+  }
+
+  .info-container {
+    background: #f9fafb;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+  }
+
+  .price-info, .tax-info, .net-sale-value {
+    font-size: 1em;
+    color: #555;
+    margin: 10px 0;
+  }
+
+  .highlight {
+    font-weight: 600;
+    color: #333;
+  }
+
+  .sell-button {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background 0.3s ease, transform 0.2s ease;
+  }
+
+  .sell-button:hover {
+    background: #c82333;
+    transform: scale(1.02);
+  }
+
+  .sell-button:active {
+    transform: scale(0.98);
+  }
+
+  .back-link {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #007BFF;
+    text-decoration: none;
+    font-size: 1em;
+    font-weight: 500;
+    transition: color 0.3s ease;
+  }
+
+  .back-link:hover {
+    color: #0056b3;
+    text-decoration: underline;
+  }
+</style>
+
+<script>
+  const sharesInput = document.getElementById("id_shares");
+  const saleValueEl = document.getElementById("saleValue");
+  const pricePerShare = parseFloat("{{ sale_price }}");
+  const taxRate = parseFloat("{{ tax_rate }}") / 100;
+
+  function updateSaleValue() {
+    let shares = parseInt(sharesInput.value);
+    if (isNaN(shares) || shares < 0) {
+      shares = 0;
+    }
+    const grossValue = shares * pricePerShare;
+    const netValue = grossValue - (grossValue * taxRate);
+    saleValueEl.textContent = netValue.toFixed(2);
+  }
+
+  if (sharesInput) {
+    sharesInput.addEventListener("input", updateSaleValue);
+    updateSaleValue();
+  }
+</script>
+{% endblock %}

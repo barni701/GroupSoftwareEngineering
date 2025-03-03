@@ -1,7 +1,17 @@
 from django.core.management import call_command
 from celery import shared_task
+import logging
 
+logger = logging.getLogger(__name__)
 
+@shared_task
+def reset_low_value_stocks_task():
+    try:
+        # This calls your reset_low_value_stocks management command.
+        call_command('reset_low_value_stocks')
+        logger.info("Successfully ran reset_low_value_stocks command.")
+    except Exception as e:
+        logger.error("Error running reset_low_value_stocks command: %s", e)
 
 @shared_task
 def update_stock_prices_task():

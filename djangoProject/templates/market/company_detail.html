@@ -8,6 +8,9 @@
   <header class="company-header" style="text-align: center; margin-bottom: 30px;">
     <h1 style="font-size: 2.5rem; color: #333;">{{ company.name }}</h1>
     <p style="font-size: 1.1rem; color: #555;">{{ company.description }}</p>
+    {% if company.view_count %}
+      <p style="font-size: 0.9rem; color: #777;">Views: {{ company.view_count }}</p>
+    {% endif %}
   </header>
 
   <!-- Key Metrics Section -->
@@ -30,10 +33,13 @@
     </div>
   </section>
 
-  <!-- Call-to-Action Buttons (placed above events) -->
+  <!-- Call-to-Action Buttons -->
   <section style="text-align: center; margin-bottom: 30px;">
     <a href="{% url 'market:invest' company.pk %}" style="display: inline-block; padding: 12px 20px; background: #28a745; color: #fff; text-decoration: none; border-radius: 5px; margin-right: 10px;">Invest Now</a>
-    <a href="{% url 'market:market_events' %}" style="display: inline-block; padding: 12px 20px; background: #ffc107; color: #333; text-decoration: none; border-radius: 5px;">View Market Events</a>
+    <a href="{% url 'market:market_events' %}" style="display: inline-block; padding: 12px 20px; background: #ffc107; color: #333; text-decoration: none; border-radius: 5px; margin-right: 10px;">View Market Events</a>
+    {% if user_has_investment %}
+        <a href="{% url 'market:sell_investment_company' company.pk %}" style="display: inline-block; padding: 12px 20px; background: #dc3545; color: #fff; text-decoration: none; border-radius: 5px;">Sell Now</a>
+    {% endif %}
   </section>
 
   <!-- Events Affecting This Company -->
@@ -112,57 +118,79 @@
 
   <!-- Chart.js Script for Historical Price -->
   <script>
-    fetch("{% url 'market:price_history_api' company.id %}")
-      .then(response => response.json())
-      .then(data => {
-        const dates = data.history.map(item => item.date);
-        const prices = data.history.map(item => parseFloat(item.price));
-        const ctx = document.getElementById('priceChart').getContext('2d');
-        new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: dates,
-            datasets: [{
-              label: 'Price ($)',
-              data: prices,
-              borderColor: 'rgba(0, 123, 255, 1)',
-              backgroundColor: 'rgba(0, 123, 255, 0.2)',
-              borderWidth: 2,
-              fill: true,
-              tension: 0.4,
-              pointRadius: 4,
-              pointHoverRadius: 6
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              x: {
-                title: { display: true, text: 'Date' },
-                ticks: { autoSkip: true, maxTicksLimit: 10 }
-              },
-              y: {
-                title: { display: true, text: 'Price ($)' }
-              }
+      fetch("{% url 'market:price_history_api' company.id %}")
+        .then(response => response.json())
+        .then(data => {
+          // Extract dates and prices from API response
+          let dates = data.history.map(item => item.date);
+          let prices = data.history.map(item => parseFloat(item.price));
+
+          // Limit to a maximum number of points for clarity
+          const maxPoints = 20;
+          if (dates.length > maxPoints) {
+            dates = dates.slice(-maxPoints);
+            prices = prices.slice(-maxPoints);
+          }
+
+          const ctx = document.getElementById('priceChart').getContext('2d');
+
+          // Create a gradient fill for a modern look
+          const gradient = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height);
+          gradient.addColorStop(0, 'rgba(0, 123, 255, 0.2)');
+          gradient.addColorStop(1, 'rgba(0, 123, 255, 0)');
+
+          new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: dates,
+              datasets: [{
+                label: 'Price ($)',
+                data: prices,
+                borderColor: 'rgba(0, 123, 255, 1)',
+                backgroundColor: gradient,
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 4,
+                pointHoverRadius: 6
+              }]
             },
-            plugins: {
-              tooltip: {
-                callbacks: {
-                  label: function(tooltipItem) {
-                    return 'Price: $' + tooltipItem.parsed.y.toFixed(2);
-                  }
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                x: {
+                  title: { display: true, text: 'Date' },
+                  ticks: { autoSkip: true, maxTicksLimit: 10 }
+                },
+                y: {
+                  title: { display: true, text: 'Price ($)' }
                 }
               },
-              legend: { display: false }
-            },
-            animation: {
-              duration: 1000,
-              easing: 'easeOutQuart'
+              plugins: {
+                tooltip: {
+                  callbacks: {
+                    label: function(tooltipItem) {
+                      return 'Price: $' + tooltipItem.parsed.y.toFixed(2);
+                    }
+                  }
+                },
+                legend: { display: false }
+              },
+              animation: {
+                duration: 1000,
+                easing: 'easeOutQuart'
+              }
             }
-          }
-        });
-      })
-      .catch(error => console.error('Error fetching price history:', error));
-  </script>
+          });
+        })
+        .catch(error => console.error('Error fetching price history:', error));
+    </script>
+
+  <style>
+    .company-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+  </style>
 {% endblock %}

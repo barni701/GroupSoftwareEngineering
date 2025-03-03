@@ -7,11 +7,35 @@ from apps.market.models import Company, StockPriceHistory, MarketEvent
 class Command(BaseCommand):
     help = "Seed the database with sample companies and market events for the market app"
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--clear',
+            action='store_true',
+            help='Clear existing data before seeding.'
+        )
+        parser.add_argument(
+            '--company-count',
+            type=int,
+            default=25,  # Increased number of companies
+            help='Number of companies to create (default is 25).'
+        )
+        parser.add_argument(
+            '--event-count',
+            type=int,
+            default=5,
+            help='Number of market events to create (default is 5).'
+        )
+
     def handle(self, *args, **options):
-        # Optional: Clear out existing data
-        Company.objects.all().delete()
-        MarketEvent.objects.all().delete()
-        StockPriceHistory.objects.all().delete()
+        clear_data = options['clear']
+        company_count = options['company_count']
+        event_count = options['event_count']
+
+        if clear_data:
+            self.stdout.write("Clearing existing companies, events, and stock history...")
+            Company.objects.all().delete()
+            MarketEvent.objects.all().delete()
+            StockPriceHistory.objects.all().delete()
 
         companies_data = [
             {
@@ -104,7 +128,41 @@ class Command(BaseCommand):
                 "sustainability_rating": Decimal("7.8"),
                 "current_stock_price": Decimal("150.00"),
             },
+            # Additional companies:
+            {
+                "name": "Eco Innovations Group",
+                "description": "A leader in eco-friendly product design and sustainable development.",
+                "sustainability_rating": Decimal("8.2"),
+                "current_stock_price": Decimal("170.00"),
+            },
+            {
+                "name": "Green Tech Solutions",
+                "description": "Provides smart, sustainable tech solutions for urban challenges.",
+                "sustainability_rating": Decimal("8.4"),
+                "current_stock_price": Decimal("185.00"),
+            },
+            {
+                "name": "Sustainable Logistics",
+                "description": "Focuses on eco-friendly logistics and supply chain optimization.",
+                "sustainability_rating": Decimal("7.6"),
+                "current_stock_price": Decimal("145.00"),
+            },
+            {
+                "name": "Organic Harvest Co.",
+                "description": "Produces organic foods and supports sustainable farming practices.",
+                "sustainability_rating": Decimal("8.0"),
+                "current_stock_price": Decimal("130.00"),
+            },
+            {
+                "name": "Renewable Innovations",
+                "description": "Researches and develops breakthrough renewable energy technologies.",
+                "sustainability_rating": Decimal("8.9"),
+                "current_stock_price": Decimal("195.00"),
+            },
         ]
+
+        # Limit the companies based on the company_count argument
+        companies_data = companies_data[:company_count]
 
         self.stdout.write("Creating companies...")
         companies = []
@@ -115,48 +173,56 @@ class Command(BaseCommand):
             StockPriceHistory.objects.create(company=company, price=company.current_stock_price)
         self.stdout.write(self.style.SUCCESS(f"Created {len(companies)} companies."))
 
-        # Optionally, create a few sample market events (if needed)
+        # Sample events data - setting durations around 5 minutes
         events_data = [
             {
                 "title": "Government Green Subsidy",
                 "description": "A new subsidy for renewable energy boosts investor confidence.",
                 "impact_factor": Decimal("0.10"),
-                "duration": 6,
+                "duration": 5,  # 5 minutes duration
             },
             {
                 "title": "Environmental Scandal",
                 "description": "A company is caught in an environmental scandal, causing stock prices to drop.",
                 "impact_factor": Decimal("-0.15"),
-                "duration": 9,
+                "duration": 5,
             },
             {
                 "title": "Sustainability Award",
                 "description": "A company wins a prestigious sustainability award, spiking its stock price.",
                 "impact_factor": Decimal("0.12"),
-                "duration": 6,
+                "duration": 5,
             },
             {
                 "title": "Technological Breakthrough",
                 "description": "A breakthrough in eco-friendly technology improves prospects for green companies.",
                 "impact_factor": Decimal("0.08"),
-                "duration": 4,
+                "duration": 5,
             },
             {
                 "title": "Policy Change",
                 "description": "A new government policy supports sustainable practices across the board.",
                 "impact_factor": Decimal("0.05"),
-                "duration": 7,
+                "duration": 5,
             },
         ]
+
+        # Limit events based on the event_count argument
+        events_data = events_data[:event_count]
 
         self.stdout.write("Creating sample market events...")
         for event_data in events_data:
             event = MarketEvent.objects.create(**event_data)
-            # Randomly assign affected companies
+            # Randomly assign a subset of companies to this event
             if companies:
                 num = random.randint(1, len(companies))
                 affected = random.sample(companies, k=num)
-                event.companies_affected.set(affected)
+                event.companies_affected.add(*affected)
+                self.stdout.write(self.style.SUCCESS(
+                    f"Assigned {len(affected)} companies to event '{event.title}'"
+                ))
+            else:
+                self.stdout.write("No companies available to assign.")
             event.save()
             self.stdout.write(self.style.SUCCESS(f"Created event: {event.title}"))
 
