@@ -26,5 +26,6 @@ urlpatterns = [
     path("bingo/", include("apps.bingo.urls")),
     path("games/", include("apps.games.urls")),
     path('market/', include('apps.market.urls')),
-
+    path("casino/", include("apps.casino.urls")),
+    path("crates/", include("apps.crates.urls")),
 ]

@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Crate System{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/crates.css' %}">
+    <script src="{% static 'js/crates.js' %}" defer></script>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav>
+        <a href="{% url 'crate_inventory' %}">🎁 Your Crates</a>
+        <a href="{% url 'crate_shop' %}">🛒 Crate Shop</a>
+        <a href="{% url 'crate_history' %}">📜 Crate History</a>
+    </nav>
+
+    <div class="container">
+        <h1>{% block page_title %}Crates{% endblock %}</h1>
+
+        <div class="crate-content">
+            {% block crate_content %}{% endblock %}
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,29 @@
+{% extends "casino/casino_base.html" %}
+
+{% block title %}Green Fund Leaderboard{% endblock %}
+
+{% block content %}
+<h2>🌱 Green Fund Leaderboard</h2>
+<p>Top contributors helping sustainability!</p>
+
+<table class="table table-dark">
+    <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Player</th>
+            <th>Donated</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for contributor in top_contributors %}
+        <tr>
+            <td>#{{ forloop.counter }}</td>
+            <td>{{ contributor.user.username }}</td>
+            <td>{{ contributor.total_donated }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3">No contributions yet.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'crates/base_crates.html' %}
+{% load static %}
+
+{% block title %}Your Crates{% endblock %}
+{% block page_title %}🎁 Your Crates{% endblock %}
+
+{% block crate_content %}
+<p>Click a crate to open it:</p>
+
+<div class="crate-grid">
+    {% for crate in crates %}
+    <div class="crate-item" data-id="{{ crate.id }}" onclick="openCrate(this)">
+        {% if crate.type == "materials" %}
+            <img src="{% static 'images/materials_crate.jpg' %}" alt="Materials Crate">
+        {% elif crate.type == "blueprint" %}
+            <img src="{% static 'images/blueprint_crate.jpg' %}" alt="Blueprint Crate">
+        {% else %}
+            <img src="{% static 'images/default_crate.jpg' %}" alt="Default Crate">
+        {% endif %}
+        <p>{{ crate.get_type_display }}</p>
+    </div>
+    {% empty %}
+    <p>You have no crates. <a href="{% url 'crate_shop' %}">Buy some here!</a></p>
+    {% endfor %}
+</div>
+
+<!-- Crate Opening Modal -->
+<div id="crate-modal" class="modal">
+    <div class="modal-content">
+        <h3>Opening Crate...</h3>
+        <div id="crate-animation">
+            <img src="{% static 'images/crate_opening.gif' %}" alt="Opening animation">
+        </div>
+        <p id="reward-text"></p>
+        <button onclick="closeModal()">Close</button>
+    </div>
+</div>
+{% endblock %}

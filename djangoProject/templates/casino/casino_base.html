@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casino - {% block title %}Home{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: 'Arial', sans-serif;
+        }
+        .casino-header {
+            background: linear-gradient(to right, #ffcc00, #ff6699);
+            padding: 15px;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .casino-container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .casino-card {
+            background-color: #222;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .casino-footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #222;
+            margin-top: 30px;
+        }
+        .currency-display {
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+        }
+        #dice-container {
+            background: linear-gradient(45deg, #ffcc00, #ff6699); /* Gradient background */
+            padding: 20px;
+            display: inline-block;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        #dice-image {
+            transition: all 0.2s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="casino-header">
+        <h1>🎰 Welcome to the Casino! 🎲</h1>
+        <div>
+            <a href="{% url 'casino_home' %}" class="btn btn-light">Home</a>
+            <a href="{% url 'play_dice' %}" class="btn btn-warning">Dice Game</a>
+            <a href="{% url 'play_roulette' %}" class="btn btn-warning">Roulette</a>
+        </div>
+        <div class="currency-display">
+            💰 Balance: {{ request.user.userprofile.currency_balance|default:"0.00" }} |
+            🌱 Green Fund: {{ green_fund.total_donated}}
+        </div>
+    </div>
+
+    <div class="casino-container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <div class="casino-footer">
+        <p>Good luck! 🍀 Play responsibly.</p>
+    </div>
+</body>
+</html>

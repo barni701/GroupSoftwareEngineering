@@ -1,0 +1,20 @@
+{% extends 'crates/base_crates.html' %}
+{% load static %}
+
+{% block title %}Crate Shop{% endblock %}
+{% block page_title %}🛒 Crate Shop{% endblock %}
+
+{% block crate_content %}
+<p>Select a crate to purchase:</p>
+
+<div class="crate-shop-grid">
+    {% for crate in crates %}
+    <div class="crate-card">
+        <img src="{% static 'images/' %}{{ crate.type }}_crate.png" alt="{{ crate.type }} Crate">
+        <h3>{{ crate.type|capfirst }} Crate</h3>
+        <p>💰 Price: <strong>{{ crate.price }}</strong> {{ crate.currency }}</p>
+        <button onclick="buyCrate('{{ crate.type }}')">Buy Now</button>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
