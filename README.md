@@ -88,6 +88,15 @@ Date: 22/02/2025
 - Assess current unit tests and made decision to create more
 - Create Development branch used for merging current django app prototype
 
+### Session 5
+Date: 24/02/2025
+- Added styling to the bingo board
+- Account deletion added
+- Login/Sign Up bug fixing
+- Finalised tests
+- Finalised documentation
+- Finalised formatting for sprint 1 submission
+
 ## Feedback
 - Why we are making the product
 - Why we work well as a team and how
