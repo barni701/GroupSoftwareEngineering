@@ -1,0 +1,36 @@
+{% extends 'crates/base_crates.html' %}
+{% load static %}
+{% block title %}Your Item Inventory{% endblock %}
+{% block content %}
+<div class="inventory-container">
+  <h2>Your Item Inventory</h2>
+  {% if inventory_items %}
+  <table class="inventory-table">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Type</th>
+        <th>Rarity</th>
+        <th>Quantity</th>
+        <th>Value</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for inv_item in inventory_items %}
+      <tr>
+        <td>{{ inv_item.item.name }}</td>
+        <td>{{ inv_item.item.get_item_type_display }}</td>
+        <td>{{ inv_item.item.get_rarity_display }}</td>
+        <td>{{ inv_item.quantity }}</td>
+        <td>${{ inv_item.item.value }}</td>
+        <td>{{ inv_item.item.description|default:"N/A" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p>You have not collected any items yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

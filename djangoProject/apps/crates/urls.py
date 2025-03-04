@@ -1,10 +1,11 @@
 from django.urls import path
-from . import views
+from apps.crates.views import crate_shop, crate_inventory, buy_crate, open_crate, bulk_open_crates, item_inventory
 
 urlpatterns = [
-    path('', views.crate_inventory, name="crate_inventory"),
-    path('open/<int:crate_id>/', views.open_crate, name="open_crate"),
-    path('history/', views.crate_history, name="crate_history"),
-    path('shop/', views.crate_shop, name="crate_shop"),
-    path('buy/<str:crate_type>/', views.buy_crate, name="buy_crate"),
+    path("shop/", crate_shop, name="crate_shop"),
+    path("inventory/", crate_inventory, name="crate_inventory"),
+    path("items/", item_inventory, name="item_inventory"),  # New URL for item inventory
+    path("buy/<str:crate_type>/", buy_crate, name="buy_crate"),
+    path("open/<str:crate_type>/", open_crate, name="open_crate"),
+    path("bulk_open/<str:crate_type>/", bulk_open_crates, name="bulk_open_crates"),
 ]

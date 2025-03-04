@@ -1,72 +1,82 @@
-console.log("Crates.js loaded successfully!");
-
-function openCrate(crateElement) {
-    const crateId = crateElement.getAttribute("data-id");
-
-    // Show modal with animation
-    document.getElementById("crate-modal").style.display = "flex";
-    document.getElementById("reward-text").innerText = "Opening...";
-
-    setTimeout(() => {
-        fetch(`/crates/open/${crateId}/`, {
-            method: "POST",
-            headers: { "X-CSRFToken": getCookie("csrftoken") }
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("API Response:", data); // Debugging output
-
-            if (data.success && data.reward) {
-                document.getElementById("reward-text").innerText =
-                    `You received: ${data.reward.materials.join(", ")} + ${data.reward.farm_currency_bonus} FarmCoins!`;
-            } else {
-                document.getElementById("reward-text").innerText = "Error: No rewards found.";
-                console.error("Unexpected API response:", data);
-            }
-        })
-        .catch(error => console.error("Fetch error:", error));
-    }, 2000);
-}
-
-function closeModal() {
-    document.getElementById("crate-modal").style.display = "none";
-}
-
-function buyCrate(crateType) {
-    console.log(`Buying crate: ${crateType}`);
-
-    fetch(`/crates/buy/${crateType}/`, {
-        method: "POST",
-        headers: {
-            "X-CSRFToken": getCookie("csrftoken"),
-            "Content-Type": "application/json"
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log("Response received:", data);
-        if (data.success) {
-            alert(data.message);
-            location.reload();
-        } else {
-            alert("Error: " + data.error);
-        }
-    })
-    .catch(error => console.error("Fetch error:", error));
-}
-
+// CSRF token helper function (standard Django)
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== "") {
         const cookies = document.cookie.split(";");
         for (let i = 0; i < cookies.length; i++) {
             const cookie = cookies[i].trim();
-            if (cookie.startsWith(name + "=")) {
+            if (cookie.substring(0, name.length + 1) === (name + "=")) {
                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                 break;
             }
         }
     }
     return cookieValue;
+}
 
+function buyCrate(crateType) {
+    fetch(`/crates/buy/${crateType}/`, {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCookie("csrftoken")
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const messageDiv = document.getElementById("buy-message");
+        if (data.success) {
+            messageDiv.innerText = data.message;
+        } else {
+            messageDiv.innerText = "Error: " + data.error;
+        }
+    })
+    .catch(err => console.error("Error buying crate:", err));
+}
+
+// Open a single crate
+function openSingleCrate(crateType) {
+    fetch(`/crates/open/${crateType}/`, {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCookie("csrftoken")
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const messageDiv = document.getElementById("inventory-message");
+        if (data.success) {
+            messageDiv.innerText = `You received: ${data.reward.item} (${data.reward.rarity})`;
+            // Optionally, update the UI to reflect new crate quantities (e.g., reload the page)
+            location.reload();
+        } else {
+            messageDiv.innerText = "Error: " + data.error;
+        }
+    })
+    .catch(err => console.error("Error opening crate:", err));
+}
+
+// Bulk open crates of a given type
+function bulkOpenCrates(crateType) {
+    fetch(`/crates/bulk_open/${crateType}/`, {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCookie("csrftoken")
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const messageDiv = document.getElementById("inventory-message");
+        if (data.success) {
+            let summary = "Bulk Opened Rewards:\n";
+            data.rewards.forEach(reward => {
+                summary += `${reward.item} (${reward.rarity})\n`;
+            });
+            messageDiv.innerText = summary;
+            // Optionally, update the UI to reflect new crate quantities
+            location.reload();
+        } else {
+            messageDiv.innerText = "Error: " + data.error;
+        }
+    })
+    .catch(err => console.error("Error bulk opening crates:", err));
 }
