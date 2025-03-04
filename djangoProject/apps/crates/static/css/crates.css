@@ -1,51 +1,100 @@
- /* General Styles */
+/* Global Styles */
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f2f2f2;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f7f7f7;
   margin: 0;
-  padding: 0;
-  text-align: center;
+  color: #333;
 }
 
 header {
-  background-color: #333;
+  background-color: #004466;
   color: #fff;
-  padding: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 0.5rem 0;
+}
+
+.header-container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 header h1 {
   margin: 0;
+  font-size: 1.8rem;
 }
 
-nav a {
-  color: #fff;
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+nav ul li {
   margin: 0 1rem;
-  text-decoration: none;
 }
 
-main {
-  padding: 2rem;
-}
-
-footer {
-  background-color: #333;
+nav ul li a {
   color: #fff;
-  padding: 1rem;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.3s;
 }
 
-/* Crate Cards & Inventory Items */
-.crate-card, .crate-item {
+nav ul li a:hover {
+  color: #ffcc00;
+}
+
+.currency-display {
+  font-size: 0.9rem;
+}
+
+.currency-display span {
+  margin-left: 1rem;
+}
+
+/* Content container */
+.content-container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 2rem auto;
   background-color: #fff;
-  border: 1px solid #ddd;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Footer */
+footer {
+  background-color: #004466;
+  color: #fff;
+  text-align: center;
+  padding: 1rem 0;
+  margin-top: 2rem;
+}
+
+/* Crate Cards for Shop and Inventory */
+.crate-card, .crate-item {
+  background-color: #e9f1f4;
+  border: 1px solid #c0d6df;
   border-radius: 8px;
   padding: 1rem;
   margin: 1rem;
   display: inline-block;
-  width: 200px;
+  width: 250px;
   vertical-align: top;
+  text-align: center;
+}
+
+.crate-card h3, .crate-item h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.2rem;
 }
 
 button {
@@ -56,53 +105,95 @@ button {
   padding: 0.5rem 1rem;
   margin: 0.5rem;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 button:hover {
   background-color: #0056b3;
 }
 
-#buy-message, #inventory-message {
-  margin-top: 1rem;
-  font-weight: bold;
+/* Modal Styles */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.7);
 }
 
-/* Inventory Page Styles */
-.inventory-container {
-  margin: 2rem auto;
-  max-width: 900px;
-  background-color: #ffffff;
-  padding: 1.5rem;
+.modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  text-align: center;
+  max-width: 500px;
+  width: 90%;
 }
 
-.inventory-container h2 {
-  margin-bottom: 1rem;
-  color: #333;
+.modal-close {
+  background-color: #d9534f;
+  margin-top: 1rem;
 }
 
+/* Table for Item Inventory */
 .inventory-table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 1rem;
 }
 
-.inventory-table thead {
+.inventory-table th, .inventory-table td {
+  border: 1px solid #ccc;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.inventory-table th {
   background-color: #007bff;
   color: #fff;
 }
 
-.inventory-table th,
-.inventory-table td {
-  padding: 0.75rem 1rem;
-  border: 1px solid #ddd;
-  text-align: left;
+.inventory-table tr:nth-child(even) {
+  background-color: #f2f2f2;
 }
 
-.inventory-table tbody tr:nth-child(even) {
-  background-color: #f9f9f9;
+/* Reward Modal Styles (similar to other modals) */
+.modal.reward-modal, .reward-content {
+  /* Optional: different styling if desired */
 }
 
-.inventory-table tbody tr:hover {
-  background-color: #f1f1f1;
+#reward-modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.7);
+}
+
+#reward-modal .modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  max-width: 500px;
+  width: 90%;
+}
+
+#reward-details p {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
 }

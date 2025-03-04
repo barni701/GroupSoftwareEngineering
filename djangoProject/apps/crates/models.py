@@ -73,12 +73,17 @@ class Item(models.Model):
     def get_or_create_from_loot(cls, item_name):
         """Fetches or creates an item based on crate loot pool settings."""
         for crate in CRATE_TYPES.values():
-            for loot in crate.loot_pool:  # Use loot_pool, not loot_table
+            for loot in crate.loot_pool:  # Each loot is (item_name, item_type, base_rarity, drop_rate)
                 if loot[0] == item_name:
-                    base_rarity = loot[1]
+                    base_rarity = loot[2]
+                    item_type = loot[1]
+                    # For currency items, optionally set a default base_value if desired.
+                    defaults = {"item_type": item_type, "rarity": base_rarity}
+                    if item_type == "currency":
+                        defaults["base_value"] = Decimal("10.00")
                     return cls.objects.get_or_create(
                         name=item_name,
-                        defaults={"item_type": "material", "rarity": base_rarity}
+                        defaults=defaults
                     )[0]
         raise ValueError(f"Item {item_name} not found in loot pool!")
 
@@ -108,12 +113,9 @@ class InventoryItem(models.Model):
         unique_together = ("user", "item")
 
     def adjust_quantity(self, amount):
-        """Increase or decrease quantity, deleting when zero."""
+        """Increase or decrease crate quantity without deleting the record when quantity is zero."""
         self.quantity = max(0, self.quantity + amount)
-        if self.quantity == 0:
-            self.delete()
-        else:
-            self.save()
+        self.save()
 
     def __str__(self):
         return f"{self.user.username} - {self.item.name} x{self.quantity}"

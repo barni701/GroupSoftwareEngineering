@@ -7,11 +7,30 @@
   {% for key, crate in crate_definitions.items %}
   <div class="crate-card">
     <h3>{{ crate.name }}</h3>
-    <p>Price: {{ crate.price }} ({{ crate.currency }})</p>
+    <p>Price: ${{ crate.price }} ({{ crate.currency }})</p>
     <p>Rarity Boost: {{ crate.rarity_boost }}</p>
-    <button onclick="buyCrate('{{ key }}')">Buy Now</button>
+    <button type="button" onclick="buyCrate('{{ key }}')">Buy Now</button>
+    <button type="button" onclick="showDetailsPopup('{{ key }}')">View Details</button>
+    <!-- Hidden details for modal -->
+    <div id="details-{{ key }}" class="crate-details" style="display: none;">
+      <h4>Possible Drops:</h4>
+      <ul>
+        {% for loot in crate.loot_pool %}
+        <li>
+          {{ loot.0 }} – Type: {{ loot.1 }}, Base Rarity: {{ loot.2 }}, Drop Rate: {{ loot.3 }}
+          {% if loot|length > 4 %} (Value Range: {{ loot.4 }}){% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
   </div>
   {% endfor %}
 </div>
 <div id="buy-message"></div>
+<!-- Details Modal Popup -->
+<div id="details-modal" class="modal">
+  <div class="modal-content">
+    <!-- Content injected via JS -->
+  </div>
+</div>
 {% endblock %}

@@ -9,24 +9,50 @@
 </head>
 <body>
   <header>
-    <h1>Crate System</h1>
-    <nav>
-      <a href="{% url 'crate_shop' %}">Shop</a>
-      <a href="{% url 'crate_inventory' %}">Crate Inventory</a>
-      <a href="{% url 'item_inventory' %}">Item Inventory</a>
-      <!-- Add additional navigation links as needed -->
-    </nav>
-    {% if user.is_authenticated %}
-      <div class="user-currency">
-        ${{ user.userprofile.currency_balance }} | Farm: {{ user.userprofile.farm_currency }}
+    <div class="header-container">
+      <h1>Crate System</h1>
+      <nav>
+        <ul>
+          <li><a href="{% url 'crate_shop' %}">Shop</a></li>
+          <li><a href="{% url 'crate_inventory' %}">Crate Inventory</a></li>
+          <li><a href="{% url 'item_inventory' %}">Item Inventory</a></li>
+        </ul>
+      </nav>
+      {% if user.is_authenticated %}
+      <div class="currency-display">
+        <span>Main: ${{ user.userprofile.currency_balance }}</span>
+        <span>Farm: {{ user.userprofile.farm_currency }}</span>
       </div>
-    {% endif %}
+      {% endif %}
+    </div>
   </header>
   <main>
-    {% block content %}{% endblock %}
+    <div class="content-container">
+      {% block content %}{% endblock %}
+    </div>
   </main>
   <footer>
-    <p>&copy; 2025 Crate System</p>
+    <p>&copy; 2025 Crate System. All rights reserved.</p>
   </footer>
+
+  <!-- Crate Opening Modal -->
+  <div id="crate-modal" class="modal">
+    <div class="modal-content">
+      <img id="crate-animation" src="{% static 'images/crate_closed.png' %}" alt="Crate">
+      <p id="crate-message">Opening crate...</p>
+      <button type="button" class="modal-close" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+
+  <!-- Reward Modal Popup -->
+<div id="reward-modal" class="modal" style="display: none;">
+  <div class="modal-content reward-content">
+    <h3>You Obtained:</h3>
+    <div id="reward-details">
+      <!-- Reward details will be injected here -->
+    </div>
+    <button type="button" class="modal-close" onclick="closeRewardModal()">Close</button>
+  </div>
+</div>
 </body>
 </html>

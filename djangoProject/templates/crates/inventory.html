@@ -6,11 +6,11 @@
 <div id="crate-inventory">
   {% for crate in crates %}
     {% if crate.quantity > 0 %}
-      <div class="crate-item" data-crate-type="{{ crate.crate_type }}">
-        <h3>{{ crate.get_crate_type_display }} (x{{ crate.quantity }})</h3>
-        <button onclick="openSingleCrate('{{ crate.crate_type }}')">Open One</button>
-        <button onclick="bulkOpenCrates('{{ crate.crate_type }}')">Bulk Open</button>
-      </div>
+    <div class="crate-item" data-crate-type="{{ crate.crate_type }}">
+      <h3>{{ crate.get_crate_type_display }} (x{{ crate.quantity }})</h3>
+      <button type="button" onclick="openSingleCrate('{{ crate.crate_type }}')">Open One</button>
+      <button type="button" onclick="bulkOpenCrates('{{ crate.crate_type }}')">Bulk Open</button>
+    </div>
     {% endif %}
   {% empty %}
     <p>You have no crates. Visit the shop to buy some!</p>

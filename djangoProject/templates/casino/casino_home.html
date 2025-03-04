@@ -47,5 +47,7 @@
         <p class="h4">Green Fund: <strong>{{ green_fund.total_donated|default:"0.00" }} currency</strong></p>
         <a href="{% url 'green_fund_leaderboard' %}" class="btn btn-success">View Green Fund Leaderboard</a>
     </div>
+    <br><br>
+    <a href="{% url 'home' %}">Return Home</a>
 </div>
 {% endblock %}

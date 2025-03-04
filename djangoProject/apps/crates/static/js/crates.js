@@ -1,4 +1,4 @@
-// CSRF token helper function (standard Django)
+// CSRF helper function
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== "") {
@@ -14,18 +14,19 @@ function getCookie(name) {
     return cookieValue;
 }
 
+// Buy a crate
 function buyCrate(crateType) {
     fetch(`/crates/buy/${crateType}/`, {
         method: "POST",
-        headers: {
-            "X-CSRFToken": getCookie("csrftoken")
-        }
+        headers: { "X-CSRFToken": getCookie("csrftoken") }
     })
     .then(response => response.json())
     .then(data => {
         const messageDiv = document.getElementById("buy-message");
         if (data.success) {
             messageDiv.innerText = data.message;
+            // Optionally update the UI via location.reload() or DOM manipulation
+            location.reload();
         } else {
             messageDiv.innerText = "Error: " + data.error;
         }
@@ -33,50 +34,131 @@ function buyCrate(crateType) {
     .catch(err => console.error("Error buying crate:", err));
 }
 
-// Open a single crate
-function openSingleCrate(crateType) {
-    fetch(`/crates/open/${crateType}/`, {
-        method: "POST",
-        headers: {
-            "X-CSRFToken": getCookie("csrftoken")
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        const messageDiv = document.getElementById("inventory-message");
-        if (data.success) {
-            messageDiv.innerText = `You received: ${data.reward.item} (${data.reward.rarity})`;
-            // Optionally, update the UI to reflect new crate quantities (e.g., reload the page)
-            location.reload();
-        } else {
-            messageDiv.innerText = "Error: " + data.error;
-        }
-    })
-    .catch(err => console.error("Error opening crate:", err));
+// Show details popup modal
+function showDetailsPopup(crateKey) {
+    const detailsDiv = document.getElementById(`details-${crateKey}`);
+    const detailsModal = document.getElementById("details-modal");
+    detailsModal.querySelector('.modal-content').innerHTML = `
+        <h3>Crate Details</h3>
+        ${detailsDiv.innerHTML}
+        <button type="button" onclick="closeDetailsPopup()">Close</button>
+    `;
+    detailsModal.style.display = "block";
 }
 
-// Bulk open crates of a given type
+function closeDetailsPopup() {
+    document.getElementById("details-modal").style.display = "none";
+}
+
+// Modal animation for crate opening
+// Show the crate opening animation modal for a single open.
+function showCrateOpeningAnimation(callback) {
+    const modal = document.getElementById("crate-modal");
+    const crateImg = document.getElementById("crate-animation");
+    const message = document.getElementById("crate-message");
+
+    // Show modal and reset animation state.
+    modal.style.display = "block";
+    crateImg.classList.remove("opening");
+    message.innerText = "Opening crate...";
+
+    // Start animation after a short delay.
+    setTimeout(() => {
+        crateImg.classList.add("opening");
+    }, 100);
+
+    // Hide modal after animation completes (1.1 seconds), then call callback.
+    setTimeout(() => {
+        modal.style.display = "none";
+        if (callback) callback();
+    }, 1100);
+}
+
+// Updated openSingleCrate function
+function openSingleCrate(crateType) {
+    showCrateOpeningAnimation(() => {
+        fetch(`/crates/open/${crateType}/`, {
+            method: "POST",
+            headers: { "X-CSRFToken": getCookie("csrftoken") }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Instead of updating a text element, show the reward modal
+                showRewardModal(data.reward);
+                // Also update the displayed crate quantity on the inventory page
+                const crateElem = document.querySelector(`[data-crate-type="${crateType}"] h3`);
+                if (crateElem) {
+                    crateElem.innerText = crateElem.innerText.replace(/\(x\d+\)/, `(x${data.remaining})`);
+                }
+            } else {
+                const messageDiv = document.getElementById("inventory-message");
+                messageDiv.innerText = "Error: " + data.error;
+            }
+        })
+        .catch(err => console.error("Error opening crate:", err));
+    });
+}
+
+// Bulk open crates
 function bulkOpenCrates(crateType) {
     fetch(`/crates/bulk_open/${crateType}/`, {
         method: "POST",
-        headers: {
-            "X-CSRFToken": getCookie("csrftoken")
-        }
+        headers: { "X-CSRFToken": getCookie("csrftoken") }
     })
     .then(response => response.json())
     .then(data => {
-        const messageDiv = document.getElementById("inventory-message");
         if (data.success) {
-            let summary = "Bulk Opened Rewards:\n";
-            data.rewards.forEach(reward => {
-                summary += `${reward.item} (${reward.rarity})\n`;
-            });
-            messageDiv.innerText = summary;
-            // Optionally, update the UI to reflect new crate quantities
-            location.reload();
+            // Display aggregated rewards in a modal.
+            showBulkRewardModal(data.rewards);
+            // Update crate count on the page.
+            const crateElem = document.querySelector(`[data-crate-type="${crateType}"] h3`);
+            if (crateElem) {
+                crateElem.innerText = crateElem.innerText.replace(/\(x\d+\)/, `(x${data.remaining})`);
+            }
         } else {
-            messageDiv.innerText = "Error: " + data.error;
+            document.getElementById("inventory-message").innerText = "Error: " + data.error;
         }
     })
     .catch(err => console.error("Error bulk opening crates:", err));
+}
+
+// Function to show the reward modal with details
+function showRewardModal(rewardInfo) {
+    const rewardModal = document.getElementById("reward-modal");
+    const rewardDetails = rewardModal.querySelector('.modal-content');
+
+    let html = `<h3>You Obtained:</h3>`;
+    html += `<p><strong>Item:</strong> ${rewardInfo.item}</p>`;
+    html += `<p><strong>Rarity:</strong> ${rewardInfo.rarity}</p>`;
+    if (rewardInfo.farm_currency_awarded !== undefined) {
+        html += `<p><strong>Farm Currency Awarded:</strong> ${rewardInfo.farm_currency_awarded}</p>`;
+    }
+    html += `<button type="button" onclick="closeRewardModal()">Close</button>`;
+
+    rewardDetails.innerHTML = html;
+    rewardModal.style.display = "block";
+}
+
+function closeRewardModal() {
+    document.getElementById("reward-modal").style.display = "none";
+}
+
+
+// Updated function to show bulk open rewards in a modal popup
+function showBulkRewardModal(aggregatedRewards) {
+    const rewardModal = document.getElementById("reward-modal");
+    const rewardDetails = rewardModal.querySelector('.modal-content');
+    let html = "<h3>Bulk Opened Rewards</h3><ul>";
+    aggregatedRewards.forEach(reward => {
+        html += `<li><strong>${reward.item}</strong> (${reward.rarity}) x${reward.count}`;
+        if (reward.farm_currency_awarded !== undefined) {
+            html += ` – Total Farm Currency: ${reward.farm_currency_awarded}`;
+        }
+        html += `</li>`;
+    });
+    html += "</ul>";
+    html += `<button type="button" onclick="closeRewardModal()">Close</button>`;
+    rewardDetails.innerHTML = html;
+    rewardModal.style.display = "block";
 }
