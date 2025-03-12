@@ -1,0 +1,25 @@
+{% extends 'crates/base_crates.html' %}
+{% load static %}
+{% block title %}Building Catalog{% endblock %}
+{% block content %}
+<div class="inventory-container">
+  <h2>Building Catalog</h2>
+  <div class="inventory-grid">
+    {% for template in templates %}
+      <div class="inventory-card building-card {% if template.prerequisite %}locked{% else %}unlocked{% endif %}">
+        <h3>{{ template.name }}</h3>
+        <p>{{ template.description }}</p>
+        <p><strong>Base Cost:</strong> ${{ template.base_upgrade_cost }}</p>
+        {% if template.blueprint_required %}
+          <p><strong>Blueprint Required:</strong> {{ template.blueprint_required.name }}</p>
+        {% endif %}
+        {% if template.prerequisite %}
+          <p class="lock-msg">Locked – Requires: {{ template.prerequisite.name }}</p>
+        {% else %}
+          <a href="{% url 'building_template_detail' template.id %}" class="btn">View Details</a>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -5,6 +5,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import DiceGame
+from ..battlepass.utils import add_battle_pass_points
+from ..battlepass.views import battle_pass_view
 from ..users.models import UserProfile  # Assuming you store currency here
 
 @login_required
@@ -67,6 +69,7 @@ def play_dice(request):
         winnings = 0
         if game.win:
             winnings = final_bet * (6 if bet_type == "exact" else 2)
+            add_battle_pass_points(request.user, winnings//10)
             user_profile.add_currency(winnings, "Winnings from Dice Game")
 
         # Game history and win percentage calculation
@@ -177,6 +180,7 @@ def play_roulette(request):
             else:
                 winnings = final_bet * 2  # Even money bet: 2x your wager; net profit is equal to your wager.
             user_profile.add_currency(winnings, "Winnings from Roulette")
+            add_battle_pass_points(user_profile.user, winnings//10)
 
         # Refresh user profile to get updated balance
         user_profile.refresh_from_db()
@@ -225,3 +229,4 @@ def play_roulette(request):
         "green_fund_amount": updated_green_fund,
         "user_balance": updated_balance,
     })
+

@@ -16,14 +16,22 @@
           <li><a href="{% url 'crate_shop' %}">Shop</a></li>
           <li><a href="{% url 'crate_inventory' %}">Crate Inventory</a></li>
           <li><a href="{% url 'item_inventory' %}">Item Inventory</a></li>
+          <li><a href="{% url 'recipe_list' %}">Crafting</a></li>
+            <li><a href="{% url 'building_list' %}">Farm</a></li>
         </ul>
       </nav>
       {% if user.is_authenticated %}
       <div class="currency-display">
-        <span>Main: ${{ user.userprofile.currency_balance }}</span>
-        <span>Farm: {{ user.userprofile.farm_currency }}</span>
+        <span>${{ user.userprofile.currency_balance }}</span>
+        <span>Farm: ${{ user.userprofile.farm_currency }}</span>
       </div>
       {% endif %}
+
+    <nav>
+        <ul>
+            <li><a href="{% url 'home' %}">Return Home</a></li>
+        </ul>
+    </nav>
     </div>
   </header>
   <main>
@@ -38,20 +46,31 @@
   <!-- Crate Opening Modal -->
   <div id="crate-modal" class="modal">
     <div class="modal-content">
-      <img id="crate-animation" src="{% static 'images/crate_closed.png' %}" alt="Crate">
+      <img id="crate-animation" src="{% static 'images/crate_closedf.jpg' %}" alt="Crate">
       <p id="crate-message">Opening crate...</p>
       <button type="button" class="modal-close" onclick="closeModal()">Close</button>
     </div>
   </div>
 
   <!-- Reward Modal Popup -->
-<div id="reward-modal" class="modal" style="display: none;">
-  <div class="modal-content reward-content">
-    <h3>You Obtained:</h3>
-    <div id="reward-details">
-      <!-- Reward details will be injected here -->
+  <div id="reward-modal" class="modal">
+    <div class="modal-content reward-content">
+      <h3>You Obtained:</h3>
+      <div id="reward-details">
+        <!-- Reward details will be injected via JS -->
+      </div>
+      <button type="button" class="modal-close" onclick="closeRewardModal()">Close</button>
     </div>
-    <button type="button" class="modal-close" onclick="closeRewardModal()">Close</button>
+  </div>
+
+<!-- New Details Modal Popup -->
+<div id="details-modal" class="modal">
+  <div class="modal-content" id="details-content">
+    <h3>Crate Details</h3>
+    <div id="details-inner">
+      <!-- JS will inject the crate details here -->
+    </div>
+    <button type="button" class="modal-close" onclick="closeDetailsModal()">Close</button>
   </div>
 </div>
 </body>

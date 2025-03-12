@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battle Pass</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }
+        .battlepass-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 700px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .progress-bar-container {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 5px;
+            margin-top: 10px;
+            position: relative;
+        }
+        .progress-bar {
+            height: 20px;
+            background-color: #4caf50;
+            border-radius: 5px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            transition: width 0.5s;
+        }
+        .tier-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            padding: 0;
+            margin-top: 20px;
+        }
+        .tier {
+            width: 30%;
+            margin: 10px;
+            padding: 15px;
+            background: #e7e7e7;
+            border-radius: 5px;
+            text-align: center;
+            transition: 0.3s;
+        }
+        .claimed {
+            background: #4caf50;
+            color: white;
+        }
+        .upcoming {
+            background: #ffcc00;
+        }
+        .locked {
+            background: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="battlepass-container">
+        <h2>Battle Pass - Season {{ user_battle_pass.battle_pass.season_number }}</h2>
+        <p>Current Tier: {{ user_battle_pass.current_tier }}</p>
+
+        {% if not user_battle_pass.has_premium %}
+            <form action="{% url 'buy_premium_pass' %}" method="post">
+                {% csrf_token %}
+                <button type="submit">Buy Premium Pass (1000 coins)</button>
+            </form>
+        {% else %}
+            <p>✅ Premium Pass Active!</p>
+        {% endif %}
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" style="width: {{ user_battle_pass.progress_points }}%;">
+                {{ user_battle_pass.progress_points }}/100
+            </div>
+        </div>
+
+        <h3>Rewards</h3>
+        <div class="tier-list">
+            {% for tier in tiers %}
+                <div class="tier
+                    {% if user_battle_pass.current_tier > tier.tier_level %}claimed{% elif user_battle_pass.current_tier == tier.tier_level %}upcoming{% else %}locked{% endif %}"
+                    style="{% if tier.is_premium %}border: 3px solid gold;{% endif %}">
+
+                    <strong>Tier {{ tier.tier_level }}</strong><br>
+                    {{ tier.reward_name }}
+
+                    {% if tier.is_premium and not user_battle_pass.has_premium %}
+                        <span style="color: gold;">(Premium Only)</span>
+                    {% endif %}
+
+                    {% if user_battle_pass.current_tier > tier.tier_level %}
+                        ✅ Claimed
+                    {% elif user_battle_pass.current_tier == tier.tier_level %}
+                        ⏳ Upcoming
+                    {% else %}
+                        🔒 Locked
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

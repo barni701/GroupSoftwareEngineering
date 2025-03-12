@@ -1,4 +1,5 @@
 import random
+from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -46,6 +47,52 @@ def buy_crate(request, crate_type):
     except Exception as e:
         return JsonResponse({"error": f"Unexpected error: {e}"}, status=500)
 
+
+@login_required
+def bulk_buy_crates(request, crate_type):
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request method"}, status=400)
+    try:
+        # Read the quantity from the POST data
+        quantity = int(request.POST.get('quantity', 1))
+        if quantity < 1:
+            return JsonResponse({"error": "Quantity must be at least 1"}, status=400)
+
+        # Get the crate definition for the specified type
+        crate_def = CRATE_TYPES.get(crate_type)
+        if not crate_def:
+            return JsonResponse({"error": "Invalid crate type"}, status=400)
+
+        # Calculate total cost
+        total_price = crate_def.price * Decimal(quantity)
+        user_profile = UserProfile.objects.get(user=request.user)
+
+        # Check the currency and deduct accordingly
+        if crate_def.currency == "main":
+            if user_profile.currency_balance < total_price:
+                return JsonResponse({"error": "Insufficient main currency"}, status=400)
+            user_profile.deduct_currency(total_price, f"Bulk purchase of {quantity} {crate_def.name} crate(s)")
+        else:
+            if user_profile.farm_currency < total_price:
+                return JsonResponse({"error": "Insufficient farm currency"}, status=400)
+            user_profile.deduct_farm_currency(total_price, f"Bulk purchase of {quantity} {crate_def.name} crate(s)")
+
+        with transaction.atomic():
+            # Create or update the user's crate for this type
+            crate, created = Crate.objects.get_or_create(
+                user=request.user,
+                crate_type=crate_type,
+                defaults={"price": crate_def.price, "currency_type": crate_def.currency, "quantity": 0}
+            )
+            crate.adjust_quantity(quantity)
+
+        return JsonResponse({
+            "success": True,
+            "message": f"Bulk purchased {quantity} {crate_def.name} crate(s).",
+            "remaining": crate.quantity
+        })
+    except Exception as e:
+        return JsonResponse({"error": f"Unexpected error: {str(e)}"}, status=500)
 
 @login_required
 def open_crate(request, crate_type):
@@ -251,3 +298,35 @@ def item_inventory(request):
     """Displays all items in the user's inventory."""
     inventory_items = InventoryItem.objects.filter(user=request.user)
     return render(request, "crates/item_inventory.html", {"inventory_items": inventory_items})
+
+
+@login_required
+def sell_item(request, item_id):
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request method"}, status=400)
+    try:
+        quantity = int(request.POST.get("quantity", 1))
+        if quantity < 1:
+            return JsonResponse({"error": "Quantity must be at least 1"}, status=400)
+
+        inv_item = get_object_or_404(InventoryItem, user=request.user, item__id=item_id)
+        if inv_item.quantity < quantity:
+            return JsonResponse({"error": "Insufficient quantity to sell"}, status=400)
+
+        # For this example, assume you sell at 50% of the computed item value
+        sale_multiplier = Decimal("0.5")
+        sale_price = inv_item.item.value * sale_multiplier * quantity
+
+        # Deduct quantity (assuming adjust_quantity handles deletion when zero)
+        inv_item.adjust_quantity(-quantity)
+
+        # Credit the user's currency balance
+        user_profile = UserProfile.objects.get(user=request.user)
+        user_profile.add_currency(sale_price, description=f"Sold {quantity} x {inv_item.item.name}")
+
+        return JsonResponse({
+            "success": True,
+            "message": f"Sold {quantity} x {inv_item.item.name} for ${sale_price}."
+        })
+    except Exception as e:
+        return JsonResponse({"error": f"Unexpected error: {str(e)}"}, status=500)

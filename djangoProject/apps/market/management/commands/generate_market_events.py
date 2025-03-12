@@ -11,7 +11,7 @@ class Command(BaseCommand):
             '--count',
             type=int,
             # Change back to default 30 as needed
-            default=15,
+            default=10,
             help='Number of market events to generate (default is 30)'
         )
 
@@ -83,7 +83,7 @@ class Command(BaseCommand):
         for i in range(count):
             title, description = random.choice(events)
             # Choose a random impact factor between -0.35 and +0.35
-            impact = Decimal(random.uniform(-0.35, 0.35)).quantize(Decimal('0.01'))
+            impact = Decimal(random.uniform(-0.25, 0.35)).quantize(Decimal('0.01'))
             # Random duration between 1 and 5 minutes (for testing; adjust as needed)
             duration = random.randint(1, 5)
             event = MarketEvent.objects.create(

@@ -59,6 +59,7 @@ class Item(models.Model):
         (3, "Rare"),
         (4, "Epic"),
         (5, "Legendary"),
+        (6, "Mythic"),
     ]
 
     name = models.CharField(max_length=100, unique=True)

@@ -8,6 +8,7 @@ from django.utils.dateparse import parse_date
 
 from .models import Company, Investment, MarketEvent, Transaction
 from .forms import InvestmentForm, SellInvestmentForm
+from ..battlepass.utils import add_battle_pass_points
 from ..users.models import UserProfile
 from django.utils import timezone
 from apps.market.utils import record_portfolio_snapshot
@@ -163,6 +164,7 @@ def sell_investment(request, company_pk):
                 user_profile = UserProfile.objects.get(user=request.user)
                 user_profile.currency_balance += sale_value
                 user_profile.save()
+                add_battle_pass_points(user_profile, sale_value*investments.first().company.sustainability_rating // 100)
 
                 # Process the sale from the aggregated investments (FIFO: sell from the oldest first)
                 remaining_to_sell = shares_to_sell
@@ -355,6 +357,8 @@ def sell_investment_for_company(request, company_pk):
                 user_profile = UserProfile.objects.get(user=request.user)
                 user_profile.currency_balance += net_sale_value
                 user_profile.save()
+
+                add_battle_pass_points(user_profile, sale_value // 10)
 
                 # Process the sale (FIFO: sell from the oldest investment first)
                 remaining_to_sell = shares_to_sell

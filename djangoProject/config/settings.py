@@ -47,7 +47,9 @@ INSTALLED_APPS = [
     "apps.games",
     "apps.market",
     "apps.farm",
+    "apps.battlepass",
     "apps.crates",
+    "apps.crafting",
     "channels",
 ]
 

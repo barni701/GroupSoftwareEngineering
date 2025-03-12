@@ -1,0 +1,19 @@
+{% extends 'crates/base_crates.html' %}
+{% load static %}
+{% block title %}Crafting Recipes{% endblock %}
+{% block content %}
+<div class="crafting-container">
+  <h2>Available Recipes</h2>
+  <div class="recipe-grid">
+    {% for recipe in recipes %}
+      <div class="recipe-card">
+        <h3>{{ recipe.name }}</h3>
+        <p>Produces: {{ recipe.result_quantity }} x {{ recipe.result_item.name }}</p>
+        <a href="{% url 'recipe_detail' recipe.id %}" class="btn">View Details</a>
+      </div>
+    {% empty %}
+      <p>No recipes available.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

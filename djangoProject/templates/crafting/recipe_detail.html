@@ -1,0 +1,26 @@
+{% extends 'crates/base_crates.html' %}
+{% load static %}
+{% load crafting_extras %}
+{% block title %}Recipe Detail{% endblock %}
+{% block content %}
+<div class="crafting-container">
+  <h2>{{ recipe.name }}</h2>
+  <p><strong>Produces:</strong> {{ recipe.result_quantity }} x {{ recipe.result_item.name }}</p>
+  {% if recipe.description %}
+    <p>{{ recipe.description }}</p>
+  {% endif %}
+  <h3>Ingredients</h3>
+  <ul>
+    {% for ingredient in ingredients %}
+      <li>
+        {{ ingredient.quantity }} x {{ ingredient.ingredient.name }}
+        (You have: {{ inventory_info|get_item:ingredient.ingredient.id }})
+      </li>
+    {% endfor %}
+  </ul>
+  <button type="button" onclick="craftItem({{ recipe.id }})" class="btn">Craft</button>
+  <div id="crafting-message"></div>
+  <br>
+  <a href="{% url 'recipe_list' %}">Back to Recipes</a>
+</div>
+{% endblock %}
