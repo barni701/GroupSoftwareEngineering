@@ -39,13 +39,13 @@ class UserBattlePass(models.Model):
     has_premium = models.BooleanField(default=False)
 
     def progress_to_next_tier(self):
-        """Allow multiple level-ups and grant both free and premium rewards."""
+        """Allow multiple level-ups and retain excess XP."""
         from .views import grant_reward  # ✅ Import locally to avoid circular import
 
         required_points_per_tier = 100
 
         while self.progress_points >= required_points_per_tier:
-            self.progress_points -= required_points_per_tier
+            self.progress_points -= required_points_per_tier  # ✅ Only subtract enough for a level-up
             self.current_tier += 1
 
             free_reward = BattlePassTier.objects.filter(
@@ -67,6 +67,3 @@ class UserBattlePass(models.Model):
                 grant_reward(self.user, premium_reward)
 
         self.save()
-
-    def __str__(self):
-        return f"{self.user.username} - Tier {self.current_tier} ({'Premium' if self.has_premium else 'Free'})"

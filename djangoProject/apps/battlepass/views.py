@@ -6,6 +6,10 @@ from django.utils import timezone
 
 from .utils import initialize_user_battle_pass
 
+@login_required
+def battle_pass_leaderboard(request):
+    leaderboard = UserBattlePass.objects.order_by('-current_tier', '-progress_points')[:10]
+    return render(request, "battlepass/leaderboard.html", {"leaderboard": leaderboard})
 
 @login_required
 def buy_premium_pass(request):

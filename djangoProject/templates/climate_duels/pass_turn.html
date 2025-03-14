@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>⚠️ Out of GDP</h2>
+<p>You do not have enough GDP to take any actions this turn.</p>
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit" name="pass_turn" class="btn btn-secondary">Pass Turn</button>
+</form>
+
+{% endblock %}

@@ -1,0 +1,81 @@
+@import url("/static/css/variables.css");
+.dashboard-container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Floating XP Gain Effect */
+.xp-gain-animation {
+    position: absolute;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: gold;
+    opacity: 0;
+    transform: translateY(0);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+/* Widget Box */
+.widget {
+    background: #16213e;
+    color: #e3f2fd;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    margin: 20px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.widget:hover {
+    transform: scale(1.05);
+}
+
+/* Leaderboard */
+.leaderboard {
+    background: #1a1a2e;
+    padding: 20px;
+    color: white;
+    border-radius: 10px;
+}
+
+.leaderboard table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.leaderboard th, .leaderboard td {
+    padding: 10px;
+    border-bottom: 1px solid #00adb5;
+}
+
+.leaderboard tr:hover {
+    background: rgba(0, 173, 181, 0.1);
+}
+
+@keyframes rankGlow {
+    0% { background-color: rgba(0, 173, 181, 0.1); }
+    50% { background-color: rgba(0, 173, 181, 0.5); }
+    100% { background-color: rgba(0, 173, 181, 0.1); }
+}
+
+.rank-up {
+    animation: rankGlow 1s ease-in-out;
+}
+
+/* Rarity square styles */
+.rarity-square {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+    border: 1px solid #ccc;
+}
+
+.rarity-square.rarity-1 { background-color: var(--rarity-common) !important; }
+.rarity-square.rarity-2 { background-color: var(--rarity-uncommon) !important; }
+.rarity-square.rarity-3 { background-color: var(--rarity-rare) !important; }
+.rarity-square.rarity-4 { background-color: var(--rarity-epic) !important; }
+.rarity-square.rarity-5 { background-color: var(--rarity-legendary) !important; }

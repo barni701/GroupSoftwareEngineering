@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Available Seeds{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Available Seeds for Plot: {{ selected_plot.name }}</h2>
+  {% if seeds %}
+    <table class="table table-striped">
+      <thead>
+         <tr>
+           <th>Seed</th>
+           <th>Rarity</th>
+           <th>Quantity</th>
+           <th>Action</th>
+         </tr>
+      </thead>
+      <tbody>
+        {% for seed in seeds %}
+          <tr>
+             <td>
+                <span class="rarity-square rarity-{{ seed.item.rarity }}"></span>
+                {{ seed.item.name }}
+             </td>
+             <td>{{ seed.item.get_rarity_display }}</td>
+             <td>{{ seed.quantity }}</td>
+             <td>
+                <a href="{% url 'plant_seed' selected_plot.id seed.item.id %}" class="btn btn-primary btn-sm">Plant Seed</a>
+             </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>You have no seeds available. Try opening a Plant Seed Crate!</p>
+  {% endif %}
+</div>
+{% endblock %}

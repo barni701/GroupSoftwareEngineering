@@ -51,6 +51,12 @@
             text-align: center;
             transition: 0.3s;
         }
+        .tier.premium {
+            background: linear-gradient(135deg, gold, #ffdd57);
+            color: black;
+            font-weight: bold;
+            border: 3px solid gold;
+        }
         .claimed {
             background: #4caf50;
             color: white;
@@ -78,17 +84,38 @@
         {% endif %}
 
         <div class="progress-bar-container">
-            <div class="progress-bar" style="width: {{ user_battle_pass.progress_points }}%;">
-                {{ user_battle_pass.progress_points }}/100
+            <div class="progress-bar" style="width: {{ user_battle_pass.progress_points|floatformat:0 }}%;">
+                {{ user_battle_pass.progress_points }}/100 XP
             </div>
         </div>
+
+        <p>🔹 Previous Tier: {{ user_battle_pass.current_tier|add:"-1" }} | 🎯 Current Tier: {{ user_battle_pass.current_tier }} | 🚀 Next Tier: {{ user_battle_pass.current_tier|add:"1" }}</p>
+
+        <p>⏳ Time Left: <span id="season-timer"></span></p>
+        <script>
+            function updateTimer() {
+                const endDate = new Date("{{ user_battle_pass.battle_pass.end_date|date:'Y-m-d H:i:s' }}");
+                const now = new Date();
+                const diff = endDate - now;
+
+                if (diff > 0) {
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    document.getElementById("season-timer").innerText = `${days} days, ${hours} hours`;
+                } else {
+                    document.getElementById("season-timer").innerText = "Season Ended!";
+                }
+            }
+
+            updateTimer();
+            setInterval(updateTimer, 60000);
+        </script>
 
         <h3>Rewards</h3>
         <div class="tier-list">
             {% for tier in tiers %}
-                <div class="tier
-                    {% if user_battle_pass.current_tier > tier.tier_level %}claimed{% elif user_battle_pass.current_tier == tier.tier_level %}upcoming{% else %}locked{% endif %}"
-                    style="{% if tier.is_premium %}border: 3px solid gold;{% endif %}">
+            <div class="tier {% if tier.is_premium %}premium{% endif %} 
+                {% if user_battle_pass.current_tier > tier.tier_level %}claimed{% elif user_battle_pass.current_tier == tier.tier_level %}upcoming{% else %}locked{% endif %}">
 
                     <strong>Tier {{ tier.tier_level }}</strong><br>
                     {{ tier.reward_name }}

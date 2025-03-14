@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     "apps.battlepass",
     "apps.crates",
     "apps.crafting",
+    "apps.climate_duels",
+    "apps.garden",
     "channels",
 ]
 

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="friends-container">
+    <h2>👥 Friends List</h2>
+    <div class="friends-list">
+        {% for friend in friends %}
+            <div class="friend-card">
+                <div class="friend-info">
+                    <img src="https://via.placeholder.com/40" alt="Profile" class="friend-avatar">
+                    <span>{{ friend.user.username }}</span>
+                </div>
+                <a href="{% url 'users:remove_friend' friend.id %}" class="btn btn-danger btn-sm">Remove</a>
+            </div>
+        {% empty %}
+            <p class="empty-message">No friends yet. Add some friends below!</p>
+        {% endfor %}
+    </div>
+
+    <h2>📩 Friend Requests</h2>
+    <div class="friend-requests">
+        {% for request in friend_requests %}
+            <div class="friend-request-card">
+                <span>{{ request.from_user.user.username }}</span>
+                <a href="{% url 'users:accept_friend_request' request.id %}" class="btn btn-success btn-sm">Accept</a>
+            </div>
+        {% empty %}
+            <p class="empty-message">No friend requests.</p>
+        {% endfor %}
+    </div>
+
+    <h2>➕ Add a Friend</h2>
+    <form method="POST" action="{% url 'users:send_friend_request' %}" class="add-friend-form">
+        {% csrf_token %}
+        <div class="input-group">
+            <input type="text" name="username" placeholder="Enter username" required class="form-control">
+            <button type="submit" class="btn btn-primary">Send Request</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

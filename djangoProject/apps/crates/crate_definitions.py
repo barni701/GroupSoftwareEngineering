@@ -149,4 +149,68 @@ CRATE_TYPES = {
         ],
         rarity_boost=1.0
     ),
+    "plant_seed": CrateType(
+        name="Plant Seed Crate",
+        price="5.00",
+        currency="main",
+        loot_pool=[
+            ("Sunflower Seeds", "seed", 1, 40),
+            ("Pumpkin Seeds", "seed", 1, 30),
+            ("Bean Seeds", "seed", 1, 20),
+            ("Corn Seeds", "seed", 1, 10)
+        ],
+        rarity_boost=1.0
+    ),
+
+"rare_seed": CrateType(
+    name="Rare Herb Crate",
+    price="15.00",
+    currency="main",
+    loot_pool=[
+        ("Lavender Seeds", "seed", 2, 35),
+        ("Rosemary Seeds", "seed", 2, 30),
+        ("Mint Seeds", "seed", 2, 25),
+        ("Thyme Seeds", "seed", 2, 10)
+    ],
+    rarity_boost=1.2
+),
+
+"exotic_seed": CrateType(
+    name="Exotic Flora Crate",
+    price="30.00",
+    currency="main",
+    loot_pool=[
+        ("Orchid Bulbs", "seed", 3, 40),
+        ("Bamboo Shoots", "seed", 3, 30),
+        ("Lotus Pods", "seed", 3, 20),
+        ("Venus Flytrap Spores", "seed", 3, 10)
+    ],
+    rarity_boost=1.5
+),
+
+"mythical_seed": CrateType(
+    name="Mythical Garden Crate",
+    price="60.00",
+    currency="main",
+    loot_pool=[
+        ("Dragonfruit Seeds", "seed", 4, 30),
+        ("Mandrake Roots", "seed", 4, 30),
+        ("Moonflower Seeds", "seed", 4, 25),
+        ("Phoenix Fern Spores", "seed", 4, 15)
+    ],
+    rarity_boost=2.0
+),
+
+"legendary_seed": CrateType(
+    name="Legendary Botanical Crate",
+    price="100.00",
+    currency="main",
+    loot_pool=[
+        ("Golden Apple Sapling", "seed", 5, 25),
+        ("Crystal Berry Seeds", "seed", 5, 25),
+        ("Eternal Oak Acorn", "seed", 5, 30),
+        ("Shadow Vine Spores", "seed", 5, 20)
+    ],
+    rarity_boost=3.0
+)
 }

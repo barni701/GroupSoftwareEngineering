@@ -1,239 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Home</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/home.css' %}">
-    <style>
-        /* Base styling */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 0;
-            color: #333;
-            line-height: 1.6;
-        }
-        /* Modern Navigation Bar */
-        .navbar {
-            background-color: #2c3e50;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 30px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        .navbar-left, .navbar-center, .navbar-right {
-            display: flex;
-            align-items: center;
-        }
-        .navbar-left .logo {
-            width: 100px;
-            transition: transform 0.3s ease;
-        }
-        .navbar-left .logo:hover {
-            transform: scale(1.05);
-        }
-        .navbar-center ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-        }
-        .navbar-center li {
-            margin: 0 15px;
-        }
-        .navbar-center a {
-            color: #fff;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s ease;
-        }
-        .navbar-center a:hover {
-            color: #1abc9c;
-        }
-        .navbar-right {
-            font-size: 0.9em;
-        }
-        .navbar-right a, .navbar-right span {
-            color: #fff;
-            margin-left: 15px;
-            text-decoration: none;
-        }
-        .navbar-right a:hover {
-            text-decoration: underline;
-        }
-        /* Opening Section */
-        .opening {
-            text-align: center;
-            padding: 60px 20px;
-            background: linear-gradient(135deg, #1abc9c, #16a085);
-            color: #fff;
-            margin: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        .opening h1 {
-            margin-bottom: 20px;
-            font-size: 2.5em;
-            font-weight: 700;
-        }
-        .opening .text h2 {
-            margin-bottom: 15px;
-            font-size: 1.8em;
-            font-weight: 600;
-        }
-        .opening p {
-            font-size: 1.1em;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        /* Section styling */
-        .section-two {
-            padding: 40px 20px;
-            background: #fff;
-            margin: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-        .sustain-container {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-        .sustain {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-            align-items: center;
-            padding: 20px;
-            border-bottom: 1px solid #eee;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .sustain:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-        }
-        .sustain:last-child {
-            border-bottom: none;
-        }
-        .sustain-text {
-            flex: 1;
-            min-width: 300px;
-        }
-        .sustain-text h2 {
-            color: #2c3e50;
-            font-size: 1.8em;
-            margin-bottom: 10px;
-        }
-        .sustain-text p {
-            font-size: 1.1em;
-            color: #555;
-        }
-        .sustain img {
-            max-width: 300px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        .footer {
-            text-align: center;
-            padding: 30px;
-            background-color: #2c3e50;
-            color: #fff;
-            margin-top: 40px;
-            font-size: 0.9em;
-        }
-        .footer p {
-            margin: 0;
-        }
-    </style>
-</head>
-<body>
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="navbar-left">
-            <a href="{% url 'home' %}">
-                <img src="{% static 'images/home-image.png' %}" alt="Logo" class="logo">
-            </a>
-        </div>
-        <div class="navbar-center">
-            <ul>
-                <li><a href="{% url 'bingo' %}">Play</a></li>
-                <li><a href="{% url 'market:market_home' %}">Market</a></li>
-                <li><a href="{% url 'casino_home' %}">Casino</a></li>
-                <li><a href="{% url 'crate_inventory' %}">Crates</a></li>
-                <li><a href="{% url 'battlepass' %}">My Battlepass</a></li>
-            </ul>
-        </div>
-        <div class="navbar-right">
-            {% if user.is_authenticated %}
-                <span>Welcome, {{ user.username }}</span>
-                <span>Balance: ${{ user.userprofile.currency_balance }}</span>
-                <a href="{% url 'users:profile' %}">Profile</a>
-                <a href="{% url 'users:logout' %}">Log out</a>
-            {% else %}
-                <a href="{% url 'users:login' %}">Log in</a>
-                <a href="{% url 'users:signup' %}">Sign Up</a>
-            {% endif %}
-        </div>
-    </nav>
+{% extends "base.html" %}
+{% block content %}
 
+<!-- Main Container -->
+<div class="container mt-4">
     <!-- Opening Section -->
-    <div class="opening">
-        <h1>Sustainability Bingo</h1>
-        <div class="text">
+    <div class="text-center mb-5">
+        <h1 class="display-4">Sustainability Bingo</h1>
+        <div class="lead">
             <h2>How does it work?</h2>
             <p>
-                Sustainability bingo lets you help the environment while having fun! Complete various challenges to tick boxes off the bingo board and win leaf coins. These coins can be exchanged for seeds in the store to help you grow your very own virtual garden. Challenges range from online quizzes to exploring campus and scanning QR codes. Learn more about the environment and how we can help it while growing your in-game garden! Good luck!
+                Sustainability bingo lets you help the environment while having fun! Complete various challenges to tick boxes off the bingo board and win leaf coins. These coins can be exchanged for seeds in the store to help you grow your very own virtual garden. 
+            </p>
+            <p>
+                Challenges range from online quizzes to exploring campus and scanning QR codes. Learn more about the environment and how we can help it while growing your in-game garden! Good luck!
             </p>
         </div>
     </div>
 
-    <!-- Main Content Section -->
-    <section class="section-two">
-        <section class="sustain-container">
-            <div class="sustain">
-                <div class="sustain-text">
-                    <h2>Sustainable Food</h2>
-                    <p>
-                        Creating a future where all food comes from sustainable sources is key. Currently, the UK imports most of its fresh produce from overseas, contributing to high carbon emissions and unsustainable practices. Reducing food imports and waste can boost local production and sustainability.
+    <!-- Sustainability Sections -->
+    <section class="row g-4">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow">
+                <img src="https://www.stockvault.net/data/2011/03/20/119777/preview16.jpg" class="card-img-top" alt="Sustainable Food">
+                <div class="card-body">
+                    <h2 class="card-title">Sustainable Food</h2>
+                    <p class="card-text">
+                        Creating a future where all food comes from sustainable sources is key. Currently, the UK imports most of its fresh produce from overseas, contributing to high carbon emissions and unsustainable practices.
                     </p>
                 </div>
-                <img src="https://www.stockvault.net/data/2011/03/20/119777/preview16.jpg" alt="Sustainable Food">
             </div>
-            <div class="sustain">
-                <div class="sustain-text">
-                    <h2>Preventing Climate Change</h2>
-                    <p>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYa0EvIyVoa8A9hNU7Y8Ayr6LRPNvHRCeIAw&s" class="card-img-top" alt="Preventing Climate Change">
+                <div class="card-body">
+                    <h2 class="card-title">Preventing Climate Change</h2>
+                    <p class="card-text">
                         Reducing carbon emissions is critical to preventing climate change. Strategies include switching to sustainable energy sources and reducing energy consumption—from turning off unused lights to installing solar panels and wind turbines.
                     </p>
                 </div>
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYa0EvIyVoa8A9hNU7Y8Ayr6LRPNvHRCeIAw&s" alt="Preventing Climate Change">
             </div>
-            <div class="sustain">
-                <div class="sustain-text">
-                    <h2>Reducing Poverty</h2>
-                    <p>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow">
+                <img src="https://images.pexels.com/photos/6646870/pexels-photo-6646870.jpeg" class="card-img-top" alt="Reducing Poverty">
+                <div class="card-body">
+                    <h2 class="card-title">Reducing Poverty</h2>
+                    <p class="card-text">
                         Sustainability also means improving economic conditions. Reducing poverty can involve charitable donations, volunteering, and raising awareness, all of which help create a more sustainable society.
                     </p>
                 </div>
-                <img src="https://images.pexels.com/photos/6646870/pexels-photo-6646870.jpeg" alt="Reducing Poverty">
             </div>
-            <div class="sustain">
-                <div class="sustain-text">
-                    <h2>Sustainable Cities and Communities</h2>
-                    <p>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow">
+                <img src="https://images.stockcake.com/public/6/d/7/6d7ad099-e2dd-4b8c-8386-9ae802f7a34a/miniature-eco-city-stockcake.jpg" class="card-img-top" alt="Sustainable Cities">
+                <div class="card-body">
+                    <h2 class="card-title">Sustainable Cities and Communities</h2>
+                    <p class="card-text">
                         As urban populations grow, keeping cities livable is essential. This means ensuring green spaces, resilient infrastructure, and strong community support, along with sustainable food, water, and energy usage.
                     </p>
                 </div>
-                <img src="https://images.stockcake.com/public/6/d/7/6d7ad099-e2dd-4b8c-8386-9ae802f7a34a/miniature-eco-city-stockcake.jpg" alt="Sustainable Cities">
             </div>
-        </section>
+        </div>
     </section>
+</div>
 
-    <!-- Footer Section -->
-    <section class="footer">
-        <p>&copy; Copyright 2025. All rights reserved.</p>
-    </section>
-</body>
-</html>
+{% endblock %}

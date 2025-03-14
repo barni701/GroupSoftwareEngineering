@@ -31,4 +31,6 @@ urlpatterns = [
     path("crafting/", include("apps.crafting.urls")),
     path('farm/', include('apps.farm.urls')),
     path("battlepass/", include("apps.battlepass.urls")),
+    path("climate_duels/", include("apps.climate_duels.urls")),
+    path("garden/", include("apps.garden.urls")),
 ]

@@ -5,156 +5,177 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <style>
-        /* Global Styles */
+        /* Global Modern Styles */
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #e3f2fd;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            margin: 0;
         }
+        /* Profile Page Layout */
         .container {
-            background: white;
-            padding: 20px 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            width: 400px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 30px;
+            width: 90%;
+            max-width: 1200px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            margin: 40px auto;
+        }
+        /* Full-width section (Achievements) */
+        .full-width {
+            grid-column: span 2;
+        }
+        /* Profile, Currency, and Achievements sections */
+        .profile-section, .currency-section, .achievements-section {
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
             text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
         }
+        /* Profile Info */
         h2, h3 {
-            color: #333;
-        }
-        .profile-info {
-            margin-bottom: 20px;
-            text-align: left;
+            color: #00adb5;
+            font-weight: bold;
+            margin-bottom: 15px;
         }
         .profile-info p {
-            margin: 8px 0;
-            font-size: 16px;
+            font-size: 18px;
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
         }
-        form {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 20px;
-        }
-        input, button {
-            margin: 10px 0;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        button {
-            background-color: #007BFF;
-            color: white;
-            cursor: pointer;
+        /* Currency Section */
+        .currency-section input {
+            width: 90%;
+            padding: 12px;
+            border-radius: 8px;
             border: none;
-            font-weight: bold;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .link {
-            display: block;
+            font-size: 16px;
             margin-top: 10px;
-            color: #007BFF;
-            text-decoration: none;
-            font-size: 14px;
         }
-        .link:hover {
-            text-decoration: underline;
-        }
-        .currency-section {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-        .currency-section input[type="number"] {
-            width: calc(100% - 22px);
-        }
+        /* Improved Buttons */
         .currency-buttons {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
+            gap: 15px;
         }
         .currency-buttons button {
-            width: 48%;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 16px;
         }
-        .message {
-            color: red;
-            margin-top: 5px;
+        .currency-buttons button:hover {
+            transform: scale(1.05);
         }
-        /* Achievements Section */
-        .achievements {
-            margin-top: 30px;
-            text-align: left;
+        #add-currency {
+            background: #00adb5;
+            color: white;
         }
-        .achievements h3 {
-            border-bottom: 2px solid #007BFF;
-            padding-bottom: 5px;
+        #add-currency:hover {
+            background: #00949e;
+        }
+        #spend-currency {
+            background: #ff2e63;
+            color: white;
+        }
+        #spend-currency:hover {
+            background: #d81a4c;
+        }
+        /* Achievements */
+        .achievements-section {
+            padding: 30px;
         }
         .achievement-item {
-            margin: 10px 0;
-            padding: 10px;
-            background: #f9f9f9;
-            border-radius: 5px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            margin: 12px 0;
         }
         .achievement-item p {
-            margin: 5px 0;
             font-size: 14px;
-            color: #555;
+        }
+        /* Navigation Links */
+        .nav-links {
+            margin-top: 40px;
+            text-align: center;
+        }
+        .nav-links a {
+            display: inline-block;
+            margin: 10px 15px;
+            color: #00adb5;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+        .nav-links a:hover {
+            text-decoration: underline;
+            color: #00949e;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>User Profile</h2>
-
-        <div class="profile-info">
-            <p><strong>Username:</strong> {{ user.username }}</p>
-            <p><strong>Email:</strong> {{ user.email }}</p>
-            <p><strong>Currency Balance:</strong> <span id="balance">{{ currency_balance }}</span></p>
+        <!-- Profile Section -->
+        <div class="profile-section">
+            <h2>User Profile</h2>
+            <div class="profile-info">
+                <p><strong>👤 Username:</strong> {{ user.username }}</p>
+                <p><strong>📧 Email:</strong> {{ user.email }}</p>
+                <p><strong>🏆 Level:</strong> {{ user.userprofile.level }}</p>
+                <p><strong>🎯 XP:</strong> {{ user.userprofile.experience_points }}</p>
+            </div>
         </div>
 
-        <!-- Currency Management Section -->
+        <!-- Currency Management -->
         <div class="currency-section">
-            <h3>Manage Currency</h3>
+            <h3>💰 Manage Currency</h3>
+            <p><strong>Current Balance:</strong> <span id="balance">{{ currency_balance }}</span></p>
             <input type="number" id="currency-amount" placeholder="Enter amount" step="0.01" min="0">
             <div class="currency-buttons">
-                <button id="add-currency">Add Currency</button>
-                <button id="spend-currency">Spend Currency</button>
+                <button id="add-currency">➕ Add</button>
+                <button id="spend-currency">➖ Spend</button>
             </div>
             <p id="currency-message" class="message"></p>
         </div>
 
-        <!-- Update Profile Form -->
-        <form method="POST">
-            {% csrf_token %}
-            {{ profile_form.as_p }}
-            <button type="submit">Update Profile</button>
-        </form>
-
-        <!-- Achievements Section -->
-        <div class="achievements">
+        <!-- Achievements Section (Spanning full width) -->
+        <div class="achievements-section full-width">
             <h3>Your Achievements</h3>
             {% if user.achievements.all %}
                 {% for ua in user.achievements.all %}
                     <div class="achievement-item">
-                        <p><strong>{{ ua.achievement.name }}</strong></p>
+                        <p><strong>🏅 {{ ua.achievement.name }}</strong></p>
                         <p>{{ ua.achievement.description }}</p>
-                        <p><em>Awarded on: {{ ua.date_awarded|date:"M d, Y" }}</em></p>
+                        <p><em>🏆 Awarded on: {{ ua.date_awarded|date:"M d, Y" }}</em></p>
                     </div>
                 {% endfor %}
             {% else %}
-                <p>You haven't earned any achievements yet. Invest and be sustainable to unlock rewards!</p>
+                <p>No achievements yet. Invest and be sustainable to unlock rewards!</p>
             {% endif %}
         </div>
+    </div>
 
-        <a class="link" href="{% url 'home' %}">Return Home</a>
-        <a class="link" href="{% url 'users:delete_account' %}">Delete Profile</a>
-        <a class="link" href="{% url 'users:user_data' %}">View Your Data</a>
-        <a class="link" href="{% url 'users:transaction_history' %}">Transaction History</a>
+    <!-- Navigation Links -->
+    <div class="nav-links">
+        <a href="{% url 'home' %}">🏠 Return Home</a>
+        <a href="{% url 'users:delete_account' %}">🗑 Delete Profile</a>
+        <a href="{% url 'users:user_data' %}">📂 View Your Data</a>
+        <a href="{% url 'users:transaction_history' %}">📜 Transaction History</a>
     </div>
 
     <script>

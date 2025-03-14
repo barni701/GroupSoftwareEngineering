@@ -8,6 +8,7 @@ from .models import DiceGame
 from ..battlepass.utils import add_battle_pass_points
 from ..battlepass.views import battle_pass_view
 from ..users.models import UserProfile  # Assuming you store currency here
+from ..users.utils import add_xp
 
 @login_required
 def casino_home(request):
@@ -69,8 +70,12 @@ def play_dice(request):
         winnings = 0
         if game.win:
             winnings = final_bet * (6 if bet_type == "exact" else 2)
-            add_battle_pass_points(request.user, winnings//10)
             user_profile.add_currency(winnings, "Winnings from Dice Game")
+            xp_gain = max(10, min(bet_amount // 2, 100))  # XP scales with bet
+            add_xp(request.user, xp_gain)
+        else:
+            xp_gain = max(5, min(bet_amount // 4, 50))  # XP for losing
+            add_xp(request.user, xp_gain)
 
         # Game history and win percentage calculation
         all_games = DiceGame.objects.filter(user=request.user).order_by("-timestamp")
@@ -180,7 +185,11 @@ def play_roulette(request):
             else:
                 winnings = final_bet * 2  # Even money bet: 2x your wager; net profit is equal to your wager.
             user_profile.add_currency(winnings, "Winnings from Roulette")
-            add_battle_pass_points(user_profile.user, winnings//10)
+            xp_gain = max(10, min(bet_amount // 2, 100))  # XP scales with bet
+            add_xp(request.user, xp_gain)
+        else:
+            xp_gain = max(5, min(bet_amount // 4, 50))  # XP for losing
+            add_xp(request.user, xp_gain)
 
         # Refresh user profile to get updated balance
         user_profile.refresh_from_db()
@@ -229,4 +238,3 @@ def play_roulette(request):
         "green_fund_amount": updated_green_fund,
         "user_balance": updated_balance,
     })
-

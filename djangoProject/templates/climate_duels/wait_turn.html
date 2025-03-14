@@ -1,0 +1,16 @@
+
+
+{% extends "base.html" %}
+{% block content %}
+<h2>⏳ Waiting for Opponent</h2>
+<p>Your turn has been played. Please wait for your opponent to take their turn.</p>
+
+<!-- Auto-refresh every 5 seconds -->
+<script>
+    setTimeout(function(){
+        location.reload();
+    }, 5000);
+</script>
+
+<a href="{% url 'climate_duels:duel_list' %}" class="btn btn-primary mt-3">Back to Duels</a>
+{% endblock %}

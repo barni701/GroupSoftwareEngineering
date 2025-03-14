@@ -51,6 +51,7 @@ class Item(models.Model):
         ("special", "Special Item"),
         ("consumable", "Consumable"),
         ("currency", "Currency"),
+        ("Seed", "Seed"),
     ]
 
     RARITY_LEVELS = [

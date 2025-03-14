@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>🌍 Climate Duel - Turn {{ duel.current_turn }}</h2>
+
+{% if duel.current_turn|divisibleby:2 and request.user == duel.player_two or not duel.current_turn|divisibleby:2 and request.user == duel.player_one %}
+
+    <p>✅ It's your turn! Choose policies to play:</p>
+    <p><strong>Your GDP Budget:</strong> <span id="gdp-budget" data-budget="{{ player_budget }}">{{ player_budget|floatformat:2 }}</span></p>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- 💥 Power-Ups Section -->
+        {% if powerups %}
+            <h3>Use a Power-Up</h3>
+            <div class="powerup-selection">
+                {% for powerup in powerups %}
+                    <label class="powerup-card">
+                        <input type="radio" name="powerup_id" value="{{ powerup.id }}" class="powerup-radio">
+                        <div class="powerup-info">
+                            <h3>{{ powerup.name }}</h3>
+                            <p>Effect: <strong>{{ powerup.effect_description }}</strong></p>
+                        </div>
+                    </label>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No available Power-Ups.</p>
+        {% endif %}
+
+        <!-- 📌 Policy Selection -->
+        <h3>Select Policies</h3>
+        <div class="policy-selection">
+            {% for policy in policies %}
+                <label class="policy-card" data-cost="{{ policy.cost }}">
+                    <input type="checkbox" name="policy_ids" value="{{ policy.id }}" class="policy-checkbox" onchange="validateSelection()">
+                    <div class="policy-info">
+                        <h3>{{ policy.name }}</h3>
+                        <p>CO₂ Reduction: <strong>-{{ policy.co2_reduction }}</strong></p>
+                        <p>GDP Impact: <strong>{{ policy.gdp_impact }}</strong></p>
+                        <p class="policy-cost">Cost: <strong>{{ policy.cost }}</strong></p>
+                    </div>
+                </label>
+            {% endfor %}
+        </div>
+
+        <button type="submit" id="playTurnButton" class="btn btn-primary mt-3" disabled>Play Turn</button>
+    </form>
+
+{% else %}
+    <p>⏳ Waiting for your opponent to play...</p>
+{% endif %}
+
+<!-- Player Stats Section -->
+<div class="player-stats">
+    <p><strong>Your CO₂ Levels:</strong> 
+        {% if request.user == duel.player_one %}
+            {{ duel.player_one_co2 }}
+        {% else %}
+            {{ duel.player_two_co2 }}
+        {% endif %}
+    </p>
+    <p><strong>Your GDP:</strong> 
+        {% if request.user == duel.player_one %}
+            {{ duel.player_one_gdp }}
+        {% else %}
+            {{ duel.player_two_gdp }}
+        {% endif %}
+    </p>
+</div>
+
+<style>
+    .policy-selection, .powerup-selection {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .policy-card, .powerup-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 220px;
+        padding: 15px;
+        border: 2px solid #4CAF50;
+        border-radius: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .policy-card:hover, .powerup-card:hover {
+        transform: scale(1.05);
+    }
+
+    .policy-checkbox, .powerup-radio {
+        display: none;
+    }
+
+    .policy-checkbox:checked + .policy-info, .powerup-radio:checked + .powerup-info {
+        background-color: #4CAF50;
+        color: white;
+        border-radius: 10px;
+    }
+
+    .policy-info, .powerup-info {
+        padding: 10px;
+    }
+
+    .policy-cost {
+        font-weight: bold;
+        color: #d9534f;
+    }
+
+    .player-stats {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        text-align: center;
+    }
+</style>
+
+<script>
+    function validateSelection() {
+        const checkboxes = document.querySelectorAll('.policy-checkbox');
+        const checkedBoxes = document.querySelectorAll('.policy-checkbox:checked');
+        const playButton = document.getElementById('playTurnButton');
+        const gdpBudgetElement = document.getElementById('gdp-budget');
+
+        let totalCost = 0;
+        checkedBoxes.forEach(checkbox => {
+            const policyCard = checkbox.closest('.policy-card');
+            totalCost += parseFloat(policyCard.getAttribute('data-cost'));
+        });
+
+        let currentBudget = parseFloat(gdpBudgetElement.getAttribute('data-budget')) || 0;
+
+        // Enforce max selection of two policies
+        checkboxes.forEach(box => {
+            if (checkedBoxes.length >= 2 && !box.checked) {
+                box.disabled = true;
+            } else {
+                box.disabled = false;
+            }
+        });
+
+        // Enable button only if 1 or 2 policies are selected and within budget
+        playButton.disabled = !(checkedBoxes.length >= 1 && checkedBoxes.length <= 2 && totalCost <= currentBudget);
+    }
+
+    // Ensure all checkboxes trigger the validation function
+    document.querySelectorAll('.policy-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', validateSelection);
+    });
+
+</script>
+
+{% endblock %}

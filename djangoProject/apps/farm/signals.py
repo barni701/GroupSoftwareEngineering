@@ -5,6 +5,9 @@ from django.dispatch import receiver
 from django.contrib.auth.models import User
 from apps.farm.models import Building
 
+# Disabled for now
+
+'''
 @receiver(post_save, sender=User)
 def create_starting_buildings(sender, instance, created, **kwargs):
     if created:
@@ -21,4 +24,4 @@ def create_starting_buildings(sender, instance, created, **kwargs):
             name="Small Barn",
             level=1,
             description="A small barn to house your animals and store feed."
-        )
+        )'''

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Your Garden{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Your Garden Plots</h2>
+    <div class="mb-3">
+      <a href="{% url 'create_plot' %}" class="btn btn-primary">Create New Plot</a>
+    </div>
+    <div class="row">
+      {% if plots %}
+        {% for plot in plots %}
+          <div class="col-md-4">
+            <div class="card mb-3">
+              <div class="card-header">{{ plot.name }}</div>
+              <div class="card-body">
+                {% if plot.current_plant %}
+                  <p>
+                    Planted: 
+                    <span class="rarity-square rarity-{{ plot.current_plant.seed.rarity }}"></span>
+                    {{ plot.current_plant.seed.name }}
+                  </p>
+                  <p>Time until harvest: {{ plot.current_plant.time_until_harvest }}</p>
+                  {% if plot.current_plant.is_ready_to_harvest %}
+                    <a href="{% url 'harvest_crop' plot.current_plant.id %}" class="btn btn-success">Harvest</a>
+                  {% else %}
+                    <p>Growing...</p>
+                  {% endif %}
+                {% else %}
+                  <p>Empty plot.</p>
+                  <a href="{% url 'available_seeds' plot.id %}" class="btn btn-primary">Plant Seeds</a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="col-12">
+          <div class="alert alert-info">
+            You don't have any garden plots yet. Please create a new plot.
+          </div>
+        </div>
+      {% endif %}
+    </div>
+</div>
+{% endblock %}

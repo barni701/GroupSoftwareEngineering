@@ -1,12 +1,15 @@
 from decimal import Decimal, InvalidOperation
 from django.contrib.auth import login, logout
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib import messages
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 import logging
 from .forms import ProfileUpdateForm, TCConsentForm, CustomSignUpForm
 from .models import UserProfile
+from django.contrib.auth.decorators import login_required
+from apps.battlepass.models import UserBattlePass
+from apps.users.models import UserProfile, FriendRequest
 
 
 from django.contrib.auth.forms import UserCreationForm
@@ -75,6 +78,28 @@ def profile_view(request):
     })
 
 @login_required
+def dashboard(request):
+    """Dashboard displaying user stats, transactions, achievements, and leaderboards."""
+    user_profile = UserProfile.objects.select_related('user').get(user=request.user)
+    user_battle_pass = UserBattlePass.objects.filter(user=request.user).select_related('battle_pass').first()
+
+    # Fetch related transactions and achievements efficiently
+    transactions = user_profile.transactions.all().order_by('-created_at')[:5]
+    achievements = user_profile.achievements.all().order_by('-date_awarded')[:3]
+
+    # Fetch leaderboard (top 10 users by level, then XP)
+    leaderboard = UserProfile.objects.order_by('-level', '-experience_points')[:10]
+
+    context = {
+        'user_profile': user_profile,
+        'user_battle_pass': user_battle_pass,
+        'transactions': transactions,
+        'achievements': achievements,
+        'leaderboard': leaderboard,
+    }
+    return render(request, 'users/dashboard.html', context)
+
+@login_required
 def user_data_view(request):
     """GDPR-compliant view to show and export user data."""
     user = request.user
@@ -132,3 +157,54 @@ def transaction_history(request):
     user_profile = UserProfile.objects.get(user=request.user)
     transactions = user_profile.transactions.all().order_by("-created_at")
     return render(request, "users/transaction_history.html", {"transactions": transactions})
+
+@login_required
+def friends_list(request):
+    """Display the user's friends and incoming friend requests."""
+    user_profile = request.user.userprofile
+    friends = user_profile.friends.all()
+    friend_requests = FriendRequest.objects.filter(to_user=user_profile)
+
+    context = {
+        'friends': friends,
+        'friend_requests': friend_requests,
+    }
+    return render(request, "users/friends_list.html", context)
+
+@login_required
+def send_friend_request(request):
+    """Send a friend request to another user by username."""
+    if request.method == "POST":
+        username = request.POST.get("username")
+        to_user = UserProfile.objects.filter(user__username=username).first()
+
+        if to_user and to_user != request.user.userprofile:
+            if not FriendRequest.objects.filter(from_user=request.user.userprofile, to_user=to_user).exists():
+                FriendRequest.objects.create(from_user=request.user.userprofile, to_user=to_user)
+                messages.success(request, "Friend request sent!")
+        else:
+            messages.error(request, "User not found or invalid.")
+    
+    return redirect("users:friends_list")
+
+
+@login_required
+def accept_friend_request(request, request_id):
+    friend_request = FriendRequest.objects.get(id=request_id)
+    if friend_request.to_user == request.user.userprofile:
+        friend_request.accept()
+        messages.success(request, "Friend request accepted!")
+    return redirect("users:friends_list")
+
+@login_required
+def remove_friend(request, user_id):
+    """Remove a friend from the user's friend list."""
+    user_profile = request.user.userprofile
+    friend_profile = get_object_or_404(UserProfile, id=user_id)
+
+    if user_profile.friends.filter(id=friend_profile.id).exists():
+        user_profile.friends.remove(friend_profile)
+        friend_profile.friends.remove(user_profile)  # Ensure it's removed both ways
+        messages.success(request, "Friend removed successfully!")
+
+    return redirect("users:friends_list")

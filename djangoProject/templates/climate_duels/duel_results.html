@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>🌍 Climate Duel Results</h2>
+
+{% if winner %}
+    <p>🏆 <strong>{{ winner.username }}</strong> has won the duel by reaching Net-Zero CO₂!</p>
+{% else %}
+    <p>⚖ The game ended in a tie.</p>
+{% endif %}
+
+<a href="{% url 'climate_duels:duel_list' %}" class="btn btn-primary">Back to Duels</a>
+{% endblock %}

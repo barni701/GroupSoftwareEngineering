@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Garden Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Your Garden</h2>
+    {% if plots %}
+      <div class="row">
+        {% for plot in plots %}
+          <div class="col-md-4">
+            <div class="card mb-3">
+              <div class="card-header">
+                {{ plot.name }}
+              </div>
+              <div class="card-body">
+                {% if plot.current_plant %}
+                  <p>Planted: {{ plot.current_plant.seed.name }}</p>
+                  <p>Time until harvest: {{ plot.current_plant.time_until_harvest }}</p>
+                  {% if plot.current_plant.is_ready_to_harvest %}
+                    <a href="{% url 'harvest_crop' plot.current_plant.id %}" class="btn btn-success">Harvest</a>
+                  {% else %}
+                    <p>Growing...</p>
+                  {% endif %}
+                {% else %}
+                  <p>Empty plot.</p>
+                  <a href="{% url 'plant_seed' plot.id %}" class="btn btn-primary">Plant Seed</a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>You don't have any garden plots yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

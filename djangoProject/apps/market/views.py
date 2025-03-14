@@ -9,6 +9,7 @@ from django.utils.dateparse import parse_date
 from .models import Company, Investment, MarketEvent, Transaction
 from .forms import InvestmentForm, SellInvestmentForm
 from ..battlepass.utils import add_battle_pass_points
+from apps.users.utils import add_xp
 from ..users.models import UserProfile
 from django.utils import timezone
 from apps.market.utils import record_portfolio_snapshot
@@ -85,6 +86,9 @@ def invest_in_company(request, pk):
                 user_profile.save()
                 investment.save()
                 record_portfolio_snapshot(request.user)
+                # Grant XP based on investment amount
+                investment_xp = max(10, min(total_cost // 10, 100))  # Scales XP from 10 to 100 max
+                add_xp(request.user, investment_xp)
                 return redirect('market:company_detail', pk=company.pk)
             else:
                 form.add_error(None, "Insufficient funds to make this investment.")
@@ -358,7 +362,10 @@ def sell_investment_for_company(request, company_pk):
                 user_profile.currency_balance += net_sale_value
                 user_profile.save()
 
-                add_battle_pass_points(user_profile, sale_value // 10)
+                # Calculate XP based on profit and sustainability
+                sustainability_bonus = company.sustainability_rating // 5  # Extra XP for green stocks
+                profit_xp = max(5, min(sale_value // 20 + sustainability_bonus, 100))
+                add_xp(request.user, profit_xp)
 
                 # Process the sale (FIFO: sell from the oldest investment first)
                 remaining_to_sell = shares_to_sell

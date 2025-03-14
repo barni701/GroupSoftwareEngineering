@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>🌍 Climate Duel Event</h2>
+
+<p>A special event has occurred in the game! Make a decision:</p>
+
+<form method="POST">
+    {% csrf_token %}
+
+    {% for option in event_options %}
+        <label>
+            <input type="radio" name="event_choice" value="{{ option.id }}">
+            {{ option.description }}
+        </label><br>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-primary">Confirm Choice</button>
+</form>
+
+{% endblock %}
