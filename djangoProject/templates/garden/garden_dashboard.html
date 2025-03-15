@@ -1,27 +1,40 @@
 {% extends 'base.html' %}
-{% block title %}Your Garden{% endblock %}
+{% block title %}Garden Dashboard{% endblock %}
 {% block content %}
 <div class="container mt-4">
-    <h2>Your Garden Plots</h2>
+    <h2>Your Garden</h2>
+    <!-- Add Plot Button -->
     <div class="mb-3">
-      <a href="{% url 'create_plot' %}" class="btn btn-primary">Create New Plot</a>
+        <a href="{% url 'create_plot' %}" class="btn btn-primary">Add Plot</a>
     </div>
-    <div class="row">
-      {% if plots %}
+    {% if plots %}
+      <div class="row">
         {% for plot in plots %}
           <div class="col-md-4">
             <div class="card mb-3">
-              <div class="card-header">{{ plot.name }}</div>
+              <div class="card-header">
+                {{ plot.name }}
+              </div>
               <div class="card-body">
                 {% if plot.current_plant %}
                   <p>
                     Planted: 
                     <span class="rarity-square rarity-{{ plot.current_plant.seed.rarity }}"></span>
-                    {{ plot.current_plant.seed.name }}
+                    {{ plot.current_plant.seed.name }} ({{ plot.current_plant.seed.get_rarity_display }})
                   </p>
                   <p>Time until harvest: {{ plot.current_plant.time_until_harvest }}</p>
+                  <div class="progress">
+                    <div class="progress-bar" role="progressbar"
+                         data-planted-at="{{ plot.current_plant.planted_at|date:'c' }}"
+                         data-growth-duration="{{ plot.current_plant.growth_duration.total_seconds }}"
+                         style="width: {{ plot.current_plant.progress_percentage }}%;"
+                         aria-valuenow="{{ plot.current_plant.progress_percentage }}"
+                         aria-valuemin="0" aria-valuemax="100">
+                      {{ plot.current_plant.progress_percentage }}%
+                    </div>
+                  </div>
                   {% if plot.current_plant.is_ready_to_harvest %}
-                    <a href="{% url 'harvest_crop' plot.current_plant.id %}" class="btn btn-success">Harvest</a>
+                    <a href="{% url 'harvest_crop' plot.current_plant.id %}" class="btn btn-success mt-2">Harvest</a>
                   {% else %}
                     <p>Growing...</p>
                   {% endif %}
@@ -33,13 +46,11 @@
             </div>
           </div>
         {% endfor %}
-      {% else %}
-        <div class="col-12">
-          <div class="alert alert-info">
-            You don't have any garden plots yet. Please create a new plot.
-          </div>
-        </div>
-      {% endif %}
-    </div>
+      </div>
+    {% else %}
+      <div class="alert alert-info">
+          You don't have any garden plots yet.
+      </div>
+    {% endif %}
 </div>
 {% endblock %}

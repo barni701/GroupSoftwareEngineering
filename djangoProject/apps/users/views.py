@@ -90,14 +90,31 @@ def dashboard(request):
     # Fetch leaderboard (top 10 users by level, then XP)
     leaderboard = UserProfile.objects.order_by('-level', '-experience_points')[:10]
 
+    required_xp = user_profile.get_required_xp(user_profile.level)  # XP needed for the next level
+    current_progress = user_profile.experience_points
+
     context = {
         'user_profile': user_profile,
         'user_battle_pass': user_battle_pass,
         'transactions': transactions,
         'achievements': achievements,
         'leaderboard': leaderboard,
+        "required_xp": required_xp,
+        "current_progress": current_progress,
     }
     return render(request, 'users/dashboard.html', context)
+
+@login_required
+def xp_status(request):
+    user_profile = request.user.userprofile
+    required_xp = user_profile.get_required_xp(user_profile.level)
+    current_progress = user_profile.experience_points
+    data = {
+        "level": user_profile.level,
+        "current_progress": current_progress,
+        "required_xp": required_xp,
+    }
+    return JsonResponse(data)
 
 @login_required
 def user_data_view(request):

@@ -4,15 +4,13 @@
     <h1 class="dashboard-title">📊 User Dashboard</h1>
 
     <div class="dashboard-widgets">
-        <!-- XP Progress -->
+        <!-- Inside your XP widget in dashboard.html -->
         <div class="widget xp-widget">
             <div class="xp-gain-animation" id="xp-gain">+0 XP</div>
             <h3>⭐ Experience Progress</h3>
-            <p>Level: <strong>{{ user_profile.level }}</strong></p>
-            {% with next_level_xp=user_profile.get_required_xp previous_xp=user_profile.get_required_xp|add:'-100' %}
-                <progress value="{{ user_profile.experience_points|default:0|add:'-previous_xp' }}" max="{{ next_level_xp }}"></progress>
-                <p>{{ user_profile.experience_points|default:0|add:'-previous_xp' }} / {{ next_level_xp }} XP</p>
-            {% endwith %}
+            <p>Level: <strong id="xp-level">{{ user_profile.level }}</strong></p>
+            <progress id="xp-progress" value="{{ current_progress }}" max="{{ required_xp }}"></progress>
+            <p id="xp-text">{{ current_progress }} / {{ required_xp }} XP</p>
         </div>
 
         <!-- Battle Pass Progress -->

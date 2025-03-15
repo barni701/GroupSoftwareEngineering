@@ -1,7 +1,7 @@
 from decimal import Decimal
-from .models import GreenFund, GreenFundContribution, RouletteGame
+from .models import BlackjackGame, GreenFund, GreenFundContribution, RouletteGame
 
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import DiceGame
@@ -238,3 +238,74 @@ def play_roulette(request):
         "green_fund_amount": updated_green_fund,
         "user_balance": updated_balance,
     })
+
+@login_required
+def play_blackjack(request, game_id=None):
+    # Load an existing game if provided, else None.
+    if game_id:
+        game = get_object_or_404(BlackjackGame, id=game_id, user=request.user)
+    else:
+        game = None
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+        # If no game exists, create a new game.
+        if not game:
+            bet_amount = Decimal(request.POST.get("bet_amount", "0"))
+            if bet_amount <= 0:
+                messages.error(request, "Invalid bet amount.")
+                return redirect("casino_home")
+            user_profile = request.user.userprofile
+            if not user_profile.deduct_currency(bet_amount, "Bet on Blackjack"):
+                messages.error(request, "Insufficient funds.")
+                return redirect("casino_home")
+            game = BlackjackGame.objects.create(user=request.user, bet_amount=bet_amount)
+            game.initialize_game()
+
+        # Process player action.
+        if action == "hit":
+            game.hit()
+            if game.player_value() > 21:
+                game.determine_result()
+                messages.info(request, "Bust! You lost.")
+        elif action == "stand":
+            game.dealer_play()
+            game.determine_result()
+            messages.info(request, f"Game over. You {game.result}.")
+        elif action == "double":
+            # Allow doubling only if exactly 2 cards in player's hand.
+            if len(game.player_hand) != 2:
+                messages.error(request, "You can only double down on your first move (with exactly 2 cards).")
+                return redirect("play_blackjack", game_id=game.id)
+            extra_bet = game.bet_amount
+            user_profile = request.user.userprofile
+            if not user_profile.deduct_currency(extra_bet, "Double down on Blackjack"):
+                messages.error(request, "Insufficient funds to double down.")
+                return redirect("play_blackjack", game_id=game.id)
+            game.bet_amount += extra_bet
+            game.save()
+            game.hit()
+            game.dealer_play()
+            game.determine_result()
+            messages.info(request, f"Double down complete. You {game.result}.")
+
+        # Award XP (using your centralized XP function)
+        xp_gain = game.bet_amount * Decimal("10")  # Example: 10 XP per bet unit.
+        add_xp(request.user, xp_gain)
+
+        # Award currency based on game result:
+        user_profile = request.user.userprofile
+        if game.result == "win":
+            # For a win, pay out 2x the bet (refund plus winnings).
+            winnings = game.bet_amount * Decimal("2")
+            user_profile.add_currency(winnings, description="Blackjack win payout")
+            messages.success(request, f"You win! You earned ${winnings}.")
+        elif game.result == "push":
+            # Refund the bet if it's a push.
+            user_profile.add_currency(game.bet_amount, description="Blackjack push refund")
+            messages.info(request, "Push! Your bet has been refunded.")
+        # For a loss, no currency is added.
+        
+        return redirect("play_blackjack", game_id=game.id)
+
+    return render(request, "casino/blackjack.html", {"game": game})

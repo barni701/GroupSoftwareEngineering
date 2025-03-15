@@ -31,6 +31,7 @@ class UserProfile(models.Model):
     # New currency (farm-generated)
     farm_currency = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal('0.00'))
 
+    total_experience = models.IntegerField(default=0)
     experience_points = models.IntegerField(default=0)
     level = models.IntegerField(default=1)
 
@@ -116,21 +117,41 @@ class UserProfile(models.Model):
                 return True
             return False
 
-    def get_required_xp(self, level=None):
-        """Returns the XP required to reach a given level (defaults to the user's current level)."""
-        if level is None:
-            level = self.level  # Ensure it uses the current level if no level is provided
+    def get_required_xp(self, level):
+        # For level 1, the requirement is 100 XP; for higher levels, an exponential formula.
         return int(100 * (1.5 ** (level - 1)))
     
     def add_experience(self, amount):
-        """Adds XP and handles leveling up dynamically."""
-        self.experience_points += amount
+        if amount < 0:
+            return  # Optionally handle negative values
+        self.total_experience += amount
         
-        while self.experience_points >= self.get_required_xp():
-            self.experience_points -= self.get_required_xp()
-            self.level += 1
-
+        level = 1
+        xp_remaining = self.total_experience
+        while xp_remaining >= self.get_required_xp(level):
+            required = self.get_required_xp(level)
+            if xp_remaining < required:
+                break
+            xp_remaining -= required
+            level += 1
+        
+        self.level = level
+        self.experience_points = xp_remaining
         self.save()
+    
+    '''def add_experience(self, amount):
+        if amount < 0:
+            return  # Optionally handle negative values
+        self.experience_points += amount
+        # Level up as long as we have enough XP for the current level
+        while self.experience_points >= self.get_required_xp(self.level):
+            required = self.get_required_xp(self.level)
+            self.experience_points -= required
+            self.level += 1
+        # Safety: ensure XP is not negative
+        if self.experience_points < 0:
+            self.experience_points = 0
+        self.save()'''
 
     def check_achievements(self):
         """Check if the user qualifies for any achievements and reward them."""

@@ -1,8 +1,7 @@
-/* variables.css */
 :root {
-    --rarity-common: #8BC34A;    /* Vibrant green for Common */
-    --rarity-uncommon: #03A9F4;  /* Vivid blue for Uncommon */
-    --rarity-rare: #FFEB3B;      /* Bright yellow for Rare */
-    --rarity-epic: #E91E63;      /* Bold pink for Epic */
-    --rarity-legendary: #FF9800; /* Striking orange for Legendary */
-  }
+  --rarity-common: #81C784;    /* Vivid green for Common */
+  --rarity-uncommon: #4FC3F7;  /* Vivid blue for Uncommon */
+  --rarity-rare: #FFF176;      /* Vivid yellow for Rare */
+  --rarity-epic: #F06292;      /* Vivid pink for Epic */
+  --rarity-legendary: #FFB74D; /* Vivid orange for Legendary */
+}

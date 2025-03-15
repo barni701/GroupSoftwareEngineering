@@ -22,4 +22,5 @@ urlpatterns = [
     path('friends/add/', views.send_friend_request, name="send_friend_request"),
     path('friends/accept/<int:request_id>/', views.accept_friend_request, name="accept_friend_request"),
     path('friends/remove/<int:user_id>/', views.remove_friend, name="remove_friend"),
+    path('xp_status/', views.xp_status, name="xp_status"),
 ]

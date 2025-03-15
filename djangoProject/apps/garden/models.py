@@ -37,4 +37,15 @@ class GardenPlant(models.Model):
     def __str__(self):
         return f"{self.seed.name} planted by {self.user.username}"
 
-# Optionally, you can add a HarvestHistory model later if you want to track each harvest.
+@property
+def progress_percentage(self):
+    """
+    Calculate the growth progress percentage:
+    ((total growth time - remaining time) / total growth time) * 100
+    """
+    total = self.growth_duration.total_seconds()
+    remaining = self.time_until_harvest().total_seconds() if self.time_until_harvest() else 0
+    if total <= 0:
+        return 100
+    progress = ((total - remaining) / total) * 100
+    return int(progress)

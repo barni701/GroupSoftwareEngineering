@@ -1,4 +1,4 @@
-@import url("{% static 'css/variables.css' %}");
+@import url("/static/css/variables.css");
 /* Global Styles */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -270,12 +270,12 @@ button:hover, .btn:hover {
   background-color: #f2f2f2;
 }
 
-/* Inventory Card Rarity Colors */
-.inventory-card.rarity-1 { background-color: #8BC34A !important; } /* Common - light green */
-.inventory-card.rarity-2 { background-color: #03A9F4 !important; } /* Uncommon - light blue */
-.inventory-card.rarity-3 { background-color: #FFEB3B !important; } /* Rare - light yellow */
-.inventory-card.rarity-4 { background-color: #E91E63 !important; } /* Epic - light red/pink */
-.inventory-card.rarity-5 { background-color: #FF9800 !important; } /* Legendary - light cyan */
+/* Inventory Card Rarity Colors using CSS variables */
+.inventory-card.rarity-1 { background-color: var(--rarity-common) !important; }
+.inventory-card.rarity-2 { background-color: var(--rarity-uncommon) !important; }
+.inventory-card.rarity-3 { background-color: var(--rarity-rare) !important; }
+.inventory-card.rarity-4 { background-color: var(--rarity-epic) !important; }
+.inventory-card.rarity-5 { background-color: var(--rarity-legendary) !important; }
 
 
 

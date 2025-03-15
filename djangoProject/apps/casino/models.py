@@ -5,9 +5,6 @@ from django.contrib.auth.models import User
 import random
 
 from decimal import Decimal
-from django.db import models
-from django.contrib.auth.models import User
-import random
 
 class DiceGame(models.Model):
     BET_TYPES = [
@@ -120,4 +117,92 @@ class RouletteGame(models.Model):
                     self.win = 1 <= int(self.result) <= 18
                 elif self.prediction.lower() == "high":
                     self.win = 19 <= int(self.result) <= 36
+        self.save()
+
+
+class BlackjackGame(models.Model):
+    RESULT_CHOICES = [
+        ('in_progress', 'In Progress'),
+        ('win', 'Win'),
+        ('lose', 'Lose'),
+        ('push', 'Push'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    bet_amount = models.DecimalField(max_digits=12, decimal_places=2)
+    # We'll store the deck and hands as JSON lists of card strings.
+    deck = models.JSONField(default=list)
+    player_hand = models.JSONField(default=list)
+    dealer_hand = models.JSONField(default=list)
+    result = models.CharField(max_length=20, choices=RESULT_CHOICES, default='in_progress')
+    timestamp = models.DateTimeField(auto_now_add=True)
+    
+    def create_deck(self):
+        suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
+        ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+        deck = [f"{rank} of {suit}" for suit in suits for rank in ranks]
+        random.shuffle(deck)
+        return deck
+
+    def initialize_game(self):
+        """Initializes a new game: sets up a deck and deals two cards each to player and dealer."""
+        self.deck = self.create_deck()
+        self.player_hand = [self.deck.pop(), self.deck.pop()]
+        self.dealer_hand = [self.deck.pop(), self.deck.pop()]
+        self.result = 'in_progress'
+        self.save()
+
+    def card_value(self, card):
+        """Returns the numeric value of a card string (e.g., 'K of Hearts' returns 10, 'A of Clubs' returns 11)."""
+        rank = card.split()[0]
+        if rank in ['J', 'Q', 'K']:
+            return 10
+        if rank == 'A':
+            return 11  # Adjust for Ace later if needed
+        return int(rank)
+    
+    def hand_value(self, hand):
+        """Calculates the total value of a hand, adjusting for Aces."""
+        total = 0
+        aces = 0
+        for card in hand:
+            val = self.card_value(card)
+            total += val
+            if card.split()[0] == 'A':
+                aces += 1
+        while total > 21 and aces:
+            total -= 10
+            aces -= 1
+        return total
+    
+    def player_value(self):
+        return self.hand_value(self.player_hand)
+    
+    def dealer_value(self):
+        return self.hand_value(self.dealer_hand)
+    
+    def hit(self):
+        """Deals one card to the player and checks for bust."""
+        if self.deck:
+            self.player_hand.append(self.deck.pop())
+            self.save()
+    
+    def dealer_play(self):
+        """Dealer hits until the hand value is at least 17."""
+        while self.dealer_value() < 17 and self.deck:
+            self.dealer_hand.append(self.deck.pop())
+        self.save()
+    
+    def determine_result(self):
+        """Determines and sets the result based on final hand values."""
+        player_total = self.player_value()
+        dealer_total = self.dealer_value()
+        if player_total > 21:
+            self.result = 'lose'
+        elif dealer_total > 21 or player_total > dealer_total:
+            self.result = 'win'
+        elif player_total == dealer_total:
+            self.result = 'push'
+        else:
+            self.result = 'lose'
         self.save()
