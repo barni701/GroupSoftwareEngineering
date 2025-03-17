@@ -179,7 +179,9 @@ def play_roulette(request):
 
         # Calculate winnings using the final bet (the actual wager)
         winnings = 0
+        win = False
         if roulette_game.win:
+            win = True
             if bet_type == "number":
                 winnings = final_bet * 36  # You receive 36x your wager; net profit is 35x.
             else:
@@ -219,6 +221,7 @@ def play_roulette(request):
             "bet_type": bet_type,
             "prediction": prediction,
             "bet_amount": bet_amount,
+            "win": win,
         })
 
     # For GET requests, render page with current data

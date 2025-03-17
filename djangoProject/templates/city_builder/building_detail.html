@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ template.name }} Details{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h2 class="mb-0">{{ template.name }}</h2>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <!-- Building Details Section -->
+        <div class="col-md-6 mb-3">
+          <h4>Building Details</h4>
+          <p class="mb-3">{{ template.description }}</p>
+          <table class="table table-sm table-borderless">
+            <tr>
+              <th>Base Cost:</th>
+              <td>${{ template.base_cost }}</td>
+            </tr>
+            <tr>
+              <th>Requirements:</th>
+              <td>
+                {% for key, value in template.resource_requirements.items %}
+                  {{ key }}: {{ value }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+              </td>
+            </tr>
+            <tr>
+              <th>Sustainability Bonus:</th>
+              <td>{{ template.sustainability_bonus }}</td>
+            </tr>
+            <tr>
+              <th>Upgrade Multiplier:</th>
+              <td>{{ template.upgrade_multiplier }}</td>
+            </tr>
+          </table>
+          <div class="mt-3">
+            <a href="{% url 'construct_building' template.id %}" class="btn btn-primary btn-sm">Construct Building</a>
+            <a href="{% url 'building_catalog' %}" class="btn btn-secondary btn-sm">Back to Catalog</a>
+          </div>
+        </div>
+        <!-- User Materials Section -->
+        <div class="col-md-6 mb-3">
+          <h4>Your Materials</h4>
+          {% if materials %}
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>Material</th>
+                  <th>Quantity</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for material in materials %}
+                  <tr>
+                    <td>{{ material.item.name }}</td>
+                    <td>{{ material.quantity }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <p class="text-muted">No materials available.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

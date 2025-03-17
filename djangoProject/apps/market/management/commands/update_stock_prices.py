@@ -11,8 +11,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         companies = Company.objects.all()
         for company in companies:
-            # 1. Base fluctuation: random change between -2% and +2%
-            base_change = Decimal(random.uniform(-0.02, 0.02)).quantize(
+            # 1. Base fluctuation: random change between -1.5% and +1.5%
+            base_change = Decimal(random.uniform(-0.015, 0.015)).quantize(
                 Decimal('0.0001'), rounding=ROUND_HALF_UP
             )
 

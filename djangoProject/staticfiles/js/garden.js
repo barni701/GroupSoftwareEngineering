@@ -17,6 +17,7 @@ window.submitPlantSeedForm = submitPlantSeedForm;
 
 function updateProgressBars() {
     const bars = document.querySelectorAll('.progress-bar');
+    console.log("Found", bars.length, "progress bars");
     bars.forEach(bar => {
         // Retrieve the planted time and growth duration (in seconds) from data attributes.
         const plantedAt = bar.getAttribute('data-planted-at');

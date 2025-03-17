@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load dict_extras %}
+{% block title %}Upgrade {{ building.template.name }}{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Upgrade {{ building.template.name }}</h2>
+    <p>Current Level: {{ building.upgrade_level }}</p>
+    <p>Upgrade Cost (Currency): ${{ upgrade_cost }}</p>
+    
+    <h3>Required Materials for Upgrade:</h3>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Material</th>
+          <th>Required Quantity</th>
+          <th>You Have</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for material, required_qty in upgrade_materials.items %}
+          <tr>
+            <td>{{ material }}</td>
+            <td>{{ required_qty }}</td>
+            <td>{{ inventory_materials|get_item:material|default:"0" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-warning">Upgrade</button>
+    </form>
+    <a href="{% url 'city_dashboard' %}" class="btn btn-secondary mt-2">Back to Dashboard</a>
+</div>
+{% endblock %}

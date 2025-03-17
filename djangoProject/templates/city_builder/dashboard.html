@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}City Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <!-- City Info Header -->
+  <div class="row mb-4 align-items-center">
+    <div class="col-md-8">
+      <h2>{{ city.name }}</h2>
+      <p>
+        <strong>Sustainability Score:</strong> ${{ city.sustainability_score }} &nbsp;&nbsp;
+        <strong>Funds:</strong> ${{ city.funds }}
+      </p>
+    </div>
+    <div class="col-md-4 text-md-right">
+      <a href="{% url 'building_catalog' %}" class="btn btn-primary">View Building Catalog</a>
+    </div>
+  </div>
+  
+  <!-- Materials/Blueprints Link -->
+  <div class="row mb-4">
+    <div class="col-12 text-center">
+      <a href="{% url 'material_dashboard' %}" class="btn btn-info btn-lg">View Materials &amp; Blueprints</a>
+    </div>
+  </div>
+
+  <!-- City Grid Section (5x5 grid) -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h4>City Grid</h4>
+      <table class="table table-bordered">
+        {% for row in grid %}
+          <tr>
+            {% for cell in row %}
+              <td style="width: 20%; height: 100px; vertical-align: middle; text-align: center;">
+                {% if cell %}
+                  <div class="building-card">
+                    <p class="mb-1"><strong>{{ cell.template.name }}</strong></p>
+                    <p class="mb-1"><small>Level: {{ cell.upgrade_level }}</small></p>
+                    <a href="{% url 'upgrade_building' cell.id %}" class="btn btn-warning btn-sm">Upgrade</a>
+                    {% if cell.template.produces_resource %}
+                      <a href="{% url 'collect_production' cell.id %}" class="btn btn-success btn-sm">
+                        Collect {{ cell.template.produces_resource|capfirst }}
+                      </a>
+                    {% endif %}
+                  </div>
+                {% else %}
+                  <div class="empty-cell">
+                    <p class="mb-0">Empty</p>
+                  </div>
+                {% endif %}
+              </td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

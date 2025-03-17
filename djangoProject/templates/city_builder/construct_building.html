@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Construct {{ template.name }}{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Construct {{ template.name }}</h2>
+  <p>Cost: ${{ template.base_cost }}</p>
+  <p>Select a square on the grid where you want to build:</p>
+
+  <!-- Grid selection -->
+  <div id="grid-container" class="grid-container">
+    {# Assuming a 5x5 grid #}
+    {% for y in "01234"|make_list %}
+      {% for x in "01234"|make_list %}
+        {% with coord=x|stringformat:"s"|add:","|add:y|stringformat:"s" %}
+          <div class="grid-cell {% if coord in occupied %}occupied{% endif %}"
+               data-x="{{ x }}"
+               data-y="{{ y }}"
+               data-coord="{{ coord }}">
+            {# No coordinate text is rendered here #}
+          </div>
+        {% endwith %}
+      {% endfor %}
+    {% endfor %}
+  </div>
+
+  <!-- Form for constructing the building -->
+  <form method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="x" id="selected-x" required>
+    <input type="hidden" name="y" id="selected-y" required>
+    <button type="submit" class="btn btn-primary">Construct</button>
+  </form>
+  <a href="{% url 'building_template_detail' template.id %}" class="btn btn-secondary mt-2">Back to Template Details</a>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      const cells = document.querySelectorAll(".grid-cell");
+      cells.forEach(cell => {
+          // Debug log for each cell.
+          console.log("Cell data:", cell.getAttribute("data-coord"), "Occupied:", cell.classList.contains("occupied"));
+          if (cell.classList.contains("occupied")) return;
+          cell.addEventListener("click", function() {
+              cells.forEach(c => {
+                  if (!c.classList.contains("occupied")) {
+                      c.classList.remove("selected");
+                  }
+              });
+              const x = cell.getAttribute("data-x");
+              const y = cell.getAttribute("data-y");
+              document.getElementById("selected-x").value = x;
+              document.getElementById("selected-y").value = y;
+              cell.classList.add("selected");
+          });
+      });
+  });
+</script>
+{% endblock %}

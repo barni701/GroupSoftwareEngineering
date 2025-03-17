@@ -19,32 +19,153 @@ class CrateType:
 CRATE_TYPES = {
     "materials": CrateType(
         name="Materials Crate",
-        price="10.00",
+        price="15.00",
         currency="main",
         loot_pool=[
-            ("Wood", "material", 1, 10),
-            ("Stone", "material", 1, 20),
-            ("Metal", "material", 2, 15),
-            ("Glass", "material", 2, 5),
-            ("Eco Tokens", "currency", 2, 50, (2, 4)),
+            # Common materials (appear in multiple crates)
+            ("Wood", "material", 1, 25),
+            ("Stone", "material", 1, 30),
+            ("Metal", "material", 2, 20),
+            ("Glass", "material", 2, 15),
+            ("Basic Electronics", "material", 2, 15),
+            ("Plastic", "material", 1, 35),
+            
+            # Specialty materials
+            ("Reinforced Glass", "material", 3, 10),
+            ("Copper Wiring", "material", 2, 20),
+            ("Eco-Concrete", "material", 2, 15)
         ],
-        rarity_boost=1.0
+        rarity_boost=1.1
     ),
-    "blueprint": CrateType(
-        name="Blueprint Crate",
-        price="15.00",
+
+    "advanced_materials": CrateType(
+        name="Advanced Materials Crate",
+        price="45.00",
+        currency="main",
+        loot_pool=[
+            # Shared basic materials
+            ("Metal", "material", 2, 25),
+            ("Copper Wiring", "material", 2, 20),
+            
+            # Advanced electronics
+            ("Advanced Electronics", "material", 4, 15),
+            ("Carbon Fiber", "material", 3, 20),
+            ("Nano-Silica", "material", 4, 10),
+            ("Graphene Sheets", "material", 5, 5),
+            
+            # Cross-crate materials
+            ("Reinforced Glass", "material", 3, 15)
+        ],
+        rarity_boost=1.4
+    ),
+
+    "eco_tech": CrateType(
+        name="Eco-Tech Crate",
+        price="35.00",
         currency="farm",
         loot_pool=[
-            ("Seed Planter", "blueprint", 1, 40),
-            ("Basic Irrigation", "blueprint", 1, 30),
-            ("Simple Greenhouse", "blueprint", 2, 20),
-            ("Compost Mixer", "blueprint", 1, 10),
-            ("Farm Expansion", "blueprint", 2, 25),
-            ("Basic Solar Panel", "blueprint", 2, 25),
-            ("Weather Station", "blueprint", 2, 20),
-            ("Fertilizer Distributor", "blueprint", 1, 15),
+            # Electronics at different tiers
+            ("Basic Electronics", "material", 2, 30),
+            ("Advanced Electronics", "material", 4, 10),
+            
+            # Shared construction materials
+            ("Eco-Concrete", "material", 2, 25),
+            ("Recycled Plastic", "material", 1, 40),
+            
+            # Specialty items
+            ("Solar Cells", "material", 3, 20),
+            ("Biofuel Catalyst", "material", 4, 15)
+        ],
+        rarity_boost=1.3
+    ),
+
+    "industrial": CrateType(
+        name="Industrial Crate",
+        price="50.00",
+        currency="main",
+        loot_pool=[
+            # Core materials
+            ("Steel Beams", "material", 3, 30),
+            ("Industrial Plastic", "material", 2, 40),
+            
+            # Electronics progression
+            ("Basic Electronics", "material", 2, 25),
+            ("Advanced Electronics", "material", 4, 15),
+            
+            # Shared advanced materials
+            ("Carbon Fiber", "material", 3, 20),
+            ("Nano-Silica", "material", 4, 10)
+        ],
+        rarity_boost=1.5
+    ),
+
+    "green_construction": CrateType(
+        name="Green Construction Crate",
+        price="40.00",
+        currency="farm",
+        loot_pool=[
+            # Base materials
+            ("Wood", "material", 1, 30),
+            ("Stone", "material", 1, 25),
+            
+            # Electronics for smart systems
+            ("Basic Electronics", "material", 2, 20),
+            
+            # Specialized materials
+            ("Bamboo Composite", "material", 3, 25),
+            ("Mycelium Insulation", "material", 4, 15),
+            ("Recycled Steel", "material", 2, 30)
         ],
         rarity_boost=1.2
+    ),
+
+    "high_tech": CrateType(
+        name="High-Tech Crate",
+        price="75.00",
+        currency="main",
+        loot_pool=[
+            # Electronics focus
+            ("Advanced Electronics", "material", 4, 40),
+            ("Quantum Chips", "material", 5, 15),
+            
+            # Shared materials
+            ("Graphene Sheets", "material", 5, 10),
+            ("Carbon Fiber", "material", 3, 25),
+            
+            # Specialty components
+            ("Neural Processors", "material", 5, 5),
+            ("Optical Sensors", "material", 4, 20)
+        ],
+        rarity_boost=1.8
+    ),
+
+    # Existing crates updated with material overlap
+    "blueprint": CrateType(
+        name="Blueprint Crate",
+        price="25.00",
+        currency="farm",
+        loot_pool=[
+            ("Smart Irrigation", "blueprint", 3, 25),
+            ("Solar Array", "blueprint", 2, 30),
+            ("Wind Turbine", "blueprint", 3, 20),
+            ("Advanced Electronics", "material", 4, 15),  # Added material
+            ("Eco-Concrete", "material", 2, 10)  # Shared material
+        ],
+        rarity_boost=1.4
+    ),
+
+    "epic": CrateType(
+        name="Epic Crate",
+        price="85.00",
+        currency="main",
+        loot_pool=[
+            ("Nanotech Solar", "special", 5, 15),
+            ("Plasma Converter", "special", 5, 10),
+            ("Advanced Electronics", "material", 4, 30),  # Increased presence
+            ("Graphene Sheets", "material", 5, 20),
+            ("Quantum Chips", "material", 5, 15)
+        ],
+        rarity_boost=2.2
     ),
     "rare_blueprint": CrateType(
         name="Rare Blueprint Crate",
@@ -66,7 +187,11 @@ CRATE_TYPES = {
         loot_pool=[
             ("Golden Seeds", "special", 4, 5),
             ("Eco-Tokens", "currency", 3, 25, (10, 25)),
-            ("Rare Metal", "special", 2, 70),
+            ("Rare Metal", "material", 2, 70),
+            ("Drill Components", "material", 3, 20),
+            ("Tools", "material", 2, 30),
+            ("Waterproofing", "material", 2, 25),
+            ("Drainage", "material", 2, 15),
         ],
         rarity_boost=1.5
     ),
@@ -80,17 +205,6 @@ CRATE_TYPES = {
             ("Enchanted Gem", "special", 5, 50),
         ],
         rarity_boost=2.0
-    ),
-    "epic": CrateType(
-        name="Epic Crate",
-        price="50.00",
-        currency="farm",
-        loot_pool=[
-            ("Organic Fiber", "special", 5, 10),
-            ("Solar Blossom", "special", 5, 15),
-            ("Eco Catalyst", "special", 4, 75),
-        ],
-        rarity_boost=2.5
     ),
     "legendary": CrateType(
         name="Legendary Crate",
@@ -133,7 +247,8 @@ CRATE_TYPES = {
             ("Titanium", "material", 3, 30),
             ("Carbon Fiber", "material", 4, 20),
             ("Composite Alloy", "material", 3, 25),
-            ("Nano Coating", "special", 4, 15)
+            ("Nano Coating", "material", 4, 15),
+            ("Advanced Electronics", "material", 3, 20),
         ],
         rarity_boost=1.1
     ),

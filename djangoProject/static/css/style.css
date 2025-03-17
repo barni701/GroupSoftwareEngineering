@@ -74,6 +74,37 @@
     border: 1px solid #ccc;
 }
 
+.city-grid {
+    margin-top: 1rem;
+}
+.building-card, .empty-cell {
+    padding: 0.5rem;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(5, 60px);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.grid-cell {
+    width: 60px;
+    height: 60px;
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.grid-cell.occupied {
+    background-color: #eee;
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+.grid-cell.selected {
+    background-color: #cce5ff;
+}
+
 .rarity-square.rarity-1 { background-color: var(--rarity-common) !important; }
 .rarity-square.rarity-2 { background-color: var(--rarity-uncommon) !important; }
 .rarity-square.rarity-3 { background-color: var(--rarity-rare) !important; }

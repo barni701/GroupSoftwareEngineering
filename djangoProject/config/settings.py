@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "apps.crafting",
     "apps.climate_duels",
     "apps.garden",
+    "apps.city_builder",
     "channels",
 ]
 
