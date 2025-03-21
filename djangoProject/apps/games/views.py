@@ -1,17 +1,5 @@
 from django.shortcuts import render
 
-# Game 2
-def recycle_sort(request):
-    return render(request, 'games/recycle_sort.html')
-
-# Game 3
-def eco_runner(request):
-    return render(request, 'games/eco_runner.html')
-
-# Game 4
-def eco_memory(request):
-    return render(request, 'games/eco_memory.html')
-
 # Game 1
 def quiz_view(request):
     # Set of questions for the quiz
@@ -44,3 +32,21 @@ def quiz_view(request):
 
     # renders the quiz questions
     return render(request, 'games/quiz.html', {'questions': questions})
+
+
+# Game 2
+def recycle_sort(request):
+    return render(request, 'games/recycle_sort.html')
+
+# Game 3
+def eco_runner(request):
+    return render(request, 'games/eco_runner.html')
+
+# Game 4
+def eco_memory(request):
+    return render(request, 'games/eco_memory.html')
+
+
+#game 5
+def gps_game(request):
+    return render(request, 'games/gps_game.html')
