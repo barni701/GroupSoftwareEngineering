@@ -8,6 +8,7 @@ class UserProfile(models.Model):
     tc_consent = models.BooleanField(default=False)
     consent_date = models.DateTimeField(auto_now_add=True)
     friends = models.ManyToManyField("self", symmetrical=False, blank=True)
+    bingo_board = models.JSONField(default=list)
 
     def add_friend(self, friend):
         """Add a friend (if not already friends)."""
