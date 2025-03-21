@@ -6,7 +6,7 @@ import random
 
 def bingo_view(request):
     board = make_board(rows=5, cols=5)
-    return render(request, 'bingo.html', {'board': board})
+    return render(request, 'bingo/bingo.html', {'board': board})
 
 # Returns generated board variable with random integer values
 # 4x4
