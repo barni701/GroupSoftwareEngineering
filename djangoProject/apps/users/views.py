@@ -195,12 +195,13 @@ def send_friend_request(request):
         username = request.POST.get("username")
         to_user = UserProfile.objects.filter(user__username=username).first()
 
-        if to_user and to_user != request.user.userprofile:
-            if not FriendRequest.objects.filter(from_user=request.user.userprofile, to_user=to_user).exists():
-                FriendRequest.objects.create(from_user=request.user.userprofile, to_user=to_user)
-                messages.success(request, "Friend request sent!")
+        if request.user.userprofile.has_sent_request(to_user):
+            messages.error(request, "You have already sent a friend request to this user.")
+        elif to_user.has_received_request(request.user.userprofile):
+            messages.error(request, "This user has already sent you a friend request.")
         else:
-            messages.error(request, "User not found or invalid.")
+            FriendRequest.objects.create(from_user=request.user.userprofile, to_user=to_user)
+            messages.success(request, "Friend request sent!")
     
     return redirect("users:friends_list")
 
@@ -211,6 +212,17 @@ def accept_friend_request(request, request_id):
     if friend_request.to_user == request.user.userprofile:
         friend_request.accept()
         messages.success(request, "Friend request accepted!")
+    return redirect("users:friends_list")
+
+@login_required
+def decline_friend_request(request, request_id):
+    """Decline a pending friend request."""
+    friend_request = get_object_or_404(FriendRequest, id=request_id)
+
+    if friend_request.to_user == request.user.userprofile:
+        friend_request.decline()
+        messages.info(request, "Friend request declined.")
+
     return redirect("users:friends_list")
 
 @login_required

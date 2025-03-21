@@ -16,7 +16,15 @@ class UserProfile(models.Model):
             friend.friends.add(self)
             return True
         return False
-    
+
+    def has_sent_request(self, to_user):
+        """Check if a friend request has already been sent."""
+        return FriendRequest.objects.filter(from_user=self, to_user=to_user).exists()
+
+    def has_received_request(self, from_user):
+        """Check if there is a pending friend request from this user."""
+        return FriendRequest.objects.filter(from_user=from_user, to_user=self).exists()
+
     def remove_friend(self, friend):
         """Removes a friend."""
         if friend in self.friends.all():
@@ -243,4 +251,8 @@ class FriendRequest(models.Model):
     def accept(self):
         """Accept a friend request."""
         self.to_user.add_friend(self.from_user)
+        self.delete()
+
+    def decline(self):
+        """Decline a friend request."""
         self.delete()

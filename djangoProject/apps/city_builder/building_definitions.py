@@ -5,7 +5,8 @@ class BuildingDefinition:
     A detailed container for building blueprint data with multi-level upgrades.
     """
     def __init__(self, name, description, base_cost, resource_requirements,
-                 sustainability_bonus, upgrade_multiplier, upgrades=None, upgrade_materials=None):
+                 sustainability_bonus, upgrade_multiplier, upgrades=None, upgrade_materials=None, produces_resource=None,
+                 production_rate=Decimal("0.00")):
         self.name = name
         self.description = description
         self.base_cost = Decimal(base_cost)
@@ -14,6 +15,10 @@ class BuildingDefinition:
         self.upgrade_multiplier = Decimal(upgrade_multiplier)
         self.upgrades = upgrades or {}         # Additional currency cost and bonus increase per level
         self.upgrade_materials = upgrade_materials or {}  # Additional material requirements per upgrade level
+
+        self.produces_resource = produces_resource  # e.g. "wood", "energy", etc.
+        self.production_rate = Decimal(production_rate)  # units produced per hour
+
 
 BUILDING_DEFINITIONS = {
     "solar_panel": BuildingDefinition(
@@ -134,7 +139,9 @@ BUILDING_DEFINITIONS = {
             3: {"metal": 110, "advanced electronics": 40, "eco-concrete": 70},
             4: {"metal": 165, "advanced electronics": 55, "eco-concrete": 105},
             5: {"metal": 250, "advanced electronics": 80, "eco-concrete": 150},
-        }
+        },
+        produces_resource="metal",
+        production_rate=Decimal("0.50"),
     ),
     "algae_reactor": BuildingDefinition(
         name="Algae Biofuel Reactor",

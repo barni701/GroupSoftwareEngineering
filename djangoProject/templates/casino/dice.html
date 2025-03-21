@@ -57,9 +57,7 @@
     <!-- Prediction Help Text -->
     <div id="prediction_info" class="form-text text-muted mb-3">
         <p id="prediction_help">
-            For Odd/Even: Enter 0 for Even or 1 for Odd. <br>
-            For High/Low: Enter 0 for Low (1-3) or 1 for High (4-6). <br>
-            For Exact: Enter a number between 1 and 6.
+            <!-- This content will be updated by JavaScript -->
         </p>
     </div>
 
@@ -110,34 +108,37 @@
 </div>
 
 <script>
-    // Update the prediction help text based on the selected bet type
     document.addEventListener("DOMContentLoaded", function() {
         const betTypeSelect = document.getElementById("bet_type");
+        const predictionInput = document.getElementById("prediction_input");
         const predictionHelp = document.getElementById("prediction_help");
-
-        // Function to update the help text based on bet type selection
+    
         function updatePredictionHelp() {
             const betType = betTypeSelect.value;
             let helpText = "";
 
-            switch (betType) {
-                case "odd_even":
-                    helpText = "Enter 0 for Even or 1 for Odd.";
-                    break;
-                case "high_low":
-                    helpText = "Enter 0 for Low (1-3) or 1 for High (4-6).";
-                    break;
-                default:
-                    helpText = "Enter a number between 1 and 6.";
+            if (betType === "odd_even") {
+                predictionInput.min = 0;
+                predictionInput.max = 1;
+                predictionInput.value = "";
+                helpText = "🎯 Odd/Even: Enter 0 for Even or 1 for Odd.";
+            } else if (betType === "high_low") {
+                predictionInput.min = 0;
+                predictionInput.max = 1;
+                predictionInput.value = "";
+                helpText = "⬆️ High/Low: Enter 0 for Low (1-3) or 1 for High (4-6).";
+            } else {
+                predictionInput.min = 1;
+                predictionInput.max = 6;
+                predictionInput.value = "";
+                helpText = "🎲 Exact Number: Enter a number between 1 and 6.";
             }
 
-            predictionHelp.innerHTML = helpText;
+            predictionHelp.innerText = helpText;
         }
-
-        // Trigger the update function when the page loads
+    
+        // Trigger on page load and bet type change
         updatePredictionHelp();
-
-        // Trigger the update function when the bet type changes
         betTypeSelect.addEventListener("change", updatePredictionHelp);
     });
 </script>

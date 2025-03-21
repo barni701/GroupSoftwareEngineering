@@ -62,7 +62,6 @@ class CityBuilding(models.Model):
     built_at = models.DateTimeField(auto_now_add=True)
     last_collected = models.DateTimeField(default=timezone.now)  # new field
 
-
     class Meta:
         unique_together = ('city', 'x', 'y')
         ordering = ['x', 'y']
@@ -113,6 +112,15 @@ class CityBuilding(models.Model):
             self.city.calculate_sustainability_score()
         print("Upgrade successful, new level:", self.upgrade_level)
         return True, cost, {}
+    
+    @property
+    def available_production(self):
+        """Calculates the amount produced since the last collection without resetting the timer."""
+        if not self.template.produces_resource or self.template.production_rate <= 0:
+            return Decimal("0.00")
+        now = timezone.now()
+        hours_elapsed = (now - self.last_collected).total_seconds() / 3600
+        return self.template.production_rate * Decimal(hours_elapsed)
     
     def collect_production(self):
         """

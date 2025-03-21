@@ -181,6 +181,7 @@ SESSION_COOKIE_SECURE = False  # Allow session cookies over HTTP
 CSRF_COOKIE_SECURE = False  # Allow CSRF tokens over HTTP
 SECURE_PROXY_SSL_HEADER = None  # Remove any forced SSL headers
 LOGIN_REDIRECT_URL = '/'  # Change to your desired URL
+LOGIN_URL = '/users/login'  
 
 LOGGING = {
     'version': 1,

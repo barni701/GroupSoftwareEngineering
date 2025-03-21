@@ -19,13 +19,14 @@ def city_dashboard(request):
     # Get all buildings for this city.
     buildings = city.buildings.all()
 
-    # Build a grid based on city.grid_width and city.grid_height.
+    # Build grid
     grid = []
     for y in range(city.grid_height):
         row = []
         for x in range(city.grid_width):
-            # Filter for a building at the given coordinate.
             building = buildings.filter(x=x, y=y).first()
+            if building:
+                building.refresh_from_db()  # Ensure fresh data
             row.append(building)
         grid.append(row)
 

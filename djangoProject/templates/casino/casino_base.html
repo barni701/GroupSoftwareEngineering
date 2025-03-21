@@ -77,6 +77,12 @@
                 opacity: 0;
             }
         }
+
+        .form-text,
+        label,
+        .text-muted {
+            color: #f8f9fa !important;
+        }
     </style>
     <script>
         function showWinAnimation() {
@@ -113,9 +119,11 @@
     <div class="casino-header">
         <h1>🎰 Welcome to the Casino! 🎲</h1>
         <div>
-            <a href="{% url 'casino_home' %}" class="btn btn-light">Home</a>
+            <a href="{% url 'casino_home' %}" class="btn btn-light">Casino Home</a>
             <a href="{% url 'play_dice' %}" class="btn btn-warning">Dice Game</a>
             <a href="{% url 'play_roulette' %}" class="btn btn-warning">Roulette</a>
+            <a href="{% url 'play_blackjack' %}" class="btn btn-warning">BlackJack</a>
+            <a href="{% url 'home' %}" class="btn btn-warning">Return Home</a>
         </div>
         <div class="currency-display">
             💰 Balance: {{ request.user.userprofile.currency_balance|default:"0.00" }} |
