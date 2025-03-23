@@ -26,6 +26,8 @@ def bingo_view(request):
         return redirect('http://127.0.0.1:8000/users/login?next=bingo')
 
 
+    # Check for and pass bingo to html
+    bingo = checkBingo(board)
     if(bingo):
             # Generate New Board
             board = newUser()
