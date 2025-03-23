@@ -15,7 +15,6 @@ def bingo_view(request):
     try:
         user_profile = UserProfile.objects.get(user=request.user)
         board = user_profile.bingo_board
-        print(board)
         if(board == []):
             # If the user doesnt have a board, generate a new one and save it to their profile
             board = newUser()
@@ -77,3 +76,31 @@ def checkBingo(board):
 def newUser():
     # TODO: Create popup with info about game
     return make_board(rows=5, cols=5)
+
+def markSquare(challengeID, user_profile):
+    """
+    Marks a square as done in the user's bingo board.
+    
+    :param challengeID: The challenge ID as integer
+    :param user_profile: The user's profile object containing the bingo board
+    """
+
+    # get board from user
+    board = user_profile.bingo_board
+    
+    # Combine id into full links (e.g "Challenge 5")
+    challengeText = "Challenge "+challengeID
+    
+    # Find square with given challenge.
+    for row in board:
+        for cell in row:
+            if cell["challenge"] == challengeText:
+                # Mark challenge as done
+                cell["status"] = True
+
+                # Save it
+                user_profile.bingo_board = board
+                user_profile.save()
+                return
+    
+    print(f"Challenge '{challengeID}' not found on the board.")  # Debugging message
