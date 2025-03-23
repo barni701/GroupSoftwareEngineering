@@ -1,16 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "base.html" %}
+
+{% block extra_head %}
     <title>Battle Pass</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            text-align: center;
-            padding: 20px;
-        }
         .battlepass-container {
             background: white;
             padding: 20px;
@@ -68,8 +60,9 @@
             background: #ccc;
         }
     </style>
-</head>
-<body>
+{% endblock extra_head %}
+
+{% block content %}
     <div class="battlepass-container">
         <h2>Battle Pass - Season {{ user_battle_pass.battle_pass.season_number }}</h2>
         <p>Current Tier: {{ user_battle_pass.current_tier }}</p>
@@ -92,38 +85,15 @@
         <p>🔹 Previous Tier: {{ user_battle_pass.current_tier|add:"-1" }} | 🎯 Current Tier: {{ user_battle_pass.current_tier }} | 🚀 Next Tier: {{ user_battle_pass.current_tier|add:"1" }}</p>
 
         <p>⏳ Time Left: <span id="season-timer"></span></p>
-        <script>
-            function updateTimer() {
-                const endDate = new Date("{{ user_battle_pass.battle_pass.end_date|date:'Y-m-d H:i:s' }}");
-                const now = new Date();
-                const diff = endDate - now;
-
-                if (diff > 0) {
-                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    document.getElementById("season-timer").innerText = `${days} days, ${hours} hours`;
-                } else {
-                    document.getElementById("season-timer").innerText = "Season Ended!";
-                }
-            }
-
-            updateTimer();
-            setInterval(updateTimer, 60000);
-        </script>
-
         <h3>Rewards</h3>
         <div class="tier-list">
             {% for tier in tiers %}
-            <div class="tier {% if tier.is_premium %}premium{% endif %} 
-                {% if user_battle_pass.current_tier > tier.tier_level %}claimed{% elif user_battle_pass.current_tier == tier.tier_level %}upcoming{% else %}locked{% endif %}">
-
+            <div class="tier {% if tier.is_premium %}premium{% endif %} {% if user_battle_pass.current_tier > tier.tier_level %}claimed{% elif user_battle_pass.current_tier == tier.tier_level %}upcoming{% else %}locked{% endif %}">
                     <strong>Tier {{ tier.tier_level }}</strong><br>
                     {{ tier.reward_name }}
-
                     {% if tier.is_premium and not user_battle_pass.has_premium %}
                         <span style="color: gold;">(Premium Only)</span>
                     {% endif %}
-
                     {% if user_battle_pass.current_tier > tier.tier_level %}
                         ✅ Claimed
                     {% elif user_battle_pass.current_tier == tier.tier_level %}
@@ -135,5 +105,25 @@
             {% endfor %}
         </div>
     </div>
-</body>
-</html>
+{% endblock content %}
+
+{% block extra_js %}
+    <script>
+        function updateTimer() {
+            const endDate = new Date("{{ user_battle_pass.battle_pass.end_date|date:'Y-m-d H:i:s' }}");
+            const now = new Date();
+            const diff = endDate - now;
+
+            if (diff > 0) {
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                document.getElementById("season-timer").innerText = `${days} days, ${hours} hours`;
+            } else {
+                document.getElementById("season-timer").innerText = "Season Ended!";
+            }
+        }
+
+        updateTimer();
+        setInterval(updateTimer, 60000);
+    </script>
+{% endblock extra_js %}

@@ -1,249 +1,229 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>User Profile</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/home.css' %}">
-    <style>
-        /* Global Modern Styles */
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            color: #e3f2fd;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-        }
-        /* Profile Page Layout */
-        .container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: auto auto;
-            gap: 30px;
-            width: 90%;
-            max-width: 1200px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-            margin: 40px auto;
-        }
-        /* Full-width section (Achievements) */
-        .full-width {
-            grid-column: span 2;
-        }
-        /* Profile, Currency, and Achievements sections */
-        .profile-section, .currency-section, .achievements-section {
-            padding: 25px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-        }
-        /* Profile Info */
-        h2, h3 {
-            color: #00adb5;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-        .profile-info p {
-            font-size: 18px;
-            margin: 15px 0;
-            padding: 12px;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-        }
-        /* Currency Section */
-        .currency-section input {
-            width: 90%;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-        /* Improved Buttons */
-        .currency-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-        .currency-buttons button {
-            padding: 12px 18px;
-            border-radius: 8px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            border: none;
-            font-size: 16px;
-        }
-        .currency-buttons button:hover {
-            transform: scale(1.05);
-        }
-        #add-currency {
-            background: #00adb5;
-            color: white;
-        }
-        #add-currency:hover {
-            background: #00949e;
-        }
-        #spend-currency {
-            background: #ff2e63;
-            color: white;
-        }
-        #spend-currency:hover {
-            background: #d81a4c;
-        }
-        /* Achievements */
-        .achievements-section {
-            padding: 30px;
-        }
-        .achievement-item {
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 8px;
-            margin: 12px 0;
-        }
-        .achievement-item p {
-            font-size: 14px;
-        }
-        /* Navigation Links */
-        .nav-links {
-            margin-top: 40px;
-            text-align: center;
-        }
-        .nav-links a {
-            display: inline-block;
-            margin: 10px 15px;
-            color: #00adb5;
-            text-decoration: none;
-            font-size: 16px;
-            transition: color 0.3s ease;
-        }
-        .nav-links a:hover {
-            text-decoration: underline;
-            color: #00949e;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- Profile Section -->
-        <div class="profile-section">
-            <h2>User Profile</h2>
-            <div class="profile-info">
-                <p><strong>👤 Username:</strong> {{ user.username }}</p>
-                <p><strong>📧 Email:</strong> {{ user.email }}</p>
-                <p><strong>🏆 Level:</strong> {{ user.userprofile.level }}</p>
-                <p><strong>🎯 XP:</strong> {{ user.userprofile.experience_points }}</p>
-            </div>
-        </div>
+{% extends "base.html" %}
 
-        <!-- Currency Management -->
-        <div class="currency-section">
-            <h3>💰 Manage Currency</h3>
-            <p><strong>Current Balance:</strong> <span id="balance">{{ currency_balance }}</span></p>
-            <input type="number" id="currency-amount" placeholder="Enter amount" step="0.01" min="0">
-            <div class="currency-buttons">
-                <button id="add-currency">➕ Add</button>
-                <button id="spend-currency">➖ Spend</button>
-            </div>
-            <p id="currency-message" class="message"></p>
-        </div>
+{% block extra_head %}
+<style>
+    /* Profile Page Specific Styles */
+    .profile-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+        gap: 30px;
+        width: 90%;
+        max-width: 1200px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        margin: 40px auto;
+    }
+    .full-width {
+        grid-column: span 2;
+    }
+    .profile-section, .currency-section, .achievements-section {
+        padding: 25px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+    h2, h3 {
+        color: #4CAF50;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+    .profile-info p {
+        font-size: 18px;
+        margin: 15px 0;
+        padding: 12px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.1);
+    }
+    .currency-section input {
+        width: 90%;
+        padding: 12px;
+        border-radius: 8px;
+        border: none;
+        font-size: 16px;
+        margin-top: 10px;
+    }
+    .currency-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+    }
+    .currency-buttons button {
+        padding: 12px 18px;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        border: none;
+        font-size: 16px;
+    }
+    .currency-buttons button:hover {
+        transform: scale(1.05);
+    }
+    #add-currency {
+        background: #4CAF50;
+        color: white;
+    }
+    #add-currency:hover {
+        background: #43A047;
+    }
+    #spend-currency {
+        background: #ff2e63;
+        color: white;
+    }
+    #spend-currency:hover {
+        background: #d81a4c;
+    }
+    .achievements-section {
+        padding: 30px;
+    }
+    .achievement-item {
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 8px;
+        margin: 12px 0;
+    }
+    .achievement-item p {
+        font-size: 14px;
+    }
+    .nav-links {
+        margin-top: 40px;
+        text-align: center;
+    }
+    .nav-links a {
+        display: inline-block;
+        margin: 10px 15px;
+        color: #4CAF50;
+        text-decoration: none;
+        font-size: 16px;
+        transition: color 0.3s ease;
+    }
+    .nav-links a:hover {
+        text-decoration: underline;
+        color: #388E3C;
+    }
+</style>
+{% endblock extra_head %}
 
-        <!-- Achievements Section (Spanning full width) -->
-        <div class="achievements-section full-width">
-            <h3>Your Achievements</h3>
-            {% if user.achievements.all %}
-                {% for ua in user.achievements.all %}
-                    <div class="achievement-item">
-                        <p><strong>🏅 {{ ua.achievement.name }}</strong></p>
-                        <p>{{ ua.achievement.description }}</p>
-                        <p><em>🏆 Awarded on: {{ ua.date_awarded|date:"M d, Y" }}</em></p>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <p>No achievements yet. Invest and be sustainable to unlock rewards!</p>
-            {% endif %}
+{% block content %}
+<div class="profile-container">
+    <!-- Profile Section -->
+    <div class="profile-section">
+        <h2>User Profile</h2>
+        <div class="profile-info">
+            <p><strong>👤 Username:</strong> {{ user.username }}</p>
+            <p><strong>📧 Email:</strong> {{ user.email }}</p>
+            <p><strong>🏆 Level:</strong> {{ user.userprofile.level }}</p>
+            <p><strong>🎯 XP:</strong> {{ user.userprofile.experience_points }}</p>
         </div>
     </div>
 
-    <!-- Navigation Links -->
-    <div class="nav-links">
-        <a href="{% url 'home' %}">🏠 Return Home</a>
-        <a href="{% url 'users:delete_account' %}">🗑 Delete Profile</a>
-        <a href="{% url 'users:user_data' %}">📂 View Your Data</a>
-        <a href="{% url 'users:transaction_history' %}">📜 Transaction History</a>
+    <!-- Currency Management -->
+    <div class="currency-section">
+        <h3>💰 Manage Currency</h3>
+        <p><strong>Current Balance:</strong> <span id="balance">{{ currency_balance }}</span></p>
+        <input type="number" id="currency-amount" placeholder="Enter amount" step="0.01" min="0">
+        <div class="currency-buttons">
+            <button id="add-currency">➕ Add</button>
+            <button id="spend-currency">➖ Spend</button>
+        </div>
+        <p id="currency-message" class="message"></p>
     </div>
 
-    <script>
-        // Function to retrieve CSRF token from cookies
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
+    <!-- Achievements Section (Spanning full width) -->
+    <div class="achievements-section full-width">
+        <h3>Your Achievements</h3>
+        {% if user.achievements.all %}
+            {% for ua in user.achievements.all %}
+                <div class="achievement-item">
+                    <p><strong>🏅 {{ ua.achievement.name }}</strong></p>
+                    <p>{{ ua.achievement.description }}</p>
+                    <p><em>🏆 Awarded on: {{ ua.date_awarded|date:"M d, Y" }}</em></p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No achievements yet. Invest and be sustainable to unlock rewards!</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="nav-links">
+    <a href="{% url 'home' %}">🏠 Return Home</a>
+    <a href="{% url 'users:delete_account' %}">🗑 Delete Profile</a>
+    <a href="{% url 'users:user_data' %}">📂 View Your Data</a>
+    <a href="{% url 'users:transaction_history' %}">📜 Transaction History</a>
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+<script>
+    // Function to retrieve CSRF token from cookies
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
                 }
             }
-            return cookieValue;
         }
-        const csrftoken = getCookie('csrftoken');
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
 
-        // Function to update currency via POST request
-        function updateCurrency(url) {
-            const amount = document.getElementById('currency-amount').value;
-            const messageEl = document.getElementById('currency-message');
-            messageEl.textContent = ''; // Clear previous messages
+    // Function to update currency via POST request
+    function updateCurrency(url) {
+        const amount = document.getElementById('currency-amount').value;
+        const messageEl = document.getElementById('currency-message');
+        messageEl.textContent = ''; // Clear previous messages
 
-            if (!amount || parseFloat(amount) <= 0) {
-                messageEl.textContent = 'Please enter a valid amount.';
-                return;
+        if (!amount || parseFloat(amount) <= 0) {
+            messageEl.textContent = 'Please enter a valid amount.';
+            return;
+        }
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': csrftoken
+            },
+            body: new URLSearchParams({ amount: amount })
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    throw new Error(`Server Error: ${response.status} ${text}`);
+                });
             }
-
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRFToken': csrftoken
-                },
-                body: new URLSearchParams({ amount: amount })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error(`Server Error: ${response.status} ${text}`);
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.new_balance) {
-                    document.getElementById('balance').textContent = data.new_balance;
-                } else if (data.error) {
-                    document.getElementById('currency-message').textContent = data.error;
-                }
-            })
-            .catch(error => {
-                console.error('Fetch error:', error);
-                document.getElementById('currency-message').textContent = 'An error occurred: ' + error.message;
-            });
-        }
-
-        // Event listeners for the currency buttons
-        document.getElementById('add-currency').addEventListener('click', function() {
-            updateCurrency('/users/add-currency/');
+            return response.json();
+        })
+        .then(data => {
+            if (data.new_balance) {
+                document.getElementById('balance').textContent = data.new_balance;
+            } else if (data.error) {
+                document.getElementById('currency-message').textContent = data.error;
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            document.getElementById('currency-message').textContent = 'An error occurred: ' + error.message;
         });
+    }
 
-        document.getElementById('spend-currency').addEventListener('click', function() {
-            updateCurrency('/users/spend-currency/');
-        });
-    </script>
-</body>
-</html>
+    // Event listeners for the currency buttons
+    document.getElementById('add-currency').addEventListener('click', function() {
+        updateCurrency('/users/add-currency/');
+    });
+
+    document.getElementById('spend-currency').addEventListener('click', function() {
+        updateCurrency('/users/spend-currency/');
+    });
+</script>
+{% endblock extra_js %}
