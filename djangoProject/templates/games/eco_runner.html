@@ -252,7 +252,16 @@
       finalScoreDisplay.innerText = score;
       sustainabilityFactsDisplay.style.display = 'block';
       sustainabilityFactsDisplay.innerText = "Did you know? " + sustainabilityFacts[Math.floor(Math.random() * sustainabilityFacts.length)];
+    
+      // If player got 100 score or more
+      print(score)
+      if (score >= 100) {
+        print("amogus");
+        markBingoSquare("3");
+      }    
     }
+
+
 
     // Start the game loop
     function gameLoop() {
@@ -282,6 +291,39 @@
     document.getElementById("back-to-bingo").addEventListener("click", function() {
       window.location.href = "/bingo/";
     });
+
+    function markBingoSquare(challengeName) {
+        fetch("/games/mark-square/", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": getCSRFToken(),  // Django requires CSRF protection
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ challenge: challengeName })  // Send challenge dynamically
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message);
+        })
+        .catch(error => console.error("Error marking square:", error));
+    }
+
+// Function to get CSRF token from cookies (Django security requirement)
+function getCSRFToken() {
+  let cookieValue = null;
+  let cookies = document.cookie.split(';');
+  for (let i = 0; i < cookies.length; i++) {
+    let cookie = cookies[i].trim();
+    if(cookie.startsWith("csrftoken=")) {
+      cookieValue = cookie.substring("csrftoken=".length, cookie.length);
+      break;
+    }
+  }
+
+  return cookieValue;
+}
+
+
   </script>
 </body>
 </html>

@@ -1,6 +1,9 @@
 from django.shortcuts import render
+from django.http import JsonResponse
 from ..bingo.views import markSquare
 from ..users.models import UserProfile
+from django.http import JsonResponse
+import json
 
 # Game 1
 def quiz_view(request):
@@ -55,3 +58,28 @@ def eco_memory(request):
 #game 5
 def gps_game(request):
     return render(request, 'games/gps_game.html')
+
+
+#@login_required
+def mark_square_ajax(request):
+    """
+    Marks a bingo square based on the challenge name provided in the request.
+    """
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)  # Get JSON data from the request
+            challenge_name = data.get("challenge", None)  # Extract challenge name
+
+            if not challenge_name:
+                return JsonResponse({"status": "error", "message": "Missing challenge name."}, status=400)
+
+            user_profile = UserProfile.objects.get(user=request.user)
+            markSquare(challenge_name, user_profile)  # Pass dynamic challenge name
+            return JsonResponse({"status": "success", "message": f"Square '{challenge_name}' marked as done!"})
+        
+        except json.JSONDecodeError:
+            return JsonResponse({"status": "error", "message": "Invalid JSON data."}, status=400)
+        except UserProfile.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "User profile not found."}, status=404)
+    
+    return JsonResponse({"status": "error", "message": "Invalid request method."}, status=405)
