@@ -237,3 +237,142 @@ def remove_friend(request, user_id):
         messages.success(request, "Friend removed successfully!")
 
     return redirect("users:friends_list")
+
+@login_required
+def my_stats_view(request):
+    """View to display the logged-in user's stats, including cross-app stats."""
+    from apps.city_builder.models import City
+    from apps.market.models import Investment, Transaction
+    from apps.crates.models import CrateOpeningHistory
+    from apps.garden.models import GardenPlant
+    from apps.crafting.models import CraftingLog
+    from apps.climate_duels.models import DuelTurn
+    from apps.casino.models import DiceGame, BlackjackGame, RouletteGame
+
+    profile = request.user.userprofile
+    stats = profile.get_stats()
+
+    # XP Progress
+    stats["xp_to_next_level"] = stats["total_experience"] - stats["experience_points"]
+
+    # City Builder Stats
+    try:
+        city = profile.user.city
+        stats["city_name"] = city.name
+        stats["sustainability_score"] = city.sustainability_score
+        stats["total_buildings"] = city.buildings.count()
+    except City.DoesNotExist:
+        stats["city_name"] = "No City"
+        stats["sustainability_score"] = 0
+        stats["total_buildings"] = 0
+
+    # Market Stats
+    investments = Investment.objects.filter(user=profile.user)
+    stats["total_investments"] = investments.count()
+    stats["total_shares"] = sum(inv.shares for inv in investments)
+    stats["total_transactions"] = Transaction.objects.filter(user=profile.user).count()
+
+    # Crates Stats
+    stats["crates_opened"] = CrateOpeningHistory.objects.filter(user=profile.user).count()
+
+    # Garden Stats
+    stats["total_garden_plants"] = GardenPlant.objects.filter(user=profile.user).count()
+    stats["harvested_plants"] = GardenPlant.objects.filter(user=profile.user, is_harvested=True).count()
+
+    # Crafting Stats
+    stats["total_items_crafted"] = CraftingLog.objects.filter(user=profile.user).count()
+    stats["rare_items_crafted"] = CraftingLog.objects.filter(user=profile.user, rare=True).count()
+
+    # Climate Duels Stats
+    stats["climate_duels_played"] = DuelTurn.objects.filter(player=profile.user).count()
+    stats["climate_duel_eco_score"] = sum(
+        max(0, turn.duel.player_one_co2 if turn.player == turn.duel.player_one else turn.duel.player_two_co2)
+        for turn in DuelTurn.objects.filter(player=profile.user)
+    )
+
+    # Casino Stats
+    dice_games = DiceGame.objects.filter(user=profile.user)
+    bj_games = BlackjackGame.objects.filter(user=profile.user)
+    roulette_games = RouletteGame.objects.filter(user=profile.user)
+    all_games = list(dice_games) + list(bj_games) + list(roulette_games)
+    stats["total_casino_games_played"] = len(all_games)
+    stats["total_casino_wagered"] = sum(g.bet_amount for g in all_games)
+    stats["total_casino_wins"] = sum(1 for g in all_games if getattr(g, 'win', False) or getattr(g, 'result', '') == "win")
+
+    return render(request, "users/my_stats.html", {
+        "profile": profile,
+        "stats": stats,
+    })
+
+
+@login_required
+def friend_stats_view(request, username):
+    """View to display a friend's stats if they are connected, with safe cross-app data."""
+    from django.contrib.auth.models import User
+    from apps.city_builder.models import City
+    from apps.market.models import Investment, Transaction
+    from apps.crates.models import CrateOpeningHistory
+    from apps.garden.models import GardenPlant
+    from apps.crafting.models import CraftingLog
+    from apps.climate_duels.models import DuelTurn
+    from apps.casino.models import DiceGame, BlackjackGame, RouletteGame
+
+    friend_user = get_object_or_404(User, username=username)
+    friend_profile = friend_user.userprofile
+
+    if friend_profile in request.user.userprofile.friends.all():
+        stats = friend_profile.get_stats()
+        stats["xp_to_next_level"] = stats["total_experience"] - stats["experience_points"]
+
+        # City Builder Stats
+        try:
+            city = friend_user.city
+            stats["city_name"] = city.name
+            stats["sustainability_score"] = city.sustainability_score
+            stats["total_buildings"] = city.buildings.count()
+        except City.DoesNotExist:
+            stats["city_name"] = "No City"
+            stats["sustainability_score"] = 0
+            stats["total_buildings"] = 0
+
+        # Market Stats
+        investments = Investment.objects.filter(user=friend_user)
+        stats["total_investments"] = investments.count()
+        stats["total_shares"] = sum(inv.shares for inv in investments)
+        stats["total_transactions"] = Transaction.objects.filter(user=friend_user).count()
+
+        # Crates Stats
+        stats["crates_opened"] = CrateOpeningHistory.objects.filter(user=friend_user).count()
+
+                # Garden Stats
+        stats["total_garden_plants"] = GardenPlant.objects.filter(user=friend_user).count()
+        stats["harvested_plants"] = GardenPlant.objects.filter(user=friend_user, is_harvested=True).count()
+
+        # Crafting Stats
+        stats["total_items_crafted"] = CraftingLog.objects.filter(user=friend_user).count()
+        stats["rare_items_crafted"] = CraftingLog.objects.filter(user=friend_user, rare=True).count()
+
+        # Climate Duels Stats
+        stats["climate_duels_played"] = DuelTurn.objects.filter(player=friend_user).count()
+        stats["climate_duel_eco_score"] = sum(
+            max(0, turn.duel.player_one_co2 if turn.player == turn.duel.player_one else turn.duel.player_two_co2)
+            for turn in DuelTurn.objects.filter(player=friend_user)
+        )
+
+        # Casino Stats
+        dice_games = DiceGame.objects.filter(user=friend_user)
+        bj_games = BlackjackGame.objects.filter(user=friend_user)
+        roulette_games = RouletteGame.objects.filter(user=friend_user)
+        all_games = list(dice_games) + list(bj_games) + list(roulette_games)
+        stats["total_casino_games_played"] = len(all_games)
+        stats["total_casino_wagered"] = sum(g.bet_amount for g in all_games)
+        stats["total_casino_wins"] = sum(1 for g in all_games if getattr(g, 'win', False) or getattr(g, 'result', '') == "win")
+
+
+        return render(request, "users/friend_stats.html", {
+            "profile": friend_profile,
+            "stats": stats,
+        })
+
+    messages.error(request, "You are not friends with this user.")
+    return redirect("users:friends_list")

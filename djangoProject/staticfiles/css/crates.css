@@ -1,5 +1,23 @@
 @import url("/static/css/variables.css");
 /* Global Styles */
+
+html, body {
+  height: 100%;
+}
+
+.d-flex {
+  display: flex;
+}
+.flex-column {
+  flex-direction: column;
+}
+.min-vh-100 {
+  min-height: 100vh;
+}
+.flex-grow-1 {
+  flex-grow: 1;
+}
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f7f7f7;
@@ -9,7 +27,7 @@ body {
 
 /* Header & Navigation */
 header {
-  background-color: #004466;
+  background-color: green;
   color: #fff;
   position: sticky;
   top: 0;
@@ -74,7 +92,7 @@ nav ul li a:hover {
 
 /* Footer */
 footer {
-  background-color: #004466;
+  background-color: green;
   color: #fff;
   text-align: center;
   padding: 1rem 0;
@@ -101,7 +119,7 @@ footer {
 
 /* Buttons */
 button, .btn {
-  background-color: #007bff;
+  background-color: green;
   border: none;
   border-radius: 4px;
   color: #fff;
@@ -113,7 +131,7 @@ button, .btn {
 }
 
 button:hover, .btn:hover {
-  background-color: #0056b3;
+  background-color: darkgreen;
 }
 
 /* Modal Styles (Generic) */
@@ -277,8 +295,6 @@ button:hover, .btn:hover {
 .inventory-card.rarity-4 { background-color: var(--rarity-epic) !important; }
 .inventory-card.rarity-5 { background-color: var(--rarity-legendary) !important; }
 
-
-
 /* Reward Modal Specific Details */
 #reward-details p {
   margin: 0.5rem 0;
@@ -322,7 +338,7 @@ button:hover, .btn:hover {
 
 /* Button styling for crafting */
 .btn {
-  background-color: #007bff;
+  background-color: green;
   border: none;
   border-radius: 4px;
   color: #fff;
@@ -334,7 +350,7 @@ button:hover, .btn:hover {
 }
 
 .btn:hover {
-  background-color: #0056b3;
+  background-color: darkgreen;
 }
 
 /* New modal footer for details modal */
@@ -357,3 +373,38 @@ button:hover, .btn:hover {
 #details-modal .modal-footer .modal-close:hover {
   background-color: #c9302c;
 }
+
+main.flex-grow-1 {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.content-container {
+  flex: 1;
+}
+
+
+/* Moved Modals */
+<div id="crate-modal" class="modal">
+  <div class="modal-content">
+    <img id="crate-animation" src="{% static 'images/crate_closedf.jpg' %}" alt="Crate">
+    <p id="crate-message">Opening crate...</p>
+    <button type="button" class="modal-close" style="background-color: green;">Close</button>
+  </div>
+</div>
+
+<div id="reward-modal" class="modal">
+  <div class="modal-content reward-content">
+    <h3>You Obtained:</h3>
+    <div id="reward-details"></div>
+    <button type="button" class="modal-close" style="background-color: green;">Close</button>
+  </div>
+</div>
+
+<div id="details-modal" class="modal">
+  <div class="modal-content" id="details-content">
+    <h3>Crate Details</h3>
+    <div id="details-inner"></div>
+    <button type="button" class="modal-close" style="background-color: green;">Close</button>
+  </div>
+</div>

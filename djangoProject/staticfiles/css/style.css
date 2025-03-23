@@ -6,6 +6,16 @@
     text-align: center;
 }
 
+/* Navbar */
+.navbar {
+    background-color: #137828 !important;
+}
+
+/* Footer */
+.footer, .bg-dark {
+    background-color: #137828 !important;
+}
+
 /* Floating XP Gain Effect */
 .xp-gain-animation {
     position: absolute;
@@ -104,6 +114,27 @@
 .grid-cell.selected {
     background-color: #cce5ff;
 }
+
+
+.compact-widgets {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .compact-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .compact-widget {
+    flex: 1 1 48%;
+    background-color: #f9f9f9;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.05);
+  }
 
 .rarity-square.rarity-1 { background-color: var(--rarity-common) !important; }
 .rarity-square.rarity-2 { background-color: var(--rarity-uncommon) !important; }
