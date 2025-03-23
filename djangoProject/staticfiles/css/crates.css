@@ -382,29 +382,3 @@ main.flex-grow-1 {
 .content-container {
   flex: 1;
 }
-
-
-/* Moved Modals */
-<div id="crate-modal" class="modal">
-  <div class="modal-content">
-    <img id="crate-animation" src="{% static 'images/crate_closedf.jpg' %}" alt="Crate">
-    <p id="crate-message">Opening crate...</p>
-    <button type="button" class="modal-close" style="background-color: green;">Close</button>
-  </div>
-</div>
-
-<div id="reward-modal" class="modal">
-  <div class="modal-content reward-content">
-    <h3>You Obtained:</h3>
-    <div id="reward-details"></div>
-    <button type="button" class="modal-close" style="background-color: green;">Close</button>
-  </div>
-</div>
-
-<div id="details-modal" class="modal">
-  <div class="modal-content" id="details-content">
-    <h3>Crate Details</h3>
-    <div id="details-inner"></div>
-    <button type="button" class="modal-close" style="background-color: green;">Close</button>
-  </div>
-</div>
