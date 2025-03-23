@@ -82,6 +82,18 @@
       font-size: 2em;
       color: #e74c3c;
       margin-top: 20px;
+      text-align: center;
+    }
+
+    #game-over button {
+      background-color: #27ae60;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+      margin-top: 15px;
     }
   </style>
 </head>
@@ -102,7 +114,11 @@
   <div id="score">Score: 0</div>
   <div id="timer">Time Left: 60</div>
   <div id="feedback"></div>
-  <div id="game-over">Game Over! Final Score: <span id="final-score"></span></div>
+  <div id="game-over">
+    Game Over! Final Score: <span id="final-score"></span>
+    <br>
+    <button id="back-to-bingo">Back to Bingo Board</button>
+  </div>
 
   <script>
     const wasteItem = document.getElementById('waste-item');
@@ -201,6 +217,10 @@
     // Initialize the game
     updateWasteItem();
     startTimer();
+
+    document.getElementById("back-to-bingo").addEventListener("click", function() {
+      window.location.href = "/bingo/";
+    });
   </script>
 </body>
 </html>

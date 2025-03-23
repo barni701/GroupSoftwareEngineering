@@ -41,6 +41,7 @@
             height: 100%;
             border: none;
         }
+        /* Style for all buttons */
         button {
             padding: 10px 20px;
             font-size: 16px;
@@ -54,19 +55,24 @@
         button:hover {
             background-color: #45a049;
         }
+        /* Style for the Back to Bingo Board button specifically */
+        #back-to-bingo {
+            background-color: #27ae60; /* Green background */
+            display: none; /* Hidden until check-in is successful */
+        }
     </style>
 </head>
 <body>
-    <button onclick="window.location.href='/bingo/'">Back to Bingo</button><br><br>
     <h1>Let's explore the campus</h1>
-    <p id = "instructionText">Click the button below to check if you're near the destination.</p>
+    <p id="instructionText">Click the button below to check if you're near the destination.</p>
 
     <div class="map-container">
         <iframe src="https://www.google.com/maps/embed?pb=!1m17!1m8!1m3!1d315.6329967418732!2d-3.5295472404920196!3d50.73730232349469!3m2!1i1024!2i768!4f13.1!4m6!3e3!4m0!4m3!3m2!1d50.737253499999994!2d-3.5294493!5e0!3m2!1sen!2suk!4v1741524314845!5m2!1sen!2suk" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
     </div>
 
-    <button id = "checkInButton" onclick="checkIn()">Check In</button>
-    
+    <button id="checkInButton" onclick="checkIn()">Check In</button>
+    <!-- Hidden Back to Bingo button that will appear upon successful check-in -->
+    <button id="back-to-bingo">Back to Bingo Board</button>
 
     <script>
         // Target location coordinates (latitude, longitude)
@@ -90,8 +96,10 @@
         function checkIn() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
-                    //const userLat = position.coords.latitude;
-                    //const userLon = position.coords.longitude;
+                    // Uncomment the lines below to use actual geolocation:
+                    // const userLat = position.coords.latitude;
+                    // const userLon = position.coords.longitude;
+                    // For now, we're using fixed coordinates:
                     const userLat = 50.737265;
                     const userLon = -3.529447;
 
@@ -100,9 +108,12 @@
 
                     if (distance <= checkInDistance) {
                         alert('You are near the target location! Check-in successful.');
-                        // Send request to server to mark the tile as complete
+                        // Hide the check-in button and update instructions
                         document.getElementById('checkInButton').style.display = 'none';
-                        document.getElementById('instructionText').innerText = 'Successfully checked in".';
+                        document.getElementById('instructionText').innerText = 'Successfully checked in.';
+                        // Reveal the Back to Bingo button
+                        document.getElementById('back-to-bingo').style.display = 'inline-block';
+                        // Send request to server to mark the tile as complete
                         fetch('/markSquare/', {
                             method: 'POST',
                             headers: {
@@ -114,14 +125,10 @@
                           .then(data => {
                               if (data.success) {
                                   alert('Tile marked as complete.');
-                                  
                               } else {
                                   alert('Failed to mark tile as complete.');
                               }
                           });
-                        
-
-                        
                     } else {
                         alert('You are too far from the target location. Try again later.');
                     }
@@ -132,6 +139,11 @@
                 alert('Geolocation is not supported by your browser.');
             }
         }
+
+        // Event listener for the Back to Bingo button
+        document.getElementById("back-to-bingo").addEventListener("click", function() {
+            window.location.href = "/bingo/";
+        });
     </script>
 </body>
 </html>
