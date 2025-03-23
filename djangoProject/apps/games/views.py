@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from ..bingo.views import markSquare
+from ..users.models import UserProfile
 
 # Game 1
 def quiz_view(request):
@@ -13,7 +15,6 @@ def quiz_view(request):
         {"text": "What is Exeter Univerisities biodiversity action plan called?", "answer": "Nature"},
 
     ]
-
     if request.method == 'POST':
         correct_answers = 0
         total_questions = len(questions)
@@ -23,6 +24,10 @@ def quiz_view(request):
             user_answer = request.POST.get(f'question_{i}')
             if user_answer and user_answer.strip().lower() == question["answer"].lower():
                 correct_answers += 1
+
+        # If the user got all questions right, mark the square as done.
+        if(correct_answers == total_questions):
+            markSquare("1", UserProfile.objects.get(user=request.user))
 
         # renders the results
         return render(request, 'games/quiz_result.html', {

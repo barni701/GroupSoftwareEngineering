@@ -32,6 +32,18 @@
         .card.flipped img {
             display: block;
         }
+        /* Style for the Back to Bingo Board button */
+        #back-to-bingo {
+            display: none; /* Hidden until the game is finished */
+            background-color: #27ae60;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
@@ -39,16 +51,17 @@
     <p>Match the eco-friendly cards!</p>
     <div id="game-board"></div>
     <p id="message"></p>
+    <button id="back-to-bingo">Back to Bingo Board</button>
     <script>
         // Use Django static path for local images
-    const ecoImages = [
-        "{% static 'games/tree.png' %}",
-        "{% static 'games/solar.png' %}",
-        "{% static 'games/recycle.png' %}",
-        "{% static 'games/wind.png' %}",
-        "{% static 'games/water.png' %}",
-        "{% static 'games/leaf.png' %}"
-    ];
+        const ecoImages = [
+            "{% static 'games/tree.png' %}",
+            "{% static 'games/solar.png' %}",
+            "{% static 'games/recycle.png' %}",
+            "{% static 'games/wind.png' %}",
+            "{% static 'games/water.png' %}",
+            "{% static 'games/leaf.png' %}"
+        ];
 
         // Duplicate images to create pairs and then shuffle
         let cards = ecoImages.concat(ecoImages);
@@ -89,6 +102,8 @@
                         flippedCards = [];
                         if (matchedCount === cards.length) {
                             document.getElementById('message').innerText = 'Congratulations! You matched all the cards!';
+                            // Show the back-to-bingo button when the game is finished
+                            document.getElementById('back-to-bingo').style.display = 'inline-block';
                         }
                     } else {
                         // Flip back the cards after a short delay
@@ -101,6 +116,11 @@
             });
 
             board.appendChild(card);
+        });
+
+        // Event listener for the back-to-bingo button
+        document.getElementById("back-to-bingo").addEventListener("click", function() {
+            window.location.href = "/bingo/";
         });
     </script>
 </body>
