@@ -101,6 +101,8 @@
       moveRight: false
     };
 
+    alert("Score at least 100 to win!");
+
     // Arrays for recyclable items and obstacles (non-recyclable waste)
     let recyclableItems = [];
     let obstacles = [];
@@ -254,9 +256,8 @@
       sustainabilityFactsDisplay.innerText = "Did you know? " + sustainabilityFacts[Math.floor(Math.random() * sustainabilityFacts.length)];
     
       // If player got 100 score or more
-      print(score)
       if (score >= 100) {
-        print("amogus");
+        console.log("WIN!");
         markBingoSquare("3");
       }    
     }
