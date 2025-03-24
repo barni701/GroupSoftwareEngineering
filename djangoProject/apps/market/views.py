@@ -13,6 +13,7 @@ from apps.users.utils import add_xp
 from ..users.models import UserProfile
 from django.utils import timezone
 from apps.market.utils import record_portfolio_snapshot
+import requests
 
 
 
@@ -394,3 +395,14 @@ def sell_investment_for_company(request, company_pk):
         'tax_rate': float(TAX_RATE * 100),  # Display as percentage (e.g., 5.0 for 5%)
     }
     return render(request, 'market/sell_investment_company.html', context)
+
+def get_stock_price(ticker):
+    api_key = "7S2SD3DMH9XEB4FH"
+    url = f'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={ticker}&apikey={api_key}'
+    response = requests.get(url)
+    data = response.json()
+    try:
+        price = float(data["Global Quote"]["05. price"])
+    except (KeyError, ValueError):
+        price = None
+    return price
