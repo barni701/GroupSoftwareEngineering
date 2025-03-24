@@ -3,11 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <title>Quiz Results</title>
+    <style>
+        body {
+            font-family: Tahoma;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: black;
+            text-align: center;
+        }
+
+        p {
+            text-align: center;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+            max-width: 50vw;
+            width: 100%;
+            text-align: center;
+        }
+
+        .links a {
+            display: inline-block;
+            background-color: rgb(0, 168, 0);
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: 2px solid  rgb(0, 168, 0);
+            margin: 10px;
+        }
+
+        .links a:hover {
+            background-color: rgb(0, 128, 0);
+        }
+    </style>
 </head>
 <body>
-    <h1>Quiz Results</h1>
-    <p>You got {{ correct_answers }} out of {{ total_questions }} correct!</p>
-    <a href="{% url 'quiz_view' %}">Try Again</a>
-    <a href="{% url 'bingo' %}">Bingo Board</a>
+    <div class="container">
+        <h1>Quiz Results</h1>
+        <p>You got <strong>{{ correct_answers }}</strong> out of <strong>{{ total_questions }}</strong> correct!</p>
+        <div class="links">
+            <a href="{% url 'quiz_view' %}">Try Again</a>
+            <a href="{% url 'bingo' %}">Bingo Board</a>
+        </div>
+    </div>
 </body>
 </html>

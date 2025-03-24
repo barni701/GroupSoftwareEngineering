@@ -3,17 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <title>Quiz</title>
+    <style>
+        body {
+            font-family: Tahoma;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+            max-width: 50vw;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: black;
+        }
+
+        a {
+            color: green;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        label {
+            font-size: 16px;
+            color:black;
+            display: block;
+            margin-top: 10px;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 5px;
+            margin-top: 5px;
+            border: 1px solid #cfcfcf;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: rgb(0, 168, 0);;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #009f42;
+        }
+    </style>
 </head>
 <body>
-    <h1>Sustainablity Quiz</h1>
-    <label>Please read <a href="https://www.exeter.ac.uk/about/sustainability/">here</a> and answer the following questions:</label><br><br>
-    <form method="post">
-        {% csrf_token %}
-        {% for question in questions %}
-            <label for="question_{{ forloop.counter }}"> {{ question.text }} </label><br>
-            <input type="text" id="question_{{ forloop.counter0 }}" name="question_{{ forloop.counter0 }}" required><br><br>
-        {% endfor %}
-        <button type="submit">Check Answers</button>
-    </form>
+
+    <div class="container">
+        <h1>Sustainability Quiz</h1>
+        <label>Please read <a href="https://www.exeter.ac.uk/about/sustainability/">here</a> and answer the following questions:</label>
+        <br><br>
+        <form method="post">
+            {% csrf_token %}
+            {% for question in questions %}
+                <label for="question_{{ forloop.counter }}"> {{ question.text }} </label>
+                <input type="text" id="question_{{ forloop.counter0 }}" name="question_{{ forloop.counter0 }}" required>
+                <br><br>
+            {% endfor %}
+            <button type="submit">Check Answers</button>
+        </form>
+    </div>
+
 </body>
 </html>
