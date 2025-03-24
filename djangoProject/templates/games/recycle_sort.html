@@ -112,7 +112,7 @@
     <div class="bin" data-type="glass">Glass</div>
   </div>
   <div id="score">Score: 0</div>
-  <div id="timer">Time Left: 60</div>
+  <div id="timer">Time Left: 30</div>
   <div id="feedback"></div>
   <div id="game-over">
     Game Over! Final Score: <span id="final-score"></span>
@@ -130,7 +130,7 @@
     const finalScoreDisplay = document.getElementById('final-score');
 
     let score = 0;
-    let timeLeft = 100;
+    let timeLeft = 30;
     let timer;
 
     const wasteItems = [
@@ -194,7 +194,7 @@
         scoreDisplay.innerText = 'Score: ' + score;
 
         // If the score reaches 100 and hasn't been marked yet
-        if (score >= 100 && !hasMarkedSquare) {
+        if (score >= 50 && !hasMarkedSquare) {
             hasMarkedSquare = true;  // Prevent duplicate calls
             markBingoSquare();
         }
