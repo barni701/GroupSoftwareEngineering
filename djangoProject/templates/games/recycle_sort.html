@@ -217,21 +217,7 @@
         })
         .catch(error => console.error("Error marking square:", error));
     }
-
-    // Function to get CSRF token from cookies (Django security requirement)
-    function getCSRFToken() {
-        let cookieValue = null;
-        let cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            let cookie = cookies[i].trim();
-            if (cookie.startsWith("csrftoken=")) {
-                cookieValue = cookie.substring("csrftoken=".length, cookie.length);
-                break;
-            }
-        }
-        return cookieValue;
-    }
-
+    
     // Set up drag events for the waste item
     wasteItem.addEventListener('dragstart', function (e) {
       e.dataTransfer.setData('text/plain', wasteItem.dataset.type);

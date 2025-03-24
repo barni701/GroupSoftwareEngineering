@@ -74,7 +74,14 @@
     <!-- Hidden Back to Bingo button that will appear upon successful check-in -->
     <button id="back-to-bingo">Back to Bingo Board</button>
 
+    {% load static %}
+    <script src="{% static 'js/marking_square.js' %}"></script>
     <script>
+
+        console.log("Inline script loaded.");
+        console.log("markBingoSquare type:", typeof markBingoSquare);  // Debugging log
+
+
         // Target location coordinates (latitude, longitude)
         const targetLat = 50.737265;
         const targetLon = -3.529447;
@@ -108,27 +115,13 @@
 
                     if (distance <= checkInDistance) {
                         alert('You are near the target location! Check-in successful.');
+                        markBingoSquare("5");
                         // Hide the check-in button and update instructions
                         document.getElementById('checkInButton').style.display = 'none';
                         document.getElementById('instructionText').innerText = 'Successfully checked in.';
                         // Reveal the Back to Bingo button
                         document.getElementById('back-to-bingo').style.display = 'inline-block';
-                        // Send request to server to mark the tile as complete
-                        fetch('/markSquare/', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRFToken': '{{ csrf_token }}'
-                            },
-                            body: JSON.stringify({ challenge: 1 })
-                        }).then(response => response.json())
-                          .then(data => {
-                              if (data.success) {
-                                  alert('Tile marked as complete.');
-                              } else {
-                                  alert('Failed to mark tile as complete.');
-                              }
-                          });
+
                     } else {
                         alert('You are too far from the target location. Try again later.');
                     }
