@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Your Materials{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-success text-white">
+      <h2 class="mb-0">Your Materials</h2>
+    </div>
+    <div class="card-body">
+      {% if materials %}
+        <div class="row">
+          {% for material in materials %}
+            <div class="col-md-3 col-sm-4 col-6 mb-3">
+              <div class="card h-100">
+                <div class="card-body text-center">
+                  <h5 class="card-title">{{ material.item.name }}</h5>
+                  <p class="card-text">Qty: <strong>{{ material.quantity }}</strong></p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-muted">You currently have no materials.</p>
+      {% endif %}
+    </div>
+    <div class="card-footer text-right">
+      <a href="{% url 'city_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

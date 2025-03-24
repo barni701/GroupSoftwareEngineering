@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Building Catalog{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Building Catalog</h2>
+    <a href="{% url 'city_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+  </div>
+  <div class="row">
+    {% for template in templates %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">{{ template.name }}</h5>
+            <p class="card-text">{{ template.description }}</p>
+            <p class="card-text"><strong>Base Cost:</strong> ${{ template.base_cost }}</p>
+          </div>
+          <div class="card-footer bg-transparent border-top-0">
+            <a href="{% url 'building_template_detail' template.id %}" class="btn btn-info btn-sm">View Details</a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <p class="text-muted">No building templates available.</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

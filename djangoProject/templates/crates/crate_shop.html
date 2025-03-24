@@ -1,0 +1,54 @@
+{% extends 'crates/base_crates.html' %}
+{% load static %}
+{% block title %}Crate Shop{% endblock %}
+{% block content %}
+<h2>Crate Shop</h2>
+<div id="crate-shop">
+  {% for key, crate in crate_definitions.items %}
+  <div class="crate-card">
+    <h3>{{ crate.name }}</h3>
+    <p>Price: ${{ crate.price }} ({{ crate.currency }})</p>
+    <p>Rarity Boost: {{ crate.rarity_boost }}</p>
+    <button type="button" onclick="buyCrate('{{ key }}')">Buy Now</button>
+    <button type="button" onclick="showDetailsPopup('{{ key }}')">Details</button>
+    <!-- Input for bulk buying -->
+    <label for="bulk-quantity-{{ key }}">Qty:</label>
+    <input type="number" id="bulk-quantity-{{ key }}" value="1" min="1">
+    <button type="button" onclick="bulkBuyCrate('{{ key }}')">Bulk Buy</button>
+    <!-- Hidden details for modal -->
+    <div id="details-{{ key }}" class="crate-details" style="display: none;">
+      <h4>Possible Drops</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Type</th>
+            <th>Base Rarity</th>
+            <th>Drop Rate</th>
+            <th>Value Range</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for loot in crate.loot_pool %}
+          <tr>
+            <td>{{ loot.0 }}</td>
+            <td>{{ loot.1 }}</td>
+            <td>{{ loot.2 }}</td>
+            <td>{{ loot.3 }}</td>
+            <td>{% if loot|length > 4 %}{{ loot.4 }}{% else %}-{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+<div id="buy-message"></div>
+<!-- New Details Modal Popup -->
+<div id="details-modal" class="modal">
+  <div class="modal-content" id="details-content">
+    <!-- JS will inject the crate details here -->
+  </div>
+</div>
+{% endblock %}

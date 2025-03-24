@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Recycle Sort Game</title>
+  <style>
+    /* Basic styling for bins and waste item */
+    .bin {
+      width: 150px;
+      height: 150px;
+      border: 2px dashed #ccc;
+      margin: 10px;
+      display: inline-block;
+      text-align: center;
+      line-height: 150px;
+      font-weight: bold;
+    }
+    .draggable {
+      width: 100px;
+      height: 100px;
+      margin: 20px;
+      background-color: #aaffaa;
+      text-align: center;
+      line-height: 100px;
+      cursor: move;
+    }
+  </style>
+</head>
+<body>
+  <h2>Recycle Sort</h2>
+  <div id="game-container">
+    <!-- Example waste item; this can be dynamically replaced -->
+    <div id="waste-item" class="draggable" draggable="true">
+      Plastic Bottle
+    </div>
+    <!-- Recycling bins -->
+    <div class="bin" data-type="plastic">Plastic</div>
+    <div class="bin" data-type="paper">Paper</div>
+    <div class="bin" data-type="metal">Metal</div>
+    <div class="bin" data-type="organic">Organic</div>
+  </div>
+  <div id="score">Score: 0</div>
+
+  <script>
+    const wasteItem = document.getElementById('waste-item');
+    const bins = document.querySelectorAll('.bin');
+    let score = 0;
+
+    // Set up drag events for the waste item
+    wasteItem.addEventListener('dragstart', function (e) {
+      e.dataTransfer.setData('text/plain', wasteItem.innerText);
+    });
+
+    // Set up drop events for each bin
+    bins.forEach(bin => {
+      bin.addEventListener('dragover', function(e) {
+        e.preventDefault();
+      });
+      bin.addEventListener('drop', function(e) {
+        e.preventDefault();
+        const droppedItem = e.dataTransfer.getData('text/plain');
+        const binType = bin.getAttribute('data-type');
+
+        // Simple check: if the waste item text includes the bin's type, it's correct
+        if(droppedItem.toLowerCase().includes(binType)) {
+          score += 10;
+          alert('Correct! Keep it green.');
+        } else {
+          alert('Oops! That doesn’t seem right.');
+        }
+        document.getElementById('score').innerText = 'Score: ' + score;
+
+        // TODO: Load the next waste item for a continuous game experience
+      });
+    });
+  </script>
+</body>
+</html>

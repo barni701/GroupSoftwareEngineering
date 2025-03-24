@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}Garden Dashboard{% endblock %}
+{% block content %}
+{% load static %}
+
+<div class="container mt-4">
+    <h2>Your Garden</h2>
+    <!-- Add Plot Button -->
+    <div class="mb-3">
+        <a href="{% url 'create_plot' %}" class="btn btn-primary">Add Plot</a>
+    </div>
+    {% if plots %}
+      <div class="row">
+        {% for plot in plots %}
+          <div class="col-md-4">
+            <div class="card mb-3">
+              <div class="card-header">
+                {{ plot.name }}
+              </div>
+              <div class="card-body">
+                {% if plot.current_plant %}
+                  <p>
+                    Planted: 
+                    <span class="rarity-square rarity-{{ plot.current_plant.seed.rarity }}"></span>
+                    {{ plot.current_plant.seed.name }} ({{ plot.current_plant.seed.get_rarity_display }})
+                  </p>
+                  {% if plot.current_plant.is_fully_grown %}
+                    <p>Fully grown!</p>
+
+                  {%else %}
+                    <p>Time until harvest: {{ plot.current_plant.time_until_harvest }}</p>
+                  {% endif %}
+                  
+                  <div class="progress">
+                    <div class="progress-bar" role="progressbar"
+                         data-planted-at="{{ plot.current_plant.planted_at|date:'c' }}"
+                         data-growth-duration="{{ plot.current_plant.growth_duration.total_seconds }}"
+                         style="width: {{ plot.current_plant.progress_percentage }}%;"
+                         aria-valuenow="{{ plot.current_plant.progress_percentage }}"
+                         aria-valuemin="0" aria-valuemax="100">
+                      {% if not plot.current_plant.is_fully_grown %}
+                        {{ plot.current_plant.progress_percentage }}%
+                      {% endif %}
+                    </div>
+                  </div>
+                  {% if plot.current_plant.is_ready_to_harvest %}
+                    <a href="{% url 'harvest_crop' plot.current_plant.id %}" class="btn btn-success mt-2">Harvest</a>
+                  {% else %}
+                    <p>Growing...</p>
+                  {% endif %}
+                {% else %}
+                  <p>Empty plot.</p>
+                  <a href="{% url 'available_seeds' plot.id %}" class="btn btn-primary">Plant Seeds</a>
+                {% endif %}
+                <div class="garden-plot">
+                    {% if plot.current_plant %}
+                        <div class="plant-container">
+                            {% if plot.current_plant.is_fully_grown %}
+                                <img src="{% static 'images/plants/tree.png' %}" alt="Mature Tree" class="plant-sprite">
+                            {% else %}
+                                <div class="growing-indicator">🌱</div>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="empty-plot">
+                            <span>Empty Plot</span>
+                        </div>
+                    {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="alert alert-info">
+          You don't have any garden plots yet.
+      </div>
+    {% endif %}
+</div>
+{% endblock %}

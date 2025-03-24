@@ -1,0 +1,28 @@
+{% extends 'crates/base_crates.html' %}
+{% load static %}
+{% block title %}{{ template.name }} Details{% endblock %}
+{% block content %}
+<div class="inventory-container">
+  <h2>{{ template.name }}</h2>
+  <p>{{ template.description }}</p>
+  <p><strong>Base Cost:</strong> ${{ template.base_upgrade_cost }}</p>
+  {% if template.blueprint_required %}
+    <p><strong>Blueprint Required:</strong> {{ template.blueprint_required.name }}</p>
+  {% endif %}
+  {% if template.prerequisite %}
+    <p class="lock-msg">Locked – Requires: {{ template.prerequisite.name }}</p>
+  {% endif %}
+
+  <!-- Purchase Option -->
+  {% if unlocked %}
+    <form action="{% url 'purchase_building' template.id %}" method="POST">
+      {% csrf_token %}
+      <button type="submit" class="btn">Buy Building</button>
+    </form>
+  {% else %}
+    <p class="error-msg">This building is locked until you construct {{ template.prerequisite.name }}.</p>
+  {% endif %}
+
+  <a href="{% url 'building_catalog' %}" class="btn">Back to Catalog</a>
+</div>
+{% endblock %}

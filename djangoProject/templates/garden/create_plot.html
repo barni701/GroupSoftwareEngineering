@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Create New Garden Plot{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Create a New Garden Plot</h2>
+  {% if current_plot_count < free_limit %}
+    <p>You have {{ free_limit|add:"-current_plot_count" }} free plot(s) remaining.</p>
+  {% else %}
+    <p>
+      Additional plots cost exponentially. Your next plot will cost: 
+      <strong>${{ plot_cost }}</strong>
+    </p>
+  {% endif %}
+  <form method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="plotName">Plot Name:</label>
+      <input type="text" id="plotName" name="name" class="form-control" placeholder="Enter plot name" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Create Plot</button>
+  </form>
+  <a href="{% url 'garden_dashboard' %}" class="btn btn-secondary mt-2">Back to Garden Dashboard</a>
+</div>
+{% endblock %}

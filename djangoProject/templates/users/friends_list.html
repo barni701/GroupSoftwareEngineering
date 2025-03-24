@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="friends-container">
+    <h2>👥 Friends List</h2>
+    <div class="friends-list">
+        {% for friend in friends %}
+            <div class="friend-card">
+                <div class="friend-info">
+                    <img src="{{ friend.user.profile_picture.url|default:'https://via.placeholder.com/40' }}" alt="Profile" class="friend-avatar">
+                    <span>{{ friend.user.username }}</span>
+                </div>
+                <div class="request-actions">
+                    <a href="{% url 'users:friend_stats' friend.user.username %}" class="btn btn-info btn-sm">View Stats</a>
+                    <a href="{% url 'users:remove_friend' friend.id %}" class="btn btn-danger btn-sm">Remove</a>
+                </div>
+            </div>
+        {% empty %}
+            <p class="empty-message">No friends yet. Add some friends below!</p>
+        {% endfor %}
+    </div>
+
+    <h2>📩 Friend Requests</h2>
+    <div class="friend-requests">
+        {% for request in friend_requests %}
+            <div class="friend-request-card">
+                <span>{{ request.from_user.user.username }}</span>
+                <div class="request-actions">
+                    <a href="{% url 'users:accept_friend_request' request.id %}" class="btn btn-success btn-sm">Accept</a>
+                    <a href="{% url 'users:decline_friend_request' request.id %}" class="btn btn-danger btn-sm">Decline</a>
+                </div>
+            </div>
+        {% empty %}
+            <p class="empty-message">No friend requests.</p>
+        {% endfor %}
+    </div>
+
+    <h2>➕ Add a Friend</h2>
+    <form method="POST" action="{% url 'users:send_friend_request' %}" class="add-friend-form">
+        {% csrf_token %}
+        <div class="input-group">
+            <input type="text" name="username" placeholder="Enter username" required class="form-control">
+            <button type="submit" class="btn btn-primary">Send Request</button>
+        </div>
+    </form>
+</div>
+
+<style>
+    .friends-container {
+        max-width: 600px;
+        margin: 20px auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .friend-card, .friend-request-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px;
+        background: #f9f9f9;
+        margin-bottom: 10px;
+        border-radius: 6px;
+    }
+    .friend-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .friend-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    .request-actions {
+        display: flex;
+        gap: 5px;
+    }
+    .add-friend-form {
+        margin-top: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+    .input-group {
+        display: flex;
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    .input-group input {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        outline: none;
+    }
+    .btn {
+        cursor: pointer;
+        padding: 8px 12px;
+    }
+</style>
+
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>🌍 Climate Duels</h2>
+
+<a href="{% url 'climate_duels:create_duel' %}" class="btn btn-primary">Start a Duel</a>
+
+<h3>Active Duels</h3>
+<ul>
+    {% for duel in duels %}
+        <li>
+            {{ duel.player_one }} vs {{ duel.player_two|default:"Waiting for Opponent" }}
+            {% if duel.player_two is None %}
+                <a href="{% url 'climate_duels:join_duel' duel.id %}" class="btn btn-warning">Join</a>
+            {% elif duel.active %}
+                <a href="{% url 'climate_duels:play_turn' duel.id %}" class="btn btn-success">Play</a>
+            {% endif %}
+        </li>
+    {% empty %}
+        <li>No active duels.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

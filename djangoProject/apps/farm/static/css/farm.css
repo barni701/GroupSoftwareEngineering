@@ -1,0 +1,126 @@
+/* Optional: Additional styles for building cards */
+.building-card {
+  background-color: #f0f8ff;
+  border: 1px solid #b0c4de;
+  padding: 1rem;
+  border-radius: 8px;
+  transition: transform 0.2s;
+}
+.building-card:hover {
+  transform: translateY(-3px);
+}
+
+/* Building Detail Container */
+.building-detail-container {
+  padding: 1rem;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Table styling for material requirements */
+.building-requirements-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+.building-requirements-table th,
+.building-requirements-table td {
+  border: 1px solid #ccc;
+  padding: 0.75rem;
+  text-align: left;
+}
+.building-requirements-table th {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.locked {
+  opacity: 0.5;
+  pointer-events: none;  /* Prevent clicks on locked items */
+}
+
+.lock-msg {
+  font-style: italic;
+  color: #a00;
+}
+
+/* Container for the purchase page */
+.purchase-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+/* Card layout for the purchase details */
+.purchase-card {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+/* Card Title */
+.purchase-card .card-title {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+/* Card Description */
+.purchase-card .card-description {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  color: #555;
+}
+
+/* Cost and Requirement Info */
+.purchase-card .cost-info {
+  margin-bottom: 1.5rem;
+}
+.purchase-card .cost-info p {
+  font-size: 1rem;
+  margin: 0.5rem 0;
+}
+.purchase-card .locked-info {
+  color: #a00;
+  font-weight: bold;
+}
+
+/* Button Styling */
+.purchase-card .btn {
+  margin: 0.5rem;
+  padding: 0.7rem 1.2rem;
+  font-size: 1rem;
+  text-decoration: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.purchase-card .purchase-btn {
+  background-color: #28a745;
+  border: none;
+  color: #fff;
+}
+.purchase-card .purchase-btn:hover {
+  background-color: #218838;
+}
+.purchase-card .back-btn {
+  background-color: #007bff;
+  color: #fff;
+  text-decoration: none;
+}
+.purchase-card .back-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Error Message */
+.purchase-card .error-msg {
+  color: #d9534f;
+  font-weight: bold;
+  margin-top: 1rem;
+}

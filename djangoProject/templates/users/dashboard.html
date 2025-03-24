@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="dashboard-container">
+    <h1 class="dashboard-title">📊 User Dashboard</h1>
+
+    <div class="dashboard-widgets">
+        <!-- Inside your XP widget in dashboard.html -->
+        <div class="widget xp-widget">
+            <div class="xp-gain-animation" id="xp-gain">+0 XP</div>
+            <h3>⭐ Experience Progress</h3>
+            <p>Level: <strong id="xp-level">{{ user_profile.level }}</strong></p>
+            <progress id="xp-progress" value="{{ current_progress }}" max="{{ required_xp }}"></progress>
+            <p id="xp-text">{{ current_progress }} / {{ required_xp }} XP</p>
+        </div>
+
+        <!-- Battle Pass Progress -->
+        <div class="widget">
+            <h3>🎖 Battle Pass</h3>
+            {% if user_battle_pass %}
+                <p>Current Tier: {{ user_battle_pass.current_tier }}</p>
+                <div class="progress-container">
+                    <progress value="{{ user_battle_pass.progress_points }}" max="100"></progress>
+                    <span>{{ user_battle_pass.progress_points }} / 100</span>
+                </div>
+            {% else %}
+                <p>You have no active Battle Pass.</p>
+            {% endif %}
+        </div>
+
+        <!-- Currency & Transactions -->
+        <div class="widget currency-widget">
+            <h3>💰 Currency</h3>
+            <p>Balance: <strong id="currency-balance">{{ user_profile.currency_balance }}</strong> Coins</p>
+            <ul class="transaction-list">
+                {% for transaction in transactions %}
+                    <li>{{ transaction.type }}: <span>{{ transaction.amount }}</span> Coins ({{ transaction.date }})</li>
+                {% empty %}
+                    <li>No recent transactions</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Recent Achievements -->
+        <div class="widget">
+            <h3>🏆 Recent Achievements</h3>
+            <ul class="achievement-list">
+                {% for achievement in achievements %}
+                    <li>🏅 {{ achievement.achievement.name }} - {{ achievement.date_awarded }}</li>
+                {% empty %}
+                    <li>No achievements yet</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Daily Quests -->
+        <div class="widget">
+            <h3>🎯 Daily Quests</h3>
+            <p>Complete quests to earn XP & Coins!</p>
+            <ul class="quest-list">
+                <li>♻️ Recycle 3 items - +50 XP</li>
+                <li>🌍 Play 2 sustainability games - +100 XP</li>
+                <li>📈 Invest in an eco-friendly stock - +200 XP</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Leaderboard -->
+    <div class="leaderboard">
+        <h2>🏆 Top Users</h2>
+        <table>
+            <thead>
+                <tr><th>Rank</th><th>User</th><th>Level</th><th>XP</th></tr>
+            </thead>
+            <tbody>
+                {% for user in leaderboard %}
+                <tr>
+                    <td>#{{ forloop.counter }}</td>
+                    <td>{{ user.user.username }}</td>
+                    <td>{{ user.level }}</td>
+                    <td>{{ user.experience_points }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

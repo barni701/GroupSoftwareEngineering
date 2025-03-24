@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/bingo.css' %}">
+{% endblock %}
+
+{% block title %}Bingo{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">Bingo</h2>
+  <table class="table table-bordered board">
+    {% for row in board %}
+      <tr>
+        {% for cell in row %}
+          <td class="{% if cell.status == 1 %}complete{% else %}incomplete{% endif %}" data-value="{{ cell.challenge }}">
+            <a href="{{ cell.url }}" class="cell-link">
+              {{ cell.challenge }}
+            </a>
+          </td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </table>
+</div>
+
+<!-- Bingo Popup-->
+<div id="bingoModal" class="modal fade" tabindex="-1" aria-labelledby="bingoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="bingoModalLabel">Bingo!</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Congratulations! You completed a Bingo. You have earned xxx xp and increased xxx balance!.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="location.reload()">Play Again</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      var bingo = "{{ bingo|lower }}"; // Convert Django boolean to JavaScript boolean
+      if (bingo === "true") {
+          var myModal = new bootstrap.Modal(document.getElementById('bingoModal'), {});
+          myModal.show();
+      }
+  });
+</script>
+{% endblock %}

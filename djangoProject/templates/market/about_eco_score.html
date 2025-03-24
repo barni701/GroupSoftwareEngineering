@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>About Green Impact Score</title>
+    {% load static %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: #fff;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #007BFF;
+        }
+        p {
+            color: #555;
+            line-height: 1.5em;
+        }
+        .formula {
+            font-style: italic;
+            background: #e0f7fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        nav {
+            background: #007BFF;
+            padding: 10px;
+            text-align: center;
+        }
+        nav a {
+            color: #fff;
+            margin: 0 10px;
+            text-decoration: none;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav>
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'market:market_home' %}">Market Home</a>
+        <a href="{% url 'market:company_list' %}">Companies</a>
+        <a href="{% url 'market:portfolio' %}">My Portfolio</a>
+        <a href="{% url 'market:market_events' %}">Market Events</a>
+        <a href="{% url 'market:leaderboard' %}">Leaderboard</a>
+    </nav>
+
+    <div class="container">
+        <h1>About Your Green Impact Score</h1>
+        <p>
+            Your Green Impact Score is a measure of how sustainably you are investing in companies that prioritize environmental responsibility.
+            It is calculated by summing the products of each investment’s sustainability rating and the number of shares you hold.
+        </p>
+        <div class="formula">
+            Green Impact Score = Σ (Sustainability Rating × Number of Shares) for each investment
+        </div>
+        <p>
+            For example, if you have invested in two companies:
+            <br><br>
+            - Company A: Sustainability Rating 8.5, 10 shares → Impact = 8.5 × 10 = 85<br>
+            - Company B: Sustainability Rating 7.0, 5 shares → Impact = 7.0 × 5 = 35<br>
+            <br>
+            Your overall Green Impact Score would be 85 + 35 = 120.
+        </p>
+        <p>
+            A higher score indicates a stronger commitment to supporting sustainable businesses and a greener future.
+        </p>
+    </div>
+</body>
+</html>

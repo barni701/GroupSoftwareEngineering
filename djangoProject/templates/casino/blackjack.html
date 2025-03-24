@@ -1,0 +1,47 @@
+{% extends "casino/casino_base.html" %}
+{% block title %}Blackjack{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Blackjack</h2>
+  {% if game %}
+    <div class="game-status">
+      <p><strong>Your Bet:</strong> ${{ game.bet_amount }}</p>
+      <h3>Your Hand ({{ game.player_value }})</h3>
+      <ul>
+        {% for card in game.player_hand %}
+          <li>{{ card }}</li>
+        {% endfor %}
+      </ul>
+      <h3>Dealer's Hand ({{ game.dealer_value }})</h3>
+      <ul>
+        {% for card in game.dealer_hand %}
+          <li>{{ card }}</li>
+        {% endfor %}
+      </ul>
+      {% if game.result == "in_progress" %}
+        <form method="post">
+          {% csrf_token %}
+          <button type="submit" name="action" value="hit" class="btn btn-primary">Hit</button>
+          <button type="submit" name="action" value="stand" class="btn btn-success">Stand</button>
+          {% if game.player_hand|length == 2 %}
+            <button type="submit" name="action" value="double" class="btn btn-warning">Double Down</button>
+          {% endif %}
+        </form>
+      {% else %}
+        <p><strong>Result:</strong> {{ game.get_result_display }}</p>
+        <a href="{% url 'play_blackjack' %}" class="btn btn-primary">Play Again</a>
+        <a href="{% url 'casino_home' %}" class="btn btn-secondary">Return to Casino Home</a>
+      {% endif %}
+    </div>
+  {% else %}
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="bet_amount">Bet Amount:</label>
+        <input type="number" name="bet_amount" id="bet_amount" class="form-control" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Start Blackjack</button>
+    </form>
+  {% endif %}
+</div>
+{% endblock %}

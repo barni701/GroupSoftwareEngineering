@@ -87,6 +87,13 @@ Date: 22/02/2025
 - Check progress on each branch to see current state of project
 - Assess current unit tests and made decision to create more
 - Create Development branch used for merging current django app prototype
+Date: 21/02/2025
+- Focussed on merging branches into a development branch
+- Linked the first game to the bingo board
+- Added the bingo checking logic
+- Linked the homepage to the bingo board
+- Resolved any merge conflicts due to combining multiple branches into one.
+- Ensured unit tests pass
 
 ### Session 5
 Date: 24/02/2025

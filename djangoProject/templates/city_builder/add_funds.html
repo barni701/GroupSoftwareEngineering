@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Add Funds to Your City{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Add Funds to Your City</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="amount">Amount:</label>
+      <input type="number" name="amount" id="amount" class="form-control" step="0.01" min="0" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Funds</button>
+  </form>
+  <a href="{% url 'city_dashboard' %}" class="btn btn-secondary mt-2">Back to City Dashboard</a>
+</div>
+{% endblock %}

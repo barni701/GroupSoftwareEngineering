@@ -1,0 +1,19 @@
+{% extends 'market/base_market.html' %}
+
+{% block title %}Sell Investment - {{ company.name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+  <h1 style="text-align: center; color: #007BFF;">Sell Investment in {{ company.name }}</h1>
+  <p style="text-align: center; font-size: 1.1rem;">You currently own <strong>{{ total_shares }}</strong> shares.</p>
+  <form method="post" style="display: flex; flex-direction: column; gap: 15px;">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="error" style="color: red; font-size: 0.9rem;">{{ form.non_field_errors }}</div>
+    {% endif %}
+    <label for="id_shares" style="font-weight: 600; color: #333;">Number of Shares to Sell:</label>
+    {{ form.shares }}
+    <button type="submit" style="padding: 12px; background: #dc3545; color: #fff; border: none; border-radius: 4px; font-size: 1rem; cursor: pointer;">Sell Shares</button>
+  </form>
+</div>
+{% endblock %}

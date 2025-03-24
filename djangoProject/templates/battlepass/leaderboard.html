@@ -1,0 +1,12 @@
+<h2>🏆 Battle Pass Leaderboard 🏆</h2>
+<table>
+    <tr><th>Rank</th><th>User</th><th>Tier</th><th>XP</th></tr>
+    {% for player in leaderboard %}
+    <tr>
+        <td>#{{ forloop.counter }}</td>
+        <td>{{ player.user.username }}</td>
+        <td>{{ player.current_tier }}</td>
+        <td>{{ player.progress_points }}</td>
+    </tr>
+    {% endfor %}
+</table>

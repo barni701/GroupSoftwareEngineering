@@ -1,0 +1,7 @@
+:root {
+  --rarity-common: #81C784;    /* Vivid green for Common */
+  --rarity-uncommon: #4FC3F7;  /* Vivid blue for Uncommon */
+  --rarity-rare: #FFF176;      /* Vivid yellow for Rare */
+  --rarity-epic: #F06292;      /* Vivid pink for Epic */
+  --rarity-legendary: #FFB74D; /* Vivid orange for Legendary */
+}

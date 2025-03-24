@@ -1,0 +1,35 @@
+{% extends 'market/base_market.html' %}
+
+{% block title %}Transaction History{% endblock %}
+
+{% block content %}
+  <h1 style="text-align: center;">Transaction History</h1>
+  {% if transactions %}
+    <table style="width:100%; border-collapse: collapse; margin-top: 20px;">
+      <thead style="background: #007BFF; color: #fff;">
+        <tr>
+          <th style="padding: 12px;">Date/Time</th>
+          <th style="padding: 12px;">Company</th>
+          <th style="padding: 12px;">Type</th>
+          <th style="padding: 12px;">Shares</th>
+          <th style="padding: 12px;">Price per Share</th>
+          <th style="padding: 12px;">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for txn in transactions %}
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 12px;">{{ txn.timestamp }}</td>
+            <td style="padding: 12px;">{{ txn.company.name }}</td>
+            <td style="padding: 12px;">{{ txn.get_transaction_type_display }}</td>
+            <td style="padding: 12px; text-align: center;">{{ txn.shares }}</td>
+            <td style="padding: 12px; text-align: right;">${{ txn.price_per_share }}</td>
+            <td style="padding: 12px; text-align: right;">${{ txn.total }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p style="text-align: center; margin-top: 20px;">You have no transactions yet.</p>
+  {% endif %}
+{% endblock %}

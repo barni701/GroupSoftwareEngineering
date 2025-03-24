@@ -1,0 +1,49 @@
+{% extends 'crates/base_crates.html' %}
+{% load static %}
+{% block title %}Building Details{% endblock %}
+{% block content %}
+<div class="building-detail-container">
+  <h2>{{ building.template.name }} (Level {{ building.level }})</h2>
+  {% if building.template.description %}
+    <p>{{ building.template.description }}</p>
+  {% endif %}
+  <p>
+    <strong>Upgrade Cost:</strong>
+    {% if building.current_upgrade_cost %}
+      ${{ building.current_upgrade_cost }}
+    {% else %}
+      N/A
+    {% endif %}
+  </p>
+  {% if building.template.blueprint_required %}
+    <p><strong>Blueprint Required:</strong> {{ building.template.blueprint_required.name }}</p>
+  {% endif %}
+
+  <h3>Materials Needed for Upgrade (to Level {{ building.level|add:"1" }})</h3>
+  {% with requirements=building.next_level_material_requirements %}
+    {% if requirements %}
+      <table class="building-requirements-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Quantity Required</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for req in requirements %}
+          <tr>
+            <td>{{ req.item.name }}</td>
+            <td>{{ req.quantity_required }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No further upgrades available.</p>
+    {% endif %}
+  {% endwith %}
+
+  <button type="button" class="btn" onclick="upgradeBuilding('{{ building.id }}')">Upgrade Building</button>
+  <div id="upgrade-message"></div>
+</div>
+{% endblock %}

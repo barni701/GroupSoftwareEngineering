@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Crate System{% endblock %}</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/crates.css' %}">
+  <script src="{% static 'js/crates.js' %}" defer></script>
+</head>
+<body>
+  <div class="d-flex flex-column min-vh-100">
+    <header style="background-color: green;">
+      <div class="header-container">
+        <h1>Crate System</h1>
+        <nav>
+          <ul>
+            <li><a href="{% url 'crate_shop' %}">Shop</a></li>
+            <li><a href="{% url 'crate_inventory' %}">Crate Inventory</a></li>
+            <li><a href="{% url 'item_inventory' %}">Item Inventory</a></li>
+            <li><a href="{% url 'recipe_list' %}">Crafting</a></li>
+            <li><a href="{% url 'building_list' %}">Farm</a></li>
+            <li><a href="{% url 'garden_dashboard' %}">Garden</a></li>
+          </ul>
+        </nav>
+        {% if user.is_authenticated %}
+        <div class="currency-display">
+          <span>${{ user.userprofile.currency_balance }}</span>
+          <span>Farm: ${{ user.userprofile.farm_currency }}</span>
+        </div>
+        {% endif %}
+
+        <nav>
+          <ul>
+            <li><a href="{% url 'home' %}">Return Home</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main class="flex-grow-1" style="flex: 1;">
+      <div class="content-container" style="flex: 1;">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+    <footer style="background-color: green;">
+      <p>&copy; 2025 Crate System. All rights reserved.</p>
+    </footer>
+    
+    <!-- Moved Modals -->
+    <div id="crate-modal" class="modal">
+      <div class="modal-content">
+        <img id="crate-animation" src="{% static 'images/crate_closedf.jpg' %}" alt="Crate">
+        <p id="crate-message">Opening crate...</p>
+        <button type="button" class="modal-close" style="background-color: green;">Close</button>
+      </div>
+    </div>
+
+    <div id="reward-modal" class="modal">
+      <div class="modal-content reward-content">
+        <h3>You Obtained:</h3>
+        <div id="reward-details">
+          <!-- Reward details will be injected via JS -->
+        </div>
+        <button type="button" class="modal-close" style="background-color: green;">Close</button>
+      </div>
+    </div>
+
+    <div id="details-modal" class="modal">
+      <div class="modal-content" id="details-content">
+        <h3>Crate Details</h3>
+        <div id="details-inner">
+          <!-- JS will inject the crate details here -->
+        </div>
+        <button type="button" class="modal-close" style="background-color: green;">Close</button>
+      </div>
+    </div>
+  </div> <!-- Close flex wrapper -->
+</body>
+</html>

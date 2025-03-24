@@ -1,0 +1,37 @@
+{% extends 'market/base_market.html' %}
+
+{% block title %}Market Events{% endblock %}
+
+{% block content %}
+  <h1 style="text-align: center; color: #007BFF; margin-bottom: 30px;">Market Events</h1>
+  <div style="max-width: 900px; margin: auto;">
+    {% for event in events %}
+      <div style="background: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <h2 style="margin-top: 0; color: #333;">{{ event.title }}</h2>
+        <p style="color: #555;">{{ event.description }}</p>
+        <p style="color: #777; font-size: 0.9em;">
+          Started: {{ event.event_date|date:"M d, Y H:i" }} &mdash; Duration: {{ event.duration }} minutes &mdash; Time Left: {{ event.get_time_left }}
+        </p>
+        <p style="font-weight: bold; color: #007BFF; margin-bottom: 10px;">
+          Impact: {{ event.impact_factor }}
+        </p>
+        {% if event.companies_affected.all %}
+          <p style="color: #555;">
+            Affected Companies:
+            {% for company in event.companies_affected.all %}
+              <a href="{% url 'market:company_detail' company.pk %}" style="{% if company.pk in user_companies %}color: #e74c3c; font-weight: bold;{% else %}color: #007BFF;{% endif %} text-decoration: none;">
+                {{ company.name }}
+              </a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+          </p>
+        {% else %}
+          <p style="color: #555;">No companies affected.</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  <!-- No additional JavaScript is needed since we've removed the graph -->
+{% endblock %}

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casino - {% block title %}Home{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: 'Arial', sans-serif;
+        }
+        .casino-title {
+            margin-bottom: 1rem;      /* Space under the heading */
+        }
+        .button-container {
+            display: flex;            /* Put buttons on one line */
+            gap: 10px;                /* Space between buttons */
+            margin-bottom: 1rem;      /* Space below the buttons */
+        }
+        .casino-header {
+            background: linear-gradient(to right, #ffcc00, #ff6699);
+            flex-direction: column;
+            padding: 15px;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .casino-container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .casino-card {
+            background-color: #222;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .casino-footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #222;
+            margin-top: 30px;
+        }
+        .currency-display {
+            font-size: 18px;
+            margin-top: 1rem;   
+            font-weight: bold;
+            color: white;
+        }
+        .btn-outline-dark:hover,
+        .btn-outline-dark.active,
+        .btn-outline-dark:focus {
+        color: white !important;
+        background-color: #212529; /* matches Bootstrap's btn-outline-dark hover */
+        border-color: #212529;
+        }
+        #dice-container {
+            background: linear-gradient(45deg, #ffcc00, #ff6699); /* Gradient background */
+            padding: 20px;
+            display: inline-block;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        #dice-image {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .floating-emoji {
+            position: fixed;
+            font-size: 2.5rem;
+            z-index: 9999;
+            opacity: 0.9;
+            pointer-events: none;
+            animation: floatUp ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(50vh) scale(1.2);
+                opacity: 0.9;
+            }
+            100% {
+                transform: translateY(-10vh) scale(0.8);
+                opacity: 0;
+            }
+        }
+
+        .form-text,
+        label,
+        .text-muted {
+            color: #f8f9fa !important;
+        }
+    </style>
+    <script>
+        function showWinAnimation() {
+            const emojiCount = 30;  // Number of emojis to spawn
+            const emojis = ["💰", "🎉", "🔥", "🍀", "💎", "🎊"]; // Emoji choices
+
+            for (let i = 0; i < emojiCount; i++) {
+                const emoji = document.createElement("div");
+                emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                emoji.classList.add("floating-emoji");
+
+                // Random positioning
+                emoji.style.left = `${Math.random() * 100}vw`;
+                emoji.style.animationDuration = `${1.5 + Math.random() * 2}s`;
+
+                document.body.appendChild(emoji);
+
+                // Remove emoji after animation ends
+                setTimeout(() => {
+                    emoji.remove();
+                }, 3000);
+            }
+        }
+
+        // Automatically trigger on win
+        document.addEventListener("DOMContentLoaded", function() {
+            {% if win %}
+                showWinAnimation();
+            {% endif %}
+        });
+    </script>
+</head>
+<body>
+    <div class="casino-header">
+        <h1 class = "casino-title">🎰 Welcome to the Casino! 🎲</h1>
+
+        <div class="casino-nav">
+            <a href="{% url 'casino_home' %}" class="btn btn-light">Casino Home</a>
+            <a href="{% url 'play_dice' %}" class="btn btn-warning">Dice Game</a>
+            <a href="{% url 'play_roulette' %}" class="btn btn-warning">Roulette</a>
+            <a href="{% url 'play_blackjack' %}" class="btn btn-warning">BlackJack</a>
+            <a href="{% url 'home' %}" class="btn btn-warning">Return Home</a>
+        </div>
+        <div class="currency-display">
+            💰 Balance: {{ request.user.userprofile.currency_balance|default:"0.00" }} |
+            🌱 Green Fund: {{ green_fund.total_donated}}
+        </div>
+    </div>
+
+    <div class="casino-container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <div class="casino-footer">
+        <p>Good luck! 🍀 Play responsibly.</p>
+    </div>
+</body>
+</html>

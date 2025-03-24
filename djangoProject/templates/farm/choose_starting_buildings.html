@@ -1,0 +1,25 @@
+{% extends 'crates/base_crates.html' %}
+{% load static %}
+{% block title %}Start Your Farm{% endblock %}
+{% block content %}
+<div class="inventory-container">
+  <h2>Welcome to Your Farm!</h2>
+  <p>You haven't started your farm yet. Choose your starter buildings to get going!</p>
+
+  <div class="starter-options" style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+    <div class="starter-set" style="border: 1px solid #ccc; padding: 1rem; border-radius: 8px; background: #f9f9f9; width: 300px; text-align: center;">
+      <h3>Basic Greenhouse</h3>
+      <p>A simple greenhouse to get your crops growing. It provides a controlled environment for your first harvests.</p>
+    </div>
+    <div class="starter-set" style="border: 1px solid #ccc; padding: 1rem; border-radius: 8px; background: #f9f9f9; width: 300px; text-align: center;">
+      <h3>Small Barn</h3>
+      <p>A small barn to store your supplies and house your early livestock, laying the foundation for future expansion.</p>
+    </div>
+  </div>
+
+  <form method="POST" style="text-align: center; margin-top: 2rem;">
+    {% csrf_token %}
+    <button type="submit" class="btn">Start My Farm</button>
+  </form>
+</div>
+{% endblock %}

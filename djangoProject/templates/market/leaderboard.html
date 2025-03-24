@@ -1,0 +1,39 @@
+{% extends 'market/base_market.html' %}
+
+{% block title %}Leaderboard{% endblock %}
+
+{% block content %}
+  <section style="text-align: center; margin-bottom: 30px;">
+    <h1>Leaderboard</h1>
+    <p>Ranked by Green Impact Score</p>
+  </section>
+
+  <div style="max-width: 800px; margin: auto;">
+    <table style="width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+      <thead style="background: #007BFF; color: #fff;">
+        <tr>
+          <th style="padding: 12px;">Rank</th>
+          <th style="padding: 12px;">User</th>
+          <th style="padding: 12px;">Portfolio Value</th>
+          <th style="padding: 12px;">Green Impact Score</th>
+          <th style="padding: 12px;">Balance</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry in leaderboard %}
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 12px; text-align: center;">{{ forloop.counter }}</td>
+            <td style="padding: 12px;">{{ entry.user.username }}</td>
+            <td style="padding: 12px; text-align: right;">${{ entry.portfolio_value }}</td>
+            <td style="padding: 12px; text-align: right;">{{ entry.green_impact }}</td>
+            <td style="padding: 12px; text-align: right;">${{ entry.balance }}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="5" style="padding: 12px; text-align: center;">No data available.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

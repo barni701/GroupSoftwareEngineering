@@ -1,0 +1,48 @@
+{% extends 'crates/base_crates.html' %}
+{% load static %}
+{% block title %}Your Item Inventory{% endblock %}
+{% block content %}
+<div class="inventory-container">
+  <h2>Your Item Inventory</h2>
+  <!-- Message area for selling -->
+  <div id="sell-message"></div>
+
+  <div class="inventory-controls">
+    <input type="text" id="itemSearch" placeholder="Search items..." onkeyup="filterItems()">
+    <select id="sortItems" onchange="sortItems()">
+      <option value="name">Sort by Name</option>
+      <option value="rarity">Sort by Rarity</option>
+      <option value="quantity">Sort by Quantity</option>
+    </select>
+  </div>
+  {% if inventory_items %}
+  <div id="inventory-grid" class="inventory-grid">
+    {% for inv_item in inventory_items %}
+    <div class="inventory-card rarity-{{ inv_item.item.rarity }}"
+         data-name="{{ inv_item.item.name }}"
+         data-rarity="{{ inv_item.item.rarity }}"
+         data-quantity="{{ inv_item.quantity }}">
+      <h3>{{ inv_item.item.name }}</h3>
+      <p>Type: {{ inv_item.item.get_item_type_display }}</p>
+      <p>Rarity: {{ inv_item.item.get_rarity_display }}</p>
+      <p>Quantity: {{ inv_item.quantity }}</p>
+      <p>Value: ${{ inv_item.item.value }}</p>
+      <button type="button" onclick="showItemDetails('{{ inv_item.item.id }}')">View Details</button>
+      <!-- Sell item functionality -->
+      <label for="sell-quantity-{{ inv_item.item.id }}">Sell Qty:</label>
+      <input type="number" id="sell-quantity-{{ inv_item.item.id }}" value="1" min="1">
+      <button type="button" onclick="sellItem('{{ inv_item.item.id }}')">Sell</button>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+    <p>You have not collected any items yet.</p>
+  {% endif %}
+  <!-- Item Detail Modal -->
+  <div id="item-detail-modal" class="modal" style="display: none;">
+    <div class="modal-content" id="item-detail-content">
+      <!-- Content will be loaded via JS -->
+    </div>
+  </div>
+</div>
+{% endblock %}

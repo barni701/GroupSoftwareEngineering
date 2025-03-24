@@ -1,0 +1,10 @@
+<form method="POST">
+    {% csrf_token %}
+    <label for="email">Email:</label>
+    <input type="email" name="email" required>
+
+    <input type="checkbox" name="consent" required>
+    <label for="consent">I agree to the <a href="/privacy-policy/">Privacy Policy</a></label>
+
+    <button type="submit">Sign Up</button>
+</form>

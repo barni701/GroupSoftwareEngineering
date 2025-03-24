@@ -1,0 +1,191 @@
+{% extends "casino/casino_base.html" %}
+
+{% block title %}Roulette - Spin the Wheel{% endblock %}
+
+{% block extra_css %}
+<style>
+  #prediction-options .btn-outline-light.active,
+  #prediction-options .btn-outline-light:focus,
+  #prediction-options .btn-outline-light:hover {
+    background-color: #ffffff1a;
+    color: #fff !important;
+    border-color: #fff;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+
+  <!-- Header -->
+  <div class="jumbotron bg-primary text-white rounded p-4">
+    <h1 class="display-4">Roulette</h1>
+    <p class="lead">Place your bet, spin the wheel, and support sustainability with every play!</p>
+    <hr class="my-4">
+    <p>Your bet helps finance eco-friendly projects through our Green Fund.</p>
+    <p class="h5">Your Balance: <strong>{{ user_balance }} currency</strong></p>
+  </div>
+
+  <!-- Result Display -->
+  {% if roll_result %}
+    <div class="card mb-4 bg-info text-white">
+      <div class="card-body text-center">
+        <h3 class="card-title">Roulette Result</h3>
+        <p class="h4">The wheel landed on: <strong>{{ roll_result }}</strong></p>
+        <p class="lead">{{ messages }}</p>
+      </div>
+    </div>
+  {% else %}
+    <div class="card mb-4 bg-light text-dark">
+      <div class="card-body text-center">
+        <h3 class="card-title">Roulette Result</h3>
+        <p class="h4">No result yet. Place your bet!</p>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Bet Form -->
+  <div class="card mb-4 bg-dark text-white">
+    <div class="card-header">Place Your Bet</div>
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="bet_amount">Bet Amount:</label>
+          <input type="number" name="bet_amount" id="bet_amount" class="form-control text-light bg-secondary border-0" min="1" required value="{{ bet_amount|default:1 }}">
+        </div>
+
+        <!-- Bet Type -->
+        <div class="form-group">
+          <label>Select Bet Type:</label>
+          <div class="btn-group btn-group-toggle d-flex flex-wrap" data-toggle="buttons">
+            <label class="btn btn-outline-light flex-fill {% if bet_type == 'number' %}active{% endif %}">
+              <input type="radio" name="bet_type" value="number" autocomplete="off" {% if bet_type == 'number' %}checked{% endif %}> Number (35:1)
+            </label>
+            <label class="btn btn-outline-light flex-fill {% if bet_type == 'color' %}active{% endif %}">
+              <input type="radio" name="bet_type" value="color" autocomplete="off" {% if bet_type == 'color' %}checked{% endif %}> Color (1:1)
+            </label>
+            <label class="btn btn-outline-light flex-fill {% if bet_type == 'odd_even' %}active{% endif %}">
+              <input type="radio" name="bet_type" value="odd_even" autocomplete="off" {% if bet_type == 'odd_even' %}checked{% endif %}> Odd/Even (1:1)
+            </label>
+            <label class="btn btn-outline-light flex-fill {% if bet_type == 'low_high' %}active{% endif %}">
+              <input type="radio" name="bet_type" value="low_high" autocomplete="off" {% if bet_type == 'low_high' %}checked{% endif %}> Low/High (1:1)
+            </label>
+          </div>
+        </div>
+
+        <!-- Prediction Options -->
+        <div class="form-group">
+          <label for="prediction" id="prediction_label">Your Prediction:</label>
+          <input type="hidden" name="prediction" id="prediction_input" value="{{ prediction|default:'' }}">
+          <div id="prediction-options" class="mt-2"></div>
+          <small id="prediction_info" class="form-text text-light">
+            For Number bets: Enter a number between 0 and 36.<br>
+            For Color bets: Choose between Red and Black.<br>
+            For Odd/Even bets: Choose between Odd and Even.<br>
+            For Low/High bets: Choose between Low (1–18) and High (19–36).
+          </small>
+        </div>
+
+        <!-- Green Bet Checkbox -->
+        <div class="form-group form-check">
+          <input type="checkbox" name="green_bet" id="green_bet" class="form-check-input" checked>
+          <label for="green_bet" class="form-check-label">🌱 Green Bet (10% of bet supports sustainability)</label>
+        </div>
+
+        <button type="submit" class="btn btn-success btn-block">Spin Roulette</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Game History -->
+  <div class="card mb-4 bg-secondary text-white">
+    <div class="card-header">Recent Roulette Games</div>
+    <div class="card-body">
+      <p>Win Rate: <strong>{{ win_percentage }}%</strong></p>
+      <table class="table table-striped table-dark">
+        <thead>
+          <tr>
+            <th>Result</th>
+            <th>Bet Type</th>
+            <th>Prediction</th>
+            <th>Win/Loss</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for game in game_history %}
+          <tr>
+            <td>{{ game.result }}</td>
+            <td>{{ game.get_bet_type_display }}</td>
+            <td>{{ game.prediction }}</td>
+            <td>{% if game.win %}✅ Win{% else %}❌ Loss{% endif %}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4">No recent games.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Green Fund -->
+  <div class="card mb-4 bg-light text-dark">
+    <div class="card-header">Green Fund</div>
+    <div class="card-body text-center">
+      <h3 class="card-title">Green Fund: <strong>{{ green_fund_amount|default:"0.00" }} currency</strong></h3>
+      <p class="card-text">Your bets support sustainable initiatives!</p>
+      <a href="{% url 'green_fund_leaderboard' %}" class="btn btn-success">View Leaderboard</a>
+    </div>
+  </div>
+</div>
+
+<!-- Prediction Options Script -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const betTypeRadios = document.getElementsByName("bet_type");
+  const predictionOptionsDiv = document.getElementById("prediction-options");
+  const predictionInput = document.getElementById("prediction_input");
+
+  function populatePredictionOptions() {
+    predictionOptionsDiv.innerHTML = "";
+    let selectedBetType;
+    for (let radio of betTypeRadios) {
+      if (radio.checked) {
+        selectedBetType = radio.value;
+        break;
+      }
+    }
+
+    if (selectedBetType === "number") {
+      predictionOptionsDiv.innerHTML = '<input type="number" class="form-control text-light bg-secondary border-0" name="prediction" id="prediction_manual" min="0" max="36" placeholder="Enter a number" required>';
+    } else {
+      const values = {
+        "color": ["red", "black"],
+        "odd_even": ["odd", "even"],
+        "low_high": ["low", "high"]
+      };
+      (values[selectedBetType] || []).forEach(value => addPredictionButton(value));
+    }
+  }
+
+  function addPredictionButton(value) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "btn btn-outline-light text-light mr-2 mb-2";
+    btn.textContent = value.charAt(0).toUpperCase() + value.slice(1);
+    btn.addEventListener("click", function() {
+      predictionInput.value = value;
+      const buttons = predictionOptionsDiv.getElementsByTagName("button");
+      for (let b of buttons) b.classList.remove("active");
+      btn.classList.add("active");
+    });
+    predictionOptionsDiv.appendChild(btn);
+  }
+
+  betTypeRadios.forEach(r => r.addEventListener("change", populatePredictionOptions));
+  populatePredictionOptions();
+});
+</script>
+{% endblock %}

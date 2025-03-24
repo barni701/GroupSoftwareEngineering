@@ -1,0 +1,8 @@
+/* variables.css */
+:root {
+    --rarity-common: #8BC34A;    /* Vibrant green for Common */
+    --rarity-uncommon: #03A9F4;  /* Vivid blue for Uncommon */
+    --rarity-rare: #FFEB3B;      /* Bright yellow for Rare */
+    --rarity-epic: #E91E63;      /* Bold pink for Epic */
+    --rarity-legendary: #FF9800; /* Striking orange for Legendary */
+  }

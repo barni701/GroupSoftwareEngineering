@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+    <title>Battle Pass</title>
+    <style>
+        .battlepass-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 700px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .progress-bar-container {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 5px;
+            margin-top: 10px;
+            position: relative;
+        }
+        .progress-bar {
+            height: 20px;
+            background-color: #4caf50;
+            border-radius: 5px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            transition: width 0.5s;
+        }
+        .tier-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            padding: 0;
+            margin-top: 20px;
+        }
+        .tier {
+            width: 30%;
+            margin: 10px;
+            padding: 15px;
+            background: #e7e7e7;
+            border-radius: 5px;
+            text-align: center;
+            transition: 0.3s;
+        }
+        .tier.premium {
+            background: linear-gradient(135deg, gold, #ffdd57);
+            color: black;
+            font-weight: bold;
+            border: 3px solid gold;
+        }
+        .claimed {
+            background: #4caf50;
+            color: white;
+        }
+        .upcoming {
+            background: #ffcc00;
+        }
+        .locked {
+            background: #ccc;
+        }
+    </style>
+{% endblock extra_head %}
+
+{% block content %}
+    <div class="battlepass-container">
+        <h2>Battle Pass - Season {{ user_battle_pass.battle_pass.season_number }}</h2>
+        <p>Current Tier: {{ user_battle_pass.current_tier }}</p>
+
+        {% if not user_battle_pass.has_premium %}
+            <form action="{% url 'buy_premium_pass' %}" method="post">
+                {% csrf_token %}
+                <button type="submit">Buy Premium Pass (1000 coins)</button>
+            </form>
+        {% else %}
+            <p>✅ Premium Pass Active!</p>
+        {% endif %}
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" style="width: {{ user_battle_pass.progress_points|floatformat:0 }}%;">
+                {{ user_battle_pass.progress_points }}/100 XP
+            </div>
+        </div>
+
+        <p>🔹 Previous Tier: {{ user_battle_pass.current_tier|add:"-1" }} | 🎯 Current Tier: {{ user_battle_pass.current_tier }} | 🚀 Next Tier: {{ user_battle_pass.current_tier|add:"1" }}</p>
+
+        <p>⏳ Time Left: <span id="season-timer"></span></p>
+        <h3>Rewards</h3>
+        <div class="tier-list">
+            {% for tier in tiers %}
+            <div class="tier {% if tier.is_premium %}premium{% endif %} {% if user_battle_pass.current_tier > tier.tier_level %}claimed{% elif user_battle_pass.current_tier == tier.tier_level %}upcoming{% else %}locked{% endif %}">
+                    <strong>Tier {{ tier.tier_level }}</strong><br>
+                    {{ tier.reward_name }}
+                    {% if tier.is_premium and not user_battle_pass.has_premium %}
+                        <span style="color: gold;">(Premium Only)</span>
+                    {% endif %}
+                    {% if user_battle_pass.current_tier > tier.tier_level %}
+                        ✅ Claimed
+                    {% elif user_battle_pass.current_tier == tier.tier_level %}
+                        ⏳ Upcoming
+                    {% else %}
+                        🔒 Locked
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock content %}
+
+{% block extra_js %}
+    <script>
+        function updateTimer() {
+            const endDate = new Date("{{ user_battle_pass.battle_pass.end_date|date:'Y-m-d H:i:s' }}");
+            const now = new Date();
+            const diff = endDate - now;
+
+            if (diff > 0) {
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                document.getElementById("season-timer").innerText = `${days} days, ${hours} hours`;
+            } else {
+                document.getElementById("season-timer").innerText = "Season Ended!";
+            }
+        }
+
+        updateTimer();
+        setInterval(updateTimer, 60000);
+    </script>
+{% endblock extra_js %}

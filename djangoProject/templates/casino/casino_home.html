@@ -1,0 +1,53 @@
+{% extends "casino/casino_base.html" %}
+
+{% block title %}Casino Home{% endblock %}
+
+{% block content %}
+<div class="casino-home container mt-4">
+    <div class="jumbotron bg-dark text-light p-4 rounded">
+        <h1 class="display-4">Welcome to the Casino!</h1>
+        <p class="lead">Enjoy our exciting games while contributing to a sustainable future!</p>
+        <hr class="my-4">
+        <p>Every game you play helps support our Green Fund, which contributes to eco-friendly projects.</p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="card bg-secondary text-light">
+                <div class="card-body">
+                    <h5 class="card-title">Dice Game</h5>
+                    <p class="card-text">Roll the dice and test your luck!</p>
+                    <a href="{% url 'play_dice' %}" class="btn btn-primary">Play Dice</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-secondary text-light">
+                <div class="card-body">
+                    <h5 class="card-title">Roulette</h5>
+                    <p class="card-text">Place your bets and spin the wheel!</p>
+                    <a href="{% url 'play_roulette' %}" class="btn btn-primary">Play Roulette</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-secondary text-light">
+                <div class="card-body">
+                    <h5 class="card-title">Blackjack</h5>
+                    <p class="card-text">Test your skill at BlackJack</p>
+                    <a href="{% url 'play_blackjack' %}" class="btn btn-primary">Play</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sustainability bg-info text-dark p-3 rounded">
+        <h3>Our Sustainability Commitment</h3>
+        <p>Every time you play, a portion of your bet goes to our Green Fund. Check out the current total:</p>
+        <p class="h4">Green Fund: <strong>{{ green_fund.total_donated|default:"0.00" }} currency</strong></p>
+        <a href="{% url 'green_fund_leaderboard' %}" class="btn btn-success">View Green Fund Leaderboard</a>
+    </div>
+    <br><br>
+    <a href="{% url 'home' %}">Return Home</a>
+</div>
+{% endblock %}

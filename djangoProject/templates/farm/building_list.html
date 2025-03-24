@@ -1,0 +1,30 @@
+{% extends 'crates/base_crates.html' %}
+{% load static %}
+{% block title %}Your Buildings{% endblock %}
+{% block content %}
+<div class="inventory-container">
+  <h2>Your Buildings</h2>
+  {% if buildings %}
+    <div class="inventory-grid">
+      {% for building in buildings %}
+      <div class="inventory-card building-card">
+        <h3>{{ building.template.name }}</h3>
+        <p>Level: {{ building.level }}</p>
+        <p>
+          <strong>Upgrade Cost:</strong>
+          {% if building.current_upgrade_cost %}
+            ${{ building.current_upgrade_cost }}
+          {% else %}
+            N/A
+          {% endif %}
+        </p>
+        <a href="{% url 'building_detail' building.id %}" class="btn">View Details</a>
+        <button type="button" class="btn" onclick="upgradeBuilding('{{ building.id }}')">Upgrade</button>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>You have no buildings yet. <a href="{% url 'choose_starting_buildings' %}">Start your farm</a>.</p>
+  {% endif %}
+</div>
+{% endblock %}

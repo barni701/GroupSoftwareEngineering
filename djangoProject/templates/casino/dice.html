@@ -1,0 +1,146 @@
+{% extends "casino/casino_base.html" %}
+
+{% block title %}Dice Game{% endblock %}
+
+{% block content %}
+<h2>🎲 Dice Game</h2>
+<p>Predict the dice roll and win big while supporting sustainability!</p>
+
+<!-- Green Bet Information -->
+<div class="casino-card">
+    <h4>🌱 What is the Green Bet?</h4>
+    <p>
+        The Green Bet automatically donates <strong>10% of your bet</strong> to our <strong>Green Fund</strong>,
+        supporting sustainability initiatives. Your contributions help fund eco-friendly projects in the community!
+    </p>
+</div>
+
+<!-- Dice Result Container -->
+<div class="casino-card">
+    <h3>🎲 Your Roll Result:</h3>
+    {% if roll_result %}
+    <div id="dice-container">
+        <!-- Display the updated dice image based on roll_result -->
+        <img id="dice-image" src="/static/images/dice{{ roll_result }}.png" width="100" alt="Dice showing {{ roll_result }}" aria-label="Dice showing {{ roll_result }}">
+    </div>
+    <p id="dice-result">Result: <span id="final-result">{{ roll_result }}</span></p>
+    {% endif %}
+    <p>{{ messages }}</p>
+</div>
+
+<!-- Dice Game Form -->
+<form method="post" class="casino-card">
+    {% csrf_token %}
+
+    <!-- Bet Amount Input -->
+    <div class="form-group">
+        <label for="bet_amount">Bet Amount:</label>
+        <input type="number" name="bet_amount" min="1" required class="form-control mb-2" value="{{ bet_amount|default:1 }}">
+    </div>
+
+    <!-- Bet Type Select -->
+    <div class="form-group">
+        <label for="bet_type">Select Bet Type:</label>
+        <select name="bet_type" id="bet_type" class="form-control mb-2">
+            <option value="exact" {% if bet_type == "exact" %}selected{% endif %}>Exact Number (x6 payout)</option>
+            <option value="odd_even" {% if bet_type == "odd_even" %}selected{% endif %}>Odd/Even (x2 payout)</option>
+            <option value="high_low" {% if bet_type == "high_low" %}selected{% endif %}>High/Low (x2 payout)</option>
+        </select>
+    </div>
+
+    <!-- Prediction Input -->
+    <div class="form-group">
+        <label for="prediction" id="prediction_label">Your Prediction:</label>
+        <input type="number" name="prediction" min="0" max="6" required class="form-control mb-2" id="prediction_input" value="{{ prediction }}">
+    </div>
+
+    <!-- Prediction Help Text -->
+    <div id="prediction_info" class="form-text text-muted mb-3">
+        <p id="prediction_help">
+            <!-- This content will be updated by JavaScript -->
+        </p>
+    </div>
+
+    <!-- Green Bet Checkbox -->
+    <div class="form-check mb-3">
+        <input type="checkbox" name="green_bet" id="green_bet" class="form-check-input" checked>
+        <label for="green_bet" class="form-check-label">🌱 Green Bet (10% of bet supports sustainability)</label>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" class="btn btn-success">Roll Dice</button>
+</form>
+
+<!-- Game History & Win Rate -->
+<div class="casino-card">
+    <h3>Your Recent Games</h3>
+    <p>Win Rate: <strong>{{ win_percentage }}%</strong></p>
+
+    <table class="table table-dark">
+        <thead>
+            <tr>
+                <th>Roll</th>
+                <th>Bet Type</th>
+                <th>Prediction</th>
+                <th>Win/Loss</th>
+            </tr>
+        </thead>
+        <tbody id="game_history">
+            {% for game in game_history %}
+            <tr>
+                <td>{{ game.roll_result }}</td>
+                <td>{{ game.get_bet_type_display }}</td>
+                <td>{{ game.prediction }}</td>
+                <td>{% if game.win %}✅ Win {% else %}❌ Loss {% endif %}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">No recent games.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Green Fund Leaderboard Link -->
+<div class="casino-card">
+    <h3>🌱 Green Fund Leaderboard</h3>
+    <p>Check the top contributors to the sustainability fund.</p>
+    <a href="{% url 'green_fund_leaderboard' %}" class="btn btn-primary">View Leaderboard</a>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const betTypeSelect = document.getElementById("bet_type");
+        const predictionInput = document.getElementById("prediction_input");
+        const predictionHelp = document.getElementById("prediction_help");
+    
+        function updatePredictionHelp() {
+            const betType = betTypeSelect.value;
+            let helpText = "";
+
+            if (betType === "odd_even") {
+                predictionInput.min = 0;
+                predictionInput.max = 1;
+                predictionInput.value = "";
+                helpText = "🎯 Odd/Even: Enter 0 for Even or 1 for Odd.";
+            } else if (betType === "high_low") {
+                predictionInput.min = 0;
+                predictionInput.max = 1;
+                predictionInput.value = "";
+                helpText = "⬆️ High/Low: Enter 0 for Low (1-3) or 1 for High (4-6).";
+            } else {
+                predictionInput.min = 1;
+                predictionInput.max = 6;
+                predictionInput.value = "";
+                helpText = "🎲 Exact Number: Enter a number between 1 and 6.";
+            }
+
+            predictionHelp.innerText = helpText;
+        }
+    
+        // Trigger on page load and bet type change
+        updatePredictionHelp();
+        betTypeSelect.addEventListener("change", updatePredictionHelp);
+    });
+</script>
+
+{% endblock %}

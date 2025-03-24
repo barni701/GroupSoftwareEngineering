@@ -1,0 +1,166 @@
+{% extends 'market/base_market.html' %}
+
+{% block title %}My Portfolio{% endblock %}
+
+{% block content %}
+  <!-- Summary Section -->
+  <section style="margin-bottom: 40px; text-align: center;">
+    <h2 style="font-size: 2rem; color: #007BFF;">Portfolio Summary</h2>
+    <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 20px;">
+      <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+        <h3 style="margin: 0; color: #28a745;">Total Invested</h3>
+        <p style="font-size: 1.2rem; font-weight: 600;">${{ total_invested|floatformat:2 }}</p>
+      </div>
+      <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+        <h3 style="margin: 0; color: #17a2b8;">Current Value</h3>
+        <p style="font-size: 1.2rem; font-weight: 600;">${{ current_value|floatformat:2 }}</p>
+      </div>
+      <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+        <h3 style="margin: 0; color: #ffc107;">Green Impact Score</h3>
+        <p style="font-size: 1.2rem; font-weight: 600;">{{ green_impact_score|floatformat:2 }}</p>
+      </div>
+      <!-- New Analytics Metrics -->
+      <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+        <h3 style="margin: 0; color: #6f42c1;">ROI</h3>
+        <p style="font-size: 1.2rem; font-weight: 600;">{{ roi|floatformat:2 }}%</p>
+      </div>
+      <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+        <h3 style="margin: 0; color: #e83e8c;">Avg. Sustainability</h3>
+        <p style="font-size: 1.2rem; font-weight: 600;">{{ avg_sustainability|floatformat:2 }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Portfolio Analytics Chart -->
+  <section style="margin-bottom: 40px;">
+    <h2 style="text-align: center; color: #007BFF;">Portfolio Performance</h2>
+    <div style="max-width: 800px; margin: 20px auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+      <canvas id="portfolioChart" width="800" height="400"></canvas>
+    </div>
+  </section>
+
+  <!-- Investment Table -->
+  <section>
+    <h2 style="text-align: center; color: #007BFF;">Investments</h2>
+    <div style="overflow-x:auto;">
+      <table id="portfolio-table" style="width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+        <thead style="background: #007BFF; color: #fff;">
+          <tr>
+            <th style="padding: 12px;">Company</th>
+            <th style="padding: 12px;">Shares</th>
+            <th style="padding: 12px;">Invested Amount</th>
+            <th style="padding: 12px;">Current Value</th>
+            <th style="padding: 12px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in portfolio_data %}
+            <tr style="border-bottom: 1px solid #ddd;">
+              <td style="padding: 12px;">
+                <a href="{% url 'market:company_detail' item.company.pk %}" style="color: #007BFF; text-decoration: none;">{{ item.company.name }}</a>
+              </td>
+              <td style="padding: 12px; text-align: center;">{{ item.shares }}</td>
+              <td style="padding: 12px; text-align: right;">${{ item.invested_amount|floatformat:2 }}</td>
+              <td style="padding: 12px; text-align: right;">${{ item.current_amount|floatformat:2 }}</td>
+              <td style="padding: 12px; text-align: center;">
+                <a href="{% url 'market:sell_investment_company' item.company.pk %}" style="padding: 8px 12px; background: #dc3545; color: #fff; text-decoration: none; border-radius: 4px; font-size: 0.9rem;">Sell</a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5" style="padding: 12px; text-align: center;">You have no investments yet.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Dynamic Refresh Script for Investment Table -->
+  <script>
+    function updatePortfolio() {
+      fetch("{% url 'market:portfolio_data_api' %}")
+        .then(response => response.json())
+        .then(data => {
+          const tbody = document.querySelector('#portfolio-table tbody');
+          tbody.innerHTML = '';
+          if (data.portfolio.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="padding: 12px; text-align: center;">You have no investments yet.</td></tr>';
+          } else {
+            data.portfolio.forEach(item => {
+              const row = document.createElement('tr');
+              row.style.borderBottom = "1px solid #ddd";
+              row.innerHTML = `
+                <td style="padding: 12px;">
+                  <a href="/market/company/${item.company_pk}/" style="color: #007BFF; text-decoration: none;">${item.company}</a>
+                </td>
+                <td style="padding: 12px; text-align: center;">${item.shares}</td>
+                <td style="padding: 12px; text-align: right;">$${parseFloat(item.invested_amount).toFixed(2)}</td>
+                <td style="padding: 12px; text-align: right;">$${parseFloat(item.current_amount).toFixed(2)}</td>
+                <td style="padding: 12px; text-align: center;">
+                  <a href="/market/investment/company/${item.company_pk}/sell/" style="padding: 8px 12px; background: #dc3545; color: #fff; text-decoration: none; border-radius: 4px; font-size: 0.9rem;">Sell</a>
+                </td>
+              `;
+              tbody.appendChild(row);
+            });
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching portfolio data:", error);
+        });
+    }
+    setInterval(updatePortfolio, 30000);
+    updatePortfolio();
+  </script>
+
+  <!-- Portfolio Analytics Chart Script -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      fetch("{% url 'market:portfolio_analytics_api' %}")
+        .then(response => response.json())
+        .then(data => {
+          // Maximum number of data points to display
+          const maxPoints = 50;
+          let timestamps = data.snapshots.map(s => s.timestamp);
+          let values = data.snapshots.map(s => parseFloat(s.total_value));
+
+          // If more than maxPoints, keep only the most recent ones
+          if (timestamps.length > maxPoints) {
+            timestamps = timestamps.slice(-maxPoints);
+            values = values.slice(-maxPoints);
+          }
+
+          const ctx = document.getElementById('portfolioChart').getContext('2d');
+          new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: timestamps,
+              datasets: [{
+                label: 'Portfolio Value ($)',
+                data: values,
+                backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                borderColor: 'rgba(0, 123, 255, 1)',
+                borderWidth: 2,
+                fill: true,
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                x: {
+                  display: true,
+                  title: { display: true, text: 'Time' },
+                  ticks: { autoSkip: true, maxTicksLimit: 10 }
+                },
+                y: {
+                  display: true,
+                  title: { display: true, text: 'Portfolio Value ($)' }
+                }
+              }
+            }
+          });
+        })
+        .catch(error => console.error('Error fetching analytics data:', error));
+    </script>
+{% endblock %}

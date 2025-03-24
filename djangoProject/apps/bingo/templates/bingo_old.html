@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Bingo{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'apps/bingo/static/css/bingo.css' %}">
+{% endblock %}
+
+{% block content %}
+    <h1 class="text-center">Bingo</h1>
+
+    <!-- Bingo Board Table -->
+    <div class="table-responsive">
+        <table class="board table table-bordered text-center">
+            {% for row in board %}
+                <tr>
+                    {% for cell in row %}
+                        <td class="{% if cell.status == 1 %}table-success{% else %}table-light{% endif %}" data-value="{{ cell.challenge }}">
+                            <a class="cell text-decoration-none" href="{{ cell.url }}">
+                                {{ cell.challenge }}
+                            </a>
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}
