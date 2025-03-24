@@ -170,38 +170,20 @@ class UserProfile(models.Model):
         self.experience_points = xp_remaining
         self.save()
     
-    '''def add_experience(self, amount):
-        if amount < 0:
-            return  # Optionally handle negative values
-        self.experience_points += amount
-        # Level up as long as we have enough XP for the current level
-        while self.experience_points >= self.get_required_xp(self.level):
-            required = self.get_required_xp(self.level)
-            self.experience_points -= required
-            self.level += 1
-        # Safety: ensure XP is not negative
-        if self.experience_points < 0:
-            self.experience_points = 0
-        self.save()'''
 
     def check_achievements(self):
-        """Check if the user qualifies for any achievements and reward them."""
         from django.utils.timezone import now
-
-        possible_achievements = Achievement.objects.all()
-
-        for achievement in possible_achievements:
-            if not UserAchievement.objects.filter(user=self, achievement=achievement).exists():
-                # Custom conditions can be set per achievement
-                if achievement.name == "First Deposit" and self.currency_balance > 0:
-                    self.add_currency(achievement.coin_reward)
-                    self.add_experience(achievement.xp_reward)
-                    UserAchievement.objects.create(user=self, achievement=achievement, date_awarded=now())
-
-                elif achievement.name == "Level 5 Reached" and self.level >= 5:
-                    self.add_currency(achievement.coin_reward)
-                    self.add_experience(achievement.xp_reward)
-                    UserAchievement.objects.create(user=self, achievement=achievement, date_awarded=now())
+        from .achievements import ACHIEVEMENT_CONDITIONS
+        awarded = False
+        for achievement in Achievement.objects.all():
+            condition = ACHIEVEMENT_CONDITIONS.get(achievement.name)
+            if condition and condition(self):
+                if not self.user_achievements.filter(achievement=achievement).exists():
+                    self.achievements.add(achievement, through_defaults={'date_awarded': now()})
+                    awarded = True
+                    print(f"Awarded achievement: {achievement.name} to user: {self.user.username}")
+        if not awarded:
+            print("No new achievements awarded for user:", self.user.username)
 
     def calculate_green_impact(self):
         # Sum over each investment: sustainability_rating * shares

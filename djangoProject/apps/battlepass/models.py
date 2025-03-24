@@ -39,14 +39,18 @@ class UserBattlePass(models.Model):
     has_premium = models.BooleanField(default=False)
 
     def progress_to_next_tier(self):
-        """Allow multiple level-ups and retain excess XP."""
-        from .views import grant_reward  # ✅ Import locally to avoid circular import
-
+        """Allow multiple level-ups and retain excess XP.
+        
+        For each tier advancement, grant the corresponding free reward and, if the user has premium,
+        the premium reward as well. Returns a list of all rewards that were granted.
+        """
+        from .views import grant_reward  # Import locally to avoid circular import
         required_points_per_tier = 100
+        granted_rewards = []
 
         while self.progress_points >= required_points_per_tier:
-            self.progress_points -= required_points_per_tier  # subtract exactly what’s needed
-            self.current_tier += 1
+            self.progress_points -= required_points_per_tier  # Deduct points required for the tier
+            self.current_tier += 1  # Increase the tier level
 
             free_reward = BattlePassTier.objects.filter(
                 battle_pass=self.battle_pass,
@@ -62,11 +66,14 @@ class UserBattlePass(models.Model):
 
             if free_reward:
                 grant_reward(self.user, free_reward)
+                granted_rewards.append(free_reward)
 
             if self.has_premium and premium_reward:
                 grant_reward(self.user, premium_reward)
+                granted_rewards.append(premium_reward)
 
         self.save()
+        return granted_rewards
     
     @property
     def progress_percent(self):
