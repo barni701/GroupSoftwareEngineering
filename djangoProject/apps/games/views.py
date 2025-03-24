@@ -59,6 +59,10 @@ def eco_memory(request):
 def gps_game(request):
     return render(request, 'games/gps_game.html')
 
+#game 6
+def gps_game2(request):
+    return render(request, 'games/gps_game2.html')
+
 
 #@login_required
 def mark_square_ajax(request):
