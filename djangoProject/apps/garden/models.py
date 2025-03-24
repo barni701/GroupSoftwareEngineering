@@ -34,6 +34,10 @@ class GardenPlant(models.Model):
         """Returns True if the plant is ready to harvest."""
         return self.time_until_harvest() == timedelta(0)
 
+    def is_fully_grown(self):
+        """Returns True if the plant has finished growing but hasn't been harvested."""
+        return self.is_ready_to_harvest() and not self.is_harvested
+
     def __str__(self):
         return f"{self.seed.name} planted by {self.user.username}"
 

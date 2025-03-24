@@ -6,6 +6,16 @@
     text-align: center;
 }
 
+/* Navbar */
+.navbar {
+    background-color: #137828 !important;
+}
+
+/* Footer */
+.footer, .bg-dark {
+    background-color: #137828 !important;
+}
+
 /* Floating XP Gain Effect */
 .xp-gain-animation {
     position: absolute;

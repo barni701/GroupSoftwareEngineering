@@ -11,8 +11,17 @@
             color: white;
             font-family: 'Arial', sans-serif;
         }
+        .casino-title {
+            margin-bottom: 1rem;      /* Space under the heading */
+        }
+        .button-container {
+            display: flex;            /* Put buttons on one line */
+            gap: 10px;                /* Space between buttons */
+            margin-bottom: 1rem;      /* Space below the buttons */
+        }
         .casino-header {
             background: linear-gradient(to right, #ffcc00, #ff6699);
+            flex-direction: column;
             padding: 15px;
             text-align: center;
             display: flex;
@@ -39,6 +48,7 @@
         }
         .currency-display {
             font-size: 18px;
+            margin-top: 1rem;   
             font-weight: bold;
             color: white;
         }
@@ -117,8 +127,9 @@
 </head>
 <body>
     <div class="casino-header">
-        <h1>🎰 Welcome to the Casino! 🎲</h1>
-        <div>
+        <h1 class = "casino-title">🎰 Welcome to the Casino! 🎲</h1>
+
+        <div class="casino-nav">
             <a href="{% url 'casino_home' %}" class="btn btn-light">Casino Home</a>
             <a href="{% url 'play_dice' %}" class="btn btn-warning">Dice Game</a>
             <a href="{% url 'play_roulette' %}" class="btn btn-warning">Roulette</a>
