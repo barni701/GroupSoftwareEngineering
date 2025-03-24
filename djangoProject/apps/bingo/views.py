@@ -24,7 +24,7 @@ def bingo_view(request):
             user_profile.save()
     except:
         print("User is not logged in!")
-        return redirect('http://127.0.0.1:8000/users/login/?next=/bingo/')
+        return redirect('http://127.0.0.1:8000/users/login/?next=bingo/')
 
 
     # Check for and pass bingo to html
