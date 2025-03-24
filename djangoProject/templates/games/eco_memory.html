@@ -52,6 +52,9 @@
     <div id="game-board"></div>
     <p id="message"></p>
     <button id="back-to-bingo">Back to Bingo Board</button>
+
+    {% load static %}
+    <script src="{% static 'js/marking_square.js' %}"></script>
     <script>
         // Use Django static path for local images
         const ecoImages = [
@@ -105,7 +108,7 @@
                             // Show the back-to-bingo button when the game is finished
                             document.getElementById('back-to-bingo').style.display = 'inline-block';
 
-                            markBingoSquare();
+                            markBingoSquare("4");
                         }
                     } else {
                         // Flip back the cards after a short delay
@@ -119,37 +122,6 @@
 
             board.appendChild(card);
         });
-
-
-        function markBingoSquare() {
-        fetch("/games/mark-square/", {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": getCSRFToken(),  // Django requires CSRF protection
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ challenge: "4" })  // Optional data
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data.message);
-        })
-        .catch(error => console.error("Error marking square:", error));
-        }
-
-        // Function to get CSRF token from cookies (Django security requirement)
-        function getCSRFToken() {
-            let cookieValue = null;
-            let cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                let cookie = cookies[i].trim();
-                if (cookie.startsWith("csrftoken=")) {
-                    cookieValue = cookie.substring("csrftoken=".length, cookie.length);
-                    break;
-                }
-            }
-            return cookieValue;
-        }
 
         // Event listener for the back-to-bingo button
         document.getElementById("back-to-bingo").addEventListener("click", function() {
