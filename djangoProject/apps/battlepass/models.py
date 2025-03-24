@@ -45,7 +45,7 @@ class UserBattlePass(models.Model):
         required_points_per_tier = 100
 
         while self.progress_points >= required_points_per_tier:
-            self.progress_points -= required_points_per_tier  # ✅ Only subtract enough for a level-up
+            self.progress_points -= required_points_per_tier  # subtract exactly what’s needed
             self.current_tier += 1
 
             free_reward = BattlePassTier.objects.filter(
@@ -67,3 +67,9 @@ class UserBattlePass(models.Model):
                 grant_reward(self.user, premium_reward)
 
         self.save()
+    
+    @property
+    def progress_percent(self):
+        """Calculate the percentage progress toward the next tier."""
+        required_points_per_tier = 100
+        return (self.progress_points % required_points_per_tier)  # Ensure it's between 0 and 99

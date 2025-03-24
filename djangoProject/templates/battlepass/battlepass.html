@@ -77,8 +77,8 @@
         {% endif %}
 
         <div class="progress-bar-container">
-            <div class="progress-bar" style="width: {{ user_battle_pass.progress_points|floatformat:0 }}%;">
-                {{ user_battle_pass.progress_points }}/100 XP
+            <div class="progress-bar" style="width: {{user_battle_pass.progress_percent}}%">
+                {{user_battle_pass.progress_percent}}/100 XP
             </div>
         </div>
 
