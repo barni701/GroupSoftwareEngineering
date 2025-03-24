@@ -1,11 +1,10 @@
-# apps/garden/models.py
-
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import timedelta
 from decimal import Decimal
 from apps.crates.models import Item  # Assuming seeds are stored as Items of a specific type
+from apps.users.models import UserProfile
 
 class GardenPlot(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="garden_plots")
@@ -40,6 +39,19 @@ class GardenPlant(models.Model):
 
     def __str__(self):
         return f"{self.seed.name} planted by {self.user.username}"
+
+    def save(self, *args, **kwargs):
+        is_new = self._state.adding
+        super().save(*args, **kwargs)
+
+        profile = UserProfile.objects.get(user=self.user)
+
+        if is_new:
+            profile.total_garden_plants += 1
+        if self.is_harvested:
+            profile.harvested_plants += 1
+
+        profile.save()
 
 @property
 def progress_percentage(self):

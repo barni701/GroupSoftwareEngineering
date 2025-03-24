@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from decimal import Decimal
 from apps.crates.crate_definitions import CRATE_TYPES
+from apps.users.models import UserProfile
 
 
 class Crate(models.Model):
@@ -131,6 +132,23 @@ class CrateOpeningHistory(models.Model):
     reward_item = models.CharField(max_length=100)  # Store the name of the reward item
     reward_rarity = models.IntegerField()  # The adjusted rarity at open time
     opened_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        # Update user profile stats
+        profile = UserProfile.objects.get(user=self.user)
+        profile.total_crates_opened += 1
+
+        # Optional: update rarest item received if current is rarer
+        try:
+            current_rarity = int(self.reward_rarity)
+            if not hasattr(profile, 'rarest_item_received') or current_rarity > getattr(profile, 'rarest_item_received', 0):
+                profile.rarest_item_received = current_rarity
+        except Exception:
+            pass
+
+        profile.save()
 
     def __str__(self):
         return f"{self.user.username} opened {self.crate_type} and received {self.reward_item} ({self.reward_rarity})"

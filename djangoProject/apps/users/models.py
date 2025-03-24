@@ -8,6 +8,29 @@ class UserProfile(models.Model):
     tc_consent = models.BooleanField(default=False)
     consent_date = models.DateTimeField(auto_now_add=True)
     friends = models.ManyToManyField("self", symmetrical=False, blank=True)
+    bingo_board = models.JSONField(default=list)
+
+    # Stats 
+    total_crates_opened = models.PositiveIntegerField(default=0)
+    total_garden_plants = models.PositiveIntegerField(default=0)
+    most_used_garden_crop = models.CharField(max_length=50, blank=True)
+
+    # 🎰 Casino stats
+    total_casino_games_played = models.PositiveIntegerField(default=0)
+    total_casino_wagered = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal('0.00'))
+    total_casino_green_bets = models.PositiveIntegerField(default=0)
+    total_casino_green_fund_donated = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal('0.00'))
+    total_casino_wins = models.PositiveIntegerField(default=0)
+
+    # 🧪 Crafting stats
+    total_items_crafted = models.PositiveIntegerField(default=0)
+    rare_items_crafted = models.PositiveIntegerField(default=0)
+    most_crafted_item = models.CharField(max_length=100, blank=True)
+
+    # ⚔️ Climate duels stats
+    climate_duels_played = models.PositiveIntegerField(default=0)
+    climate_duels_won = models.PositiveIntegerField(default=0)
+    climate_duel_eco_score = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal('0.00'))
 
     def add_friend(self, friend):
         """Add a friend (if not already friends)."""
@@ -186,6 +209,19 @@ class UserProfile(models.Model):
         for investment in self.user.investments.all():
             total += investment.company.sustainability_rating * investment.shares
         return total
+
+    def get_stats(self):
+        return {
+            "username": self.user.username,
+            "currency_balance": self.currency_balance,
+            "farm_currency": self.farm_currency,
+            "level": self.level,
+            "experience_points": self.experience_points,
+            "total_experience": self.total_experience,
+            "green_impact": self.calculate_green_impact(),
+            "achievements": list(self.achievements.select_related("achievement").all()),
+            "friends": self.friends.all()
+        }
 
 class CurrencyTransaction(models.Model):
     TRANSACTION_TYPE_CHOICES = (

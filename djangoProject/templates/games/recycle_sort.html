@@ -82,6 +82,18 @@
       font-size: 2em;
       color: #e74c3c;
       margin-top: 20px;
+      text-align: center;
+    }
+
+    #game-over button {
+      background-color: #27ae60;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+      margin-top: 15px;
     }
   </style>
 </head>
@@ -102,7 +114,11 @@
   <div id="score">Score: 0</div>
   <div id="timer">Time Left: 60</div>
   <div id="feedback"></div>
-  <div id="game-over">Game Over! Final Score: <span id="final-score"></span></div>
+  <div id="game-over">
+    Game Over! Final Score: <span id="final-score"></span>
+    <br>
+    <button id="back-to-bingo">Back to Bingo Board</button>
+  </div>
 
   <script>
     const wasteItem = document.getElementById('waste-item');
@@ -114,7 +130,7 @@
     const finalScoreDisplay = document.getElementById('final-score');
 
     let score = 0;
-    let timeLeft = 60;
+    let timeLeft = 100;
     let timer;
 
     const wasteItems = [
@@ -171,6 +187,49 @@
       bins.forEach(bin => bin.style.display = 'none');
     }
 
+    let hasMarkedSquare = false;  // Prevent multiple requests
+
+    function updateScore(points) {
+        score += points;
+        scoreDisplay.innerText = 'Score: ' + score;
+
+        // If the score reaches 100 and hasn't been marked yet
+        if (score >= 100 && !hasMarkedSquare) {
+            hasMarkedSquare = true;  // Prevent duplicate calls
+            markBingoSquare();
+        }
+    }
+
+    function markBingoSquare() {
+        fetch("/games/mark-square/", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": getCSRFToken(),  // Django requires CSRF protection
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ challenge: "2" })  // Optional data
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message);
+        })
+        .catch(error => console.error("Error marking square:", error));
+    }
+
+    // Function to get CSRF token from cookies (Django security requirement)
+    function getCSRFToken() {
+        let cookieValue = null;
+        let cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            let cookie = cookies[i].trim();
+            if (cookie.startsWith("csrftoken=")) {
+                cookieValue = cookie.substring("csrftoken=".length, cookie.length);
+                break;
+            }
+        }
+        return cookieValue;
+    }
+
     // Set up drag events for the waste item
     wasteItem.addEventListener('dragstart', function (e) {
       e.dataTransfer.setData('text/plain', wasteItem.dataset.type);
@@ -201,6 +260,10 @@
     // Initialize the game
     updateWasteItem();
     startTimer();
+
+    document.getElementById("back-to-bingo").addEventListener("click", function() {
+      window.location.href = "/bingo/";
+    });
   </script>
 </body>
 </html>

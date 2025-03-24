@@ -3,6 +3,7 @@ from decimal import Decimal
 from django.db import models
 from django.contrib.auth.models import User
 import random
+from apps.users.models import UserProfile
 
 from decimal import Decimal
 
@@ -31,6 +32,13 @@ class DiceGame(models.Model):
         elif self.bet_type == 'high_low':
             self.win = (self.roll_result > 3) if self.prediction == 1 else (self.roll_result <= 3)
         self.save()
+        # Update user stats
+        profile = UserProfile.objects.get(user=self.user)
+        profile.total_casino_games_played += 1
+        profile.total_casino_wagered += self.bet_amount
+        if self.win:
+            profile.total_casino_wins += 1
+        profile.save()
 
 class GreenFund(models.Model):
     total_donated = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal("0.00"))
@@ -118,6 +126,13 @@ class RouletteGame(models.Model):
                 elif self.prediction.lower() == "high":
                     self.win = 19 <= int(self.result) <= 36
         self.save()
+        # Update user stats
+        profile = UserProfile.objects.get(user=self.user)
+        profile.total_casino_games_played += 1
+        profile.total_casino_wagered += self.bet_amount
+        if self.win:
+            profile.total_casino_wins += 1
+        profile.save()
 
 
 class BlackjackGame(models.Model):
@@ -206,3 +221,10 @@ class BlackjackGame(models.Model):
         else:
             self.result = 'lose'
         self.save()
+        # Update user stats
+        profile = UserProfile.objects.get(user=self.user)
+        profile.total_casino_games_played += 1
+        profile.total_casino_wagered += self.bet_amount
+        if self.result == "win":
+            profile.total_casino_wins += 1
+        profile.save()

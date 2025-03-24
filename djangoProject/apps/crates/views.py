@@ -262,6 +262,7 @@ def bulk_open_crates(request, crate_type):
             else:
                 aggregated_rewards[key] = reward_info.copy()
                 aggregated_rewards[key]["count"] = 1
+
         except Exception as e:
             aggregated_rewards.setdefault("errors", []).append(str(e))
             break

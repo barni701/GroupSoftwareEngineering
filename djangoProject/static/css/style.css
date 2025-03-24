@@ -115,6 +115,33 @@
     background-color: #cce5ff;
 }
 
+
+.compact-widgets {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .compact-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .compact-widget {
+    flex: 1 1 48%;
+    background-color: #16213e; /* match .widget background */
+    color: #e3f2fd; /* match .widget text color */
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* match .widget shadow */
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .compact-widget:hover {
+    transform: scale(1.05); /* optional: keep hover effect */
+  }
+
 .rarity-square.rarity-1 { background-color: var(--rarity-common) !important; }
 .rarity-square.rarity-2 { background-color: var(--rarity-uncommon) !important; }
 .rarity-square.rarity-3 { background-color: var(--rarity-rare) !important; }

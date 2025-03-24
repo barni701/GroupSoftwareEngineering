@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from apps.users.models import UserProfile
 
 class ClimateDuel(models.Model):
     """Stores an ongoing climate duel between two players."""
@@ -44,6 +45,18 @@ class DuelTurn(models.Model):
     def __str__(self):
         return f"Turn {self.duel.current_turn} - {self.player.username}"
     
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        # Update player stats
+        profile = UserProfile.objects.get(user=self.player)
+        profile.climate_duels_played += 1
+
+        # Win/loss tracking could be implemented with a finalization check later.
+        profile.climate_duel_eco_score += max(0, self.duel.player_one_co2 if self.player == self.duel.player_one else self.duel.player_two_co2)
+
+        profile.save()
+
 class PowerUp(models.Model):
     """Power-ups that players can use to gain advantages in a duel."""
     name = models.CharField(max_length=100)

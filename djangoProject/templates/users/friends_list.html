@@ -10,7 +10,10 @@
                     <img src="{{ friend.user.profile_picture.url|default:'https://via.placeholder.com/40' }}" alt="Profile" class="friend-avatar">
                     <span>{{ friend.user.username }}</span>
                 </div>
-                <a href="{% url 'users:remove_friend' friend.id %}" class="btn btn-danger btn-sm">Remove</a>
+                <div class="request-actions">
+                    <a href="{% url 'users:friend_stats' friend.user.username %}" class="btn btn-info btn-sm">View Stats</a>
+                    <a href="{% url 'users:remove_friend' friend.id %}" class="btn btn-danger btn-sm">Remove</a>
+                </div>
             </div>
         {% empty %}
             <p class="empty-message">No friends yet. Add some friends below!</p>
