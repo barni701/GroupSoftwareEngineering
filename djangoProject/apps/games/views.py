@@ -62,6 +62,14 @@ def gps_game(request):
 def gps_game2(request):
     return render(request, 'games/gps_game2.html')
 
+def gps_game3(request):
+    return render(request, 'games/gps_game3.html')
+
+def gps_game4(request):
+    return render(request, 'games/gps_game4.html')
+
+def gps_game5(request):
+    return render(request, 'games/gps_game5.html')
 
 #@login_required
 def mark_square_ajax(request):

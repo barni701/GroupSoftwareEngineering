@@ -8,5 +8,8 @@ urlpatterns = [
     path('game4/', eco_memory, name='eco_memory'),
     path('game5/', gps_game, name='gps_game'),
     path('game6/', gps_game2, name='gps_game2'),
-    path("mark-square/", mark_square_ajax, name="mark_square_ajax"),  # Add this line
+    path('game7/', gps_game3, name='gps_game3'),
+    path('game8/', gps_game4, name='gps_game4'),
+    path('game9/', gps_game5, name='gps_game5'),
+    path("mark-square/", mark_square_ajax, name="mark_square_ajax"), 
 ]
