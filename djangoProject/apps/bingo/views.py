@@ -30,6 +30,8 @@ def bingo_view(request):
     # Check for and pass bingo to html
     bingo = checkBingo(board)
     if(bingo):
+            user_profile.add_currency(20)
+            user_profile.add_experience(50)
             # Generate New Board
             board = newUser()
             user_profile.bingo_board = board

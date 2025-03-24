@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Friend Stats{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+  <h1 class="dashboard-title">📈 {{ profile.user.username }}'s Stats Overview</h1>
+
+  <div class="dashboard-widgets compact-widgets">
+
+    <!-- First row: Core + Achievements -->
+    <div class="compact-row">
+      <div class="compact-widget">
+        <h3>🔧 Core Stats</h3>
+        <p><strong>Eco Score:</strong> {{ stats.green_impact }} <br><small>Reflects their impact on sustainability efforts.</small></p>
+        <p><strong>Level:</strong> {{ stats.level }} <span class="level-badge">🏅</span></p>
+        <progress value="{{ stats.experience_points }}" max="{{ stats.total_experience }}"></progress>
+        <p>{{ stats.experience_points }} / {{ stats.total_experience }} XP</p>
+        <p><strong>XP to Next Level:</strong> {{ stats.xp_to_next_level }}</p>
+        <p><strong>Main Currency:</strong> ${{ stats.currency_balance }}</p>
+        <p><strong>FarmCoin:</strong> ${{ stats.farm_currency }}</p>
+        <p><strong>Achievements Earned:</strong> {{ stats.achievements|length }}</p>
+        <p><strong>Total Friends:</strong> {{ stats.friends|length }}</p>
+      </div>
+
+      <div class="compact-widget">
+        <h3>🏆 Achievements</h3>
+        {% if stats.achievements %}
+          <ul class="achievement-list">
+            {% for achievement in stats.achievements %}
+              <li>🥇 <strong>{{ achievement.achievement.name }}</strong><br><small>{{ achievement.achievement.description }}</small></li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>No achievements earned yet.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Second row: Friends + City Builder -->
+    <div class="compact-row">
+      <div class="compact-widget">
+        <h3>👥 Friends</h3>
+        {% if stats.friends %}
+          <ul class="friend-list">
+            {% for friend in stats.friends %}
+              <li><a href="{% url 'users:friend_stats' friend.user.username %}">{{ friend.user.username }}</a></li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>No friends to display.</p>
+        {% endif %}
+      </div>
+
+      <div class="compact-widget">
+        <h3>🏙️ City Builder</h3>
+        <p><strong>City:</strong> {{ stats.city_name }}</p>
+        <p><strong>Sustainability Score:</strong> {{ stats.sustainability_score }}</p>
+        <p><strong>Total Buildings:</strong> {{ stats.total_buildings }}</p>
+      </div>
+    </div>
+
+    <!-- Third row: Market + Crates -->
+    <div class="compact-row">
+      <div class="compact-widget">
+        <h3>📈 Market</h3>
+        <p><strong>Investments Made:</strong> {{ stats.total_investments }}</p>
+        <p><strong>Total Shares Held:</strong> {{ stats.total_shares }}</p>
+        <p><strong>Transactions:</strong> {{ stats.total_transactions }}</p>
+      </div>
+
+      <div class="compact-widget">
+        <h3>🎁 Crates</h3>
+        <p><strong>Crates Opened:</strong> {{ stats.crates_opened }}</p>
+      </div>
+    </div>
+
+    <!-- Fourth row: Garden -->
+    <div class="compact-row">
+      <div class="compact-widget">
+        <h3>🌱 Garden</h3>
+        <p><strong>Total Plants:</strong> {{ stats.total_garden_plants }}</p>
+        <p><strong>Harvested Plants:</strong> {{ stats.harvested_plants }}</p>
+      </div>
+    </div>
+
+    <!-- Fifth row: Crafting + Climate Duels -->
+    <div class="compact-row">
+      <div class="compact-widget">
+        <h3>🧪 Crafting</h3>
+        <p><strong>Total Items Crafted:</strong> {{ stats.total_items_crafted }}</p>
+        <p><strong>Rare Items Crafted:</strong> {{ stats.rare_items_crafted }}</p>
+        <p><strong>Most Crafted Item:</strong> {{ stats.most_crafted_item }}</p>
+      </div>
+
+      <div class="compact-widget">
+        <h3>⚔️ Climate Duels</h3>
+        <p><strong>Duels Played:</strong> {{ stats.climate_duels_played }}</p>
+        <p><strong>Total Eco Score:</strong> {{ stats.climate_duel_eco_score }}</p>
+      </div>
+    </div>
+
+    <!-- Sixth row: Casino + Games -->
+    <div class="compact-row">
+      <div class="compact-widget">
+        <h3>🎰 Casino</h3>
+        <p><strong>Total Games Played:</strong> {{ stats.total_casino_games_played }}</p>
+        <p><strong>Total Wagered:</strong> ${{ stats.total_casino_wagered }}</p>
+        <p><strong>Total Wins:</strong> {{ stats.total_casino_wins }}</p>
+      </div>
+
+      <div class="compact-widget">
+        <h3>🎮 Games</h3>
+        <p><strong>Total Games Played:</strong> {{ stats.total_games_played }}</p>
+        <p><strong>Eco Choices Made:</strong> {{ stats.eco_choices_made }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-links">
+    <a href="{% url 'users:friends_list' %}">← Back to Friends</a>
+  </div>
+</div>
+{% endblock %}

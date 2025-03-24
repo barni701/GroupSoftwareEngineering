@@ -51,12 +51,18 @@ def battle_pass_view(request):
         "tiers": tiers,
     })
 
+@login_required
+def claim_battle_pass_reward(request):
+    user_battle_pass = UserBattlePass.objects.get(user=request.user)
+    user_battle_pass.progress_to_next_tier()  # This will trigger any rewards if progress is sufficient.
+    messages.success(request, "Your battle pass rewards have been claimed!")
+    return redirect('battlepass')
+
 def grant_reward(user, reward):
     """Grant a reward to a user."""
     user_profile = user.userprofile
     if reward.reward_type == 'currency':
-        user_profile.currency_balance += reward.reward_value
-        user_profile.save()
+        user_profile.add_currency(amount = reward.reward_value, description = f"Received {reward.reward_value} coins from Battle Pass")
     elif reward.reward_type == 'item':
         # Implement inventory system reward logic
         pass

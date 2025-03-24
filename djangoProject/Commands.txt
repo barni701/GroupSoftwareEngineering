@@ -1,0 +1,7 @@
+generate_rewards
+load_buildings
+populate_policies
+load_recipies
+update_item_values
+load_buildings_farm
+seed_data

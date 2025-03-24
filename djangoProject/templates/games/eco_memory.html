@@ -52,6 +52,9 @@
     <div id="game-board"></div>
     <p id="message"></p>
     <button id="back-to-bingo">Back to Bingo Board</button>
+
+    {% load static %}
+    <script src="{% static 'js/marking_square.js' %}"></script>
     <script>
         // Use Django static path for local images
         const ecoImages = [
@@ -104,6 +107,8 @@
                             document.getElementById('message').innerText = 'Congratulations! You matched all the cards!';
                             // Show the back-to-bingo button when the game is finished
                             document.getElementById('back-to-bingo').style.display = 'inline-block';
+
+                            markBingoSquare("4");
                         }
                     } else {
                         // Flip back the cards after a short delay

@@ -120,6 +120,8 @@
     <button id="back-to-bingo">Back to Bingo Board</button>
   </div>
 
+  {% load static %}
+  <script src="{% static 'js/marking_square.js' %}"></script>
   <script>
     const wasteItem = document.getElementById('waste-item');
     const bins = document.querySelectorAll('.bin');
@@ -148,6 +150,8 @@
       const randomIndex = Math.floor(Math.random() * wasteItems.length);
       return wasteItems[randomIndex];
     }
+
+    alert("Score at least 100 to win!");
 
     function updateWasteItem() {
       const newItem = getRandomWasteItem();
@@ -185,6 +189,10 @@
       finalScoreDisplay.innerText = score;
       wasteItem.style.display = 'none';
       bins.forEach(bin => bin.style.display = 'none');
+      // If the score reaches 100 and hasn't been marked yet
+      if(score >= 100) {
+        markBingoSquare("2")
+      }
     }
 
     let hasMarkedSquare = false;  // Prevent multiple requests
@@ -192,42 +200,6 @@
     function updateScore(points) {
         score += points;
         scoreDisplay.innerText = 'Score: ' + score;
-
-        // If the score reaches 100 and hasn't been marked yet
-        if (score >= 50 && !hasMarkedSquare) {
-            hasMarkedSquare = true;  // Prevent duplicate calls
-            markBingoSquare();
-        }
-    }
-
-    function markBingoSquare() {
-        fetch("/games/mark-square/", {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": getCSRFToken(),  // Django requires CSRF protection
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ challenge: "2" })  // Optional data
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data.message);
-        })
-        .catch(error => console.error("Error marking square:", error));
-    }
-
-    // Function to get CSRF token from cookies (Django security requirement)
-    function getCSRFToken() {
-        let cookieValue = null;
-        let cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            let cookie = cookies[i].trim();
-            if (cookie.startsWith("csrftoken=")) {
-                cookieValue = cookie.substring("csrftoken=".length, cookie.length);
-                break;
-            }
-        }
-        return cookieValue;
     }
 
     // Set up drag events for the waste item

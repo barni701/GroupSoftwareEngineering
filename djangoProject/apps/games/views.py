@@ -59,12 +59,24 @@ def eco_memory(request):
 def gps_game(request):
     return render(request, 'games/gps_game.html')
 
+def gps_game2(request):
+    return render(request, 'games/gps_game2.html')
+
+def gps_game3(request):
+    return render(request, 'games/gps_game3.html')
+
+def gps_game4(request):
+    return render(request, 'games/gps_game4.html')
+
+def gps_game5(request):
+    return render(request, 'games/gps_game5.html')
 
 #@login_required
 def mark_square_ajax(request):
     """
     Marks a bingo square based on the challenge name provided in the request.
     """
+    print("Got here")
     if request.method == "POST":
         try:
             data = json.loads(request.body)  # Get JSON data from the request

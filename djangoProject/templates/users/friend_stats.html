@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}{{ profile.user.username }}'s Stats{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+  <h1 class="dashboard-title">📈 {{ profile.user.username }}'s Stats Overview</h1>
+
+  <div class="dashboard-widgets compact-widgets">
+    <div class="compact-row">
+      <div class="compact-widget">
+        <h3>🔧 Core Stats</h3>
+        <p><strong>Eco Score:</strong> {{ stats.green_impact }}</p>
+        <p><strong>Level:</strong> {{ stats.level }}</p>
+        <progress value="{{ stats.experience_points }}" max="{{ stats.total_experience }}"></progress>
+        <p>{{ stats.experience_points }} / {{ stats.total_experience }} XP</p>
+        <p><strong>XP to Next Level:</strong> {{ stats.xp_to_next_level }}</p>
+        <p><strong>Main Currency:</strong> ${{ stats.currency_balance }}</p>
+        <p><strong>FarmCoin:</strong> ${{ stats.farm_currency }}</p>
+      </div>
+
+      <div class="compact-widget">
+        <h3>🏆 Achievements</h3>
+        {% if stats.achievements %}
+          <ul class="achievement-list">
+            {% for achievement in stats.achievements %}
+              <li>🥇 <strong>{{ achievement.achievement.name }}</strong><br><small>{{ achievement.achievement.description }}</small></li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>This user has not earned any achievements yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-links">
+    <a href="{% url 'users:friends_list' %}">← Back to Friends</a>
+  </div>
+</div>
+{% endblock %}

@@ -130,10 +130,16 @@
   
   .compact-widget {
     flex: 1 1 48%;
-    background-color: #f9f9f9;
+    background-color: #16213e; /* match .widget background */
+    color: #e3f2fd; /* match .widget text color */
     padding: 1rem;
     border-radius: 8px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* match .widget shadow */
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .compact-widget:hover {
+    transform: scale(1.05); /* optional: keep hover effect */
   }
 
 .rarity-square.rarity-1 { background-color: var(--rarity-common) !important; }

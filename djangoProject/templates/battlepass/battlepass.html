@@ -27,16 +27,18 @@
             font-weight: bold;
             transition: width 0.5s;
         }
+        /* Updated: Display tiers in a single horizontal scrollable row */
         .tier-list {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
+            flex-wrap: nowrap;
+            overflow-x: auto;
             padding: 0;
             margin-top: 20px;
         }
         .tier {
-            width: 30%;
-            margin: 10px;
+            flex: 0 0 auto;
+            width: 150px; /* Fixed width for each tier box */
+            margin-right: 10px;
             padding: 15px;
             background: #e7e7e7;
             border-radius: 5px;
@@ -77,8 +79,8 @@
         {% endif %}
 
         <div class="progress-bar-container">
-            <div class="progress-bar" style="width: {{ user_battle_pass.progress_points|floatformat:0 }}%;">
-                {{ user_battle_pass.progress_points }}/100 XP
+            <div class="progress-bar" style="width: {{ user_battle_pass.progress_percent }}%">
+                {{ user_battle_pass.progress_percent }}/100 XP
             </div>
         </div>
 
@@ -86,23 +88,42 @@
 
         <p>⏳ Time Left: <span id="season-timer"></span></p>
         <h3>Rewards</h3>
+        {% regroup tiers by tier_level as grouped_tiers %}
         <div class="tier-list">
-            {% for tier in tiers %}
-            <div class="tier {% if tier.is_premium %}premium{% endif %} {% if user_battle_pass.current_tier > tier.tier_level %}claimed{% elif user_battle_pass.current_tier == tier.tier_level %}upcoming{% else %}locked{% endif %}">
-                    <strong>Tier {{ tier.tier_level }}</strong><br>
-                    {{ tier.reward_name }}
-                    {% if tier.is_premium and not user_battle_pass.has_premium %}
-                        <span style="color: gold;">(Premium Only)</span>
-                    {% endif %}
+        {% for group in grouped_tiers %}
+            <div class="tier-group">
+            {% for tier in group.list %}
+                {% if not tier.is_premium %}
+                <div class="tier free {% if user_battle_pass.current_tier > tier.tier_level %}claimed{% elif user_battle_pass.current_tier == tier.tier_level %}upcoming{% else %}locked{% endif %}">
+                    <strong>Tier {{ tier.tier_level }} (Free)</strong><br>
+                    {{ tier.reward_name }}<br>
                     {% if user_battle_pass.current_tier > tier.tier_level %}
-                        ✅ Claimed
+                    ✅ Claimed
                     {% elif user_battle_pass.current_tier == tier.tier_level %}
-                        ⏳ Upcoming
+                    ⏳ Upcoming
                     {% else %}
-                        🔒 Locked
+                    🔒 Locked
                     {% endif %}
                 </div>
+                {% endif %}
             {% endfor %}
+            {% for tier in group.list %}
+                {% if tier.is_premium %}
+                <div class="tier premium {% if user_battle_pass.current_tier > tier.tier_level %}claimed{% elif user_battle_pass.current_tier == tier.tier_level %}upcoming{% else %}locked{% endif %}">
+                    <strong>Tier {{ tier.tier_level }} (Premium)</strong><br>
+                    {{ tier.reward_name }}<br>
+                    {% if user_battle_pass.current_tier > tier.tier_level %}
+                    ✅ Claimed
+                    {% elif user_battle_pass.current_tier == tier.tier_level %}
+                    ⏳ Upcoming
+                    {% else %}
+                    🔒 Locked
+                    {% endif %}
+                </div>
+                {% endif %}
+            {% endfor %}
+            </div>
+        {% endfor %}
         </div>
     </div>
 {% endblock content %}

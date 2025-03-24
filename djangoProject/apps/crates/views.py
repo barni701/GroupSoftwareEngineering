@@ -183,7 +183,7 @@ def crate_shop(request):
     return render(request, "crates/crate_shop.html", context)
 
 
-def process_single_crate_opening(user, crate, crate_def):
+def process_single_crate_opening(user, crate, crate_def, crate_type):
     """
     Processes a single crate opening.
     Returns a dictionary with reward info.
@@ -226,6 +226,14 @@ def process_single_crate_opening(user, crate, crate_def):
             "rarity": rarity_display
         }
 
+    CrateOpeningHistory.objects.create(
+            user=user,
+            crate=crate,
+            crate_type=crate_type,
+            reward_item=dropped_item.name,
+            reward_rarity=adjusted_rarity
+        )
+
     # Reduce the crate's quantity
     crate.adjust_quantity(-1)
 
@@ -253,7 +261,7 @@ def bulk_open_crates(request, crate_type):
 
     while crate and crate.quantity > 0:
         try:
-            reward_info = process_single_crate_opening(request.user, crate, crate_def)
+            reward_info = process_single_crate_opening(request.user, crate, crate_def, crate_type)
             key = reward_info.get("item")
             if key in aggregated_rewards:
                 aggregated_rewards[key]["count"] += 1
@@ -273,20 +281,6 @@ def bulk_open_crates(request, crate_type):
     aggregated_list = list(aggregated_rewards.values())
     remaining = crate.quantity if crate else 0
     return JsonResponse({"success": True, "rewards": aggregated_list, "remaining": remaining})
-
-    rewards = []
-    # Process crate openings until none remain
-    while crate and crate.quantity > 0:
-        try:
-            reward_info = process_single_crate_opening(request.user, crate, crate_def)
-            rewards.append(reward_info)
-            # Refresh the crate instance for the next iteration
-            crate = Crate.objects.filter(user=request.user, crate_type=crate_type).first()
-        except Exception as e:
-            rewards.append({"error": f"Error processing crate: {str(e)}"})
-            break  # Exit loop on error
-
-    return JsonResponse({"success": True, "rewards": rewards})
 
 @login_required
 def crate_inventory(request):

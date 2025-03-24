@@ -47,7 +47,7 @@ def plant_seed(request, plot_id, seed_id):
         return redirect("garden_dashboard")
     
     # Define a base growth time of 2 hours.
-    base_duration = timedelta(seconds=2)
+    base_duration = timedelta(hours=2)
     # Calculate multiplier: for rarity 1, multiplier = 1; for rarity 2, multiplier = 1.5; etc.
     multiplier = 1 + ((inv_item.item.rarity - 1) * 0.5)
     growth_duration = base_duration * multiplier

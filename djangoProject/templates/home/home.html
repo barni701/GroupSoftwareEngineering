@@ -1,29 +1,37 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
 
-<!-- Main Container -->
-<div class="container mt-4">
-    <!-- Opening Section -->
+<!-- Hero Section -->
+<section id="hero" role="banner" class="position-relative text-white" style="background: url('{% static "images/hero.jpg" %}') center center/cover no-repeat; min-height: 60vh;">
+  <div class="container h-100 d-flex flex-column justify-content-center align-items-center position-relative" style="z-index: 2;">
+    <h1 class="display-3 fw-bold">Sustainability Bingo</h1>
+    <p class="lead fs-4">Help the environment while having fun!</p>
+    <a href="#challenges" class="btn btn-success btn-lg mt-3">Get Started</a>
+  </div>
+  <div class="position-absolute top-0 start-0 w-100 h-100" style="background: rgba(0, 0, 0, 0.5);"></div>
+</section>
+
+<!-- Main Content -->
+<main class="container py-5" id="challenges">
+    <!-- Explanation Section -->
     <div class="text-center mb-5">
-        <h1 class="display-4">Sustainability Bingo</h1>
-        <div class="lead">
-            <h2>How does it work?</h2>
-            <p>
-                Sustainability bingo lets you help the environment while having fun! Complete various challenges to tick boxes off the bingo board and win leaf coins. These coins can be exchanged for seeds in the store to help you grow your very own virtual garden. 
-            </p>
-            <p>
-                Challenges range from online quizzes to exploring campus and scanning QR codes. Learn more about the environment and how we can help it while growing your in-game garden! Good luck!
-            </p>
-        </div>
+        <h2>How does it work?</h2>
+        <p class="lead">
+            Sustainability bingo lets you help the environment while having fun! Complete various challenges to tick boxes off the bingo board and win leaf coins. These coins can be exchanged for seeds in the store to help you grow your very own virtual garden.
+        </p>
+        <p>
+            Challenges range from online quizzes to exploring campus and scanning QR codes. Learn more about the environment and how we can help it while growing your in-game garden! Good luck!
+        </p>
     </div>
 
     <!-- Sustainability Sections -->
     <section class="row g-4">
         <div class="col-md-6 col-lg-4">
-            <div class="card shadow">
-                <img src="https://www.stockvault.net/data/2011/03/20/119777/preview16.jpg" class="card-img-top" alt="Sustainable Food">
+            <div class="card shadow hover-effect">
+                <img src="https://www.stockvault.net/data/2011/03/20/119777/preview16.jpg" class="card-img-top" alt="Sustainable Food" loading="lazy">
                 <div class="card-body">
-                    <h2 class="card-title">Sustainable Food</h2>
+                    <h3 class="card-title">Sustainable Food</h3>
                     <p class="card-text">
                         Creating a future where all food comes from sustainable sources is key. Currently, the UK imports most of its fresh produce from overseas, contributing to high carbon emissions and unsustainable practices.
                     </p>
@@ -32,10 +40,10 @@
         </div>
 
         <div class="col-md-6 col-lg-4">
-            <div class="card shadow">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYa0EvIyVoa8A9hNU7Y8Ayr6LRPNvHRCeIAw&s" class="card-img-top" alt="Preventing Climate Change">
+            <div class="card shadow hover-effect">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYa0EvIyVoa8A9hNU7Y8Ayr6LRPNvHRCeIAw&s" class="card-img-top" alt="Preventing Climate Change" loading="lazy">
                 <div class="card-body">
-                    <h2 class="card-title">Preventing Climate Change</h2>
+                    <h3 class="card-title">Preventing Climate Change</h3>
                     <p class="card-text">
                         Reducing carbon emissions is critical to preventing climate change. Strategies include switching to sustainable energy sources and reducing energy consumption—from turning off unused lights to installing solar panels and wind turbines.
                     </p>
@@ -44,10 +52,10 @@
         </div>
 
         <div class="col-md-6 col-lg-4">
-            <div class="card shadow">
-                <img src="https://images.pexels.com/photos/6646870/pexels-photo-6646870.jpeg" class="card-img-top" alt="Reducing Poverty">
+            <div class="card shadow hover-effect">
+                <img src="https://images.pexels.com/photos/6646870/pexels-photo-6646870.jpeg" class="card-img-top" alt="Reducing Poverty" loading="lazy">
                 <div class="card-body">
-                    <h2 class="card-title">Reducing Poverty</h2>
+                    <h3 class="card-title">Reducing Poverty</h3>
                     <p class="card-text">
                         Sustainability also means improving economic conditions. Reducing poverty can involve charitable donations, volunteering, and raising awareness, all of which help create a more sustainable society.
                     </p>
@@ -56,10 +64,10 @@
         </div>
 
         <div class="col-md-6 col-lg-4">
-            <div class="card shadow">
-                <img src="https://images.stockcake.com/public/6/d/7/6d7ad099-e2dd-4b8c-8386-9ae802f7a34a/miniature-eco-city-stockcake.jpg" class="card-img-top" alt="Sustainable Cities">
+            <div class="card shadow hover-effect">
+                <img src="https://images.stockcake.com/public/6/d/7/6d7ad099-e2dd-4b8c-8386-9ae802f7a34a/miniature-eco-city-stockcake.jpg" class="card-img-top" alt="Sustainable Cities" loading="lazy">
                 <div class="card-body">
-                    <h2 class="card-title">Sustainable Cities and Communities</h2>
+                    <h3 class="card-title">Sustainable Cities and Communities</h3>
                     <p class="card-text">
                         As urban populations grow, keeping cities livable is essential. This means ensuring green spaces, resilient infrastructure, and strong community support, along with sustainable food, water, and energy usage.
                     </p>
@@ -67,6 +75,5 @@
             </div>
         </div>
     </section>
-</div>
-
+</main>
 {% endblock %}
