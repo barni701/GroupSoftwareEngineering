@@ -74,10 +74,17 @@
     <!-- Hidden Back to Bingo button that will appear upon successful check-in -->
     <button id="back-to-bingo">Back to Bingo Board</button>
 
+    {% load static %}
+    <script src="{% static 'js/marking_square.js' %}"></script>
     <script>
+
+        console.log("Inline script loaded.");
+        console.log("markBingoSquare type:", typeof markBingoSquare);  // Debugging log
+
+
         // Target location coordinates (latitude, longitude)
-        const targetLat = 50.737265;
-        const targetLon = -3.529447;
+        const targetLat = 50.739585581597005;
+        const targetLon = -3.533667549609237;
         const checkInDistance = 0.1; // Distance in km (100 meters)
 
         // Haversine formula to calculate distance between two coordinates
@@ -97,35 +104,24 @@
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
                     // Uncomment the lines below to use actual geolocation:
-                    const userLat = position.coords.latitude;
-                    const userLon = position.coords.longitude;
+                    // const userLat = position.coords.latitude;
+                    // const userLon = position.coords.longitude;
+                    // For now, we're using fixed coordinates:
+                    const userLat = 50.739585581597005;
+                    const userLon = -3.533667549609237;
 
                     // Calculate the distance to the target location
                     const distance = haversine(userLat, userLon, targetLat, targetLon);
 
                     if (distance <= checkInDistance) {
                         alert('You are near the target location! Check-in successful.');
+                        markBingoSquare("6");
                         // Hide the check-in button and update instructions
                         document.getElementById('checkInButton').style.display = 'none';
                         document.getElementById('instructionText').innerText = 'Successfully checked in.';
                         // Reveal the Back to Bingo button
                         document.getElementById('back-to-bingo').style.display = 'inline-block';
-                        // Send request to server to mark the tile as complete
-                        fetch('/markSquare/', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRFToken': '{{ csrf_token }}'
-                            },
-                            body: JSON.stringify({ challenge: 1 })
-                        }).then(response => response.json())
-                          .then(data => {
-                              if (data.success) {
-                                  alert('Tile marked as complete.');
-                              } else {
-                                  alert('Failed to mark tile as complete.');
-                              }
-                          });
+
                     } else {
                         alert('You are too far from the target location. Try again later.');
                     }
