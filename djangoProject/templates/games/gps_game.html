@@ -97,11 +97,12 @@
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
                     // Uncomment the lines below to use actual geolocation:
-                    // const userLat = position.coords.latitude;
-                    // const userLon = position.coords.longitude;
+                    const userLat = position.coords.latitude;
+                    const userLon = position.coords.longitude;
+
                     // For now, we're using fixed coordinates:
-                    const userLat = 50.737265;
-                    const userLon = -3.529447;
+                    //const userLat = 50.737265;
+                    //const userLon = -3.529447;
 
                     // Calculate the distance to the target location
                     const distance = haversine(userLat, userLon, targetLat, targetLon);
